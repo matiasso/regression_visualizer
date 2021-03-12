@@ -8,8 +8,8 @@ class SidePanel extends GridPane {
   val paddingInt = 10
   this.padding = Insets(paddingInt, paddingInt, paddingInt, paddingInt)
   this.hgap = paddingInt
-  this.add(new Label("test1"), 0, 0)
-  this.add(new Label("test2"), 1, 0)
-  this.add(new Label("test3"), 0, 1)
-  this.add(new Label("test4"), 1, 1)
+  this.add(new Label("R value:"), 0, 0)
+  this.add(new Label("???"), 1, 0)
+  this.add(new Label("Graph f(x)="), 0, 1)
+  this.add(new Label("???"), 1, 1)
 }
