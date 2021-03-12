@@ -1,6 +1,6 @@
-package regressionModel
+package regressionmodel
 
-import regressionModel.GUI.MainGUI
+import regressionmodel.gui.MainGUI
 import scalafx.application.JFXApp
 import scalafx.scene.Scene
 
@@ -10,7 +10,7 @@ object Main extends JFXApp {
 
   stage = new JFXApp.PrimaryStage {
     scene = new Scene(view)
-    title.value = "Hello Stage"
+    title.value = "Regression Model"
     width = 800
     height = 500
   }

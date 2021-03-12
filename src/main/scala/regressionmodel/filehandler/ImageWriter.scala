@@ -1,4 +1,4 @@
-package regressionModel.fileHandler
+package regressionmodel.filehandler
 
 class ImageWriter (fileName: String) extends Writer {
 

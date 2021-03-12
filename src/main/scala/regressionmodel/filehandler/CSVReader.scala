@@ -1,4 +1,4 @@
-package regressionModel.fileHandler
+package regressionmodel.filehandler
 
 class CSVReader (fileName: String) extends Reader {
 
