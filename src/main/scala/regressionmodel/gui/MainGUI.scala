@@ -3,6 +3,9 @@ package regressionmodel.gui
 import scalafx.scene.control.{Button, Menu, MenuBar, MenuItem, RadioMenuItem, ToggleGroup}
 import scalafx.scene.layout.{BorderPane, StackPane}
 import regressionmodel.DataPoints
+import regressionmodel.Main.stage
+import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
+import scalafx.stage.FileChooser
 
 class MainGUI extends BorderPane {
 
@@ -10,11 +13,24 @@ class MainGUI extends BorderPane {
     val styleToggle = new ToggleGroup
     val colorToggle = new ToggleGroup
     val regrTypeToggle = new ToggleGroup
+    val open = new MenuItem("Open...")
+    open.accelerator = new KeyCodeCombination(KeyCode.O, KeyCombination.ControlDown)
+    open.onAction = e => {
+      val fileChooser = new FileChooser
+      val selectedFile = fileChooser.showOpenDialog(stage)
+      //If the user cancels the selection, it will be null
+      if (selectedFile != null){
+        println("Selected: " + selectedFile.getAbsolutePath)
+      }
+    }
+    val save = new MenuItem("Save...")
+    save.accelerator = new KeyCodeCombination(KeyCode.S, KeyCombination.ControlDown)
+    //save.onAction = e =>
+    val exit = new MenuItem("Exit")
+    exit.onAction = e => sys.exit(0)
     menus = List(
       new Menu("File") {
-        items = List(
-          new MenuItem("Open..."),
-          new MenuItem("Save..."))
+        items = List(open, save, exit)
       }, new Menu("Settings") {
         items = List(
           new Menu("Regression type") {

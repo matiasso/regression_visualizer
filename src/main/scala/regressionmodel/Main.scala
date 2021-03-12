@@ -6,6 +6,7 @@ import scalafx.scene.Scene
 
 
 object Main extends JFXApp {
+  //I created my own class for the Graphical user interface part
   val view = new MainGUI()
 
   stage = new JFXApp.PrimaryStage {
