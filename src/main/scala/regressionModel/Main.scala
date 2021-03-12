@@ -1,5 +1,6 @@
 package regressionModel
 
+import regressionModel.GUI.MainGUI
 import scalafx.application.JFXApp
 import scalafx.scene.Scene
 

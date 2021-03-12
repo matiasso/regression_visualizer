@@ -1,4 +1,4 @@
-package regressionModel
+package regressionModel.GUI
 
 import scalafx.geometry.Insets
 import scalafx.scene.control.Label

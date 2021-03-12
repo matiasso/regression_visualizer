@@ -1,11 +1,11 @@
-package regressionModel
+package regressionModel.GUI
 
 import scalafx.scene.control.{Button, Menu, MenuBar, MenuItem}
-import scalafx.scene.layout.{AnchorPane, BorderPane, StackPane}
+import scalafx.scene.layout.{BorderPane, StackPane}
 
 class MainGUI extends BorderPane {
 
-  val menuBar = new MenuBar() {
+  val menuBar: MenuBar = new MenuBar() {
     menus = List(
       new Menu("File") {
         items = List(
