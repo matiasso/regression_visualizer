@@ -1,12 +1,15 @@
 package regressionmodel.gui
 
+import scalafx.Includes._
 import scalafx.scene.control.{Button, Menu, MenuBar, MenuItem, RadioMenuItem, ToggleGroup}
 import scalafx.scene.layout.{BorderPane, StackPane}
 import regressionmodel.DataPoints
 import regressionmodel.Main.stage
 import regressionmodel.filehandler._
+import scalafx.scene.chart.ScatterChart
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
 import scalafx.stage.FileChooser
+import scalafx.stage.FileChooser.ExtensionFilter
 
 class MainGUI extends BorderPane {
 
@@ -18,21 +21,23 @@ class MainGUI extends BorderPane {
     open.accelerator = new KeyCodeCombination(KeyCode.O, KeyCombination.ControlDown)
     open.onAction = e => {
       val fileChooser = new FileChooser
+      fileChooser.setTitle("Select the datafile")
+      fileChooser.extensionFilters.addAll(
+        //Why are these seperate ?? combine them later
+        new ExtensionFilter("Text and CSV files", Seq("*.txt", "*.csv")),
+        //new ExtensionFilter("CSV Files", "*.csv")
+      )
       val selectedFile = fileChooser.showOpenDialog(stage)
       //If the user cancels the selection, it will be null
       if (selectedFile != null){
         println("Selected: " + selectedFile.getAbsolutePath)
-        selectedFile.getName.takeRight(3) match {
-          case "txt" => {
-            val txtReader = new TXTReader(selectedFile.getAbsolutePath)
-            txtReader.load()
-          }
-          case "csv" => {
-            val csvReader = new CSVReader(selectedFile.getAbsolutePath)
-            csvReader.load()
-          }
-          case _ => println("Unknown file type!") //Throw exception and show message dialog here
+        val reader = selectedFile.getName.takeRight(3) match {
+            //These are the only cases since the extensionFilter limits to these types only
+          case "txt" => new TXTReader(selectedFile.getAbsolutePath)
+          case "csv" => new CSVReader(selectedFile.getAbsolutePath)
         }
+        reader.load()
+        reader.getDataPoints(true)
       }
     }
     val save = new MenuItem("Save...")
