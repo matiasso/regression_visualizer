@@ -1,5 +1,6 @@
 package regressionmodel
 
+import scalafx.scene.chart.NumberAxis
 import scalafx.scene.control.ToggleGroup
 import scalafx.scene.paint.Color
 import scalafx.scene.paint.Color._
@@ -16,6 +17,12 @@ object GlobalVars {
   val colorToggle = new ToggleGroup
   val regrTypeToggle = new ToggleGroup
   val csvSeparatorToggle = new ToggleGroup
+
+  val xAxis = new NumberAxis(-10, 10, 1)
+  xAxis.setLabel("X")
+  val yAxis = new NumberAxis(-10, 10, 1)
+  yAxis.setLabel("Y")
+
 
 
 }

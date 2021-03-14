@@ -3,6 +3,7 @@ package regressionmodel.filehandler
 class CSVReader (fileName: String) extends Reader(fileName) {
 
   override def verifyFormat(): Boolean = {
+    //Check which separator is used in GlobalVars
     val lineRgx = """(-?\d+\.?\d*);\s?(-?\d+\.?\d*)""".r
     for (line <- this.lines){
       if (lineRgx.findFirstIn(line).isEmpty) {

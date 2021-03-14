@@ -70,10 +70,5 @@ class MainGUI extends BorderPane {
   }
   this.top = menuBar
   this.right = new SidePanel()
-  this.center = new StackPane() {
-    children = new Button("testi") {
-      prefHeight = 300
-      prefWidth = 600
-    }
-  }
+  this.center = new Plot()
 }
