@@ -43,7 +43,7 @@ class MainGUI extends BorderPane {
           //That's why we don't need "case _ =>" here
         }
         reader.load()
-        reader.getDataPoints(true)
+        reader.getDataPoints(true).foreach(println(_))
       }
     }
     val save = new MenuItem("Save...")
@@ -56,10 +56,10 @@ class MainGUI extends BorderPane {
         items = List(open, save, exit)
       }, new Menu("Settings") {
         items = List(
-          newMenuItem("Regression type", (GlobalVars.regressionOptions.map(_._1).toArray, GlobalVars.regrTypeToggle)),
-          newMenuItem("CSV Separator", (GlobalVars.csvSeparatorOptions.map(_._1).toArray, GlobalVars.csvSeparatorToggle)),
-          newMenuItem("Graph color", (GlobalVars.colorOptions.map(_._1).toArray, GlobalVars.colorToggle)),
-          newMenuItem("Point style", (GlobalVars.styleOptions.map(_._1).toArray, GlobalVars.styleToggle))
+          newMenuItem("Regression type", (GlobalVars.regressionOptions.keys.toArray, GlobalVars.regrTypeToggle)),
+          newMenuItem("CSV Separator", (GlobalVars.csvSeparatorOptions.keys.toArray, GlobalVars.csvSeparatorToggle)),
+          newMenuItem("Graph color", (GlobalVars.colorOptions.keys.toArray, GlobalVars.colorToggle)),
+          newMenuItem("Point style", (GlobalVars.styleOptions.keys.toArray, GlobalVars.styleToggle))
         )
       }, new Menu("Help") {
         items = List(
