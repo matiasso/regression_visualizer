@@ -12,7 +12,7 @@ object Main extends JFXApp {
   stage = new JFXApp.PrimaryStage {
     scene = new Scene(view)
     title.value = "Regression Model"
-    width = 800
-    height = 500
+    width = 900
+    height = 650
   }
 }

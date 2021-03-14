@@ -1,22 +1,27 @@
 package regressionmodel.gui
 
-import scalafx.Includes._
-import scalafx.scene.control.{Button, Menu, MenuBar, MenuItem, RadioMenuItem, ToggleGroup}
-import scalafx.scene.layout.{BorderPane, StackPane}
-import regressionmodel.DataPoints
+import regressionmodel.GlobalVars
 import regressionmodel.Main.stage
 import regressionmodel.filehandler._
-import scalafx.scene.chart.ScatterChart
+import scalafx.scene.control._
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
+import scalafx.scene.layout.{BorderPane, StackPane}
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 
 class MainGUI extends BorderPane {
 
+  def newMenuItem(text:String, tuple: (Array[String], ToggleGroup)): Menu = {
+    //This is used for the settings menu, to create a menu item with first item selected
+    new Menu(text) {
+      items = tuple._1.map(name => new RadioMenuItem(name.capitalize) {
+        toggleGroup = tuple._2
+        selected = name == tuple._1.head
+      }).toList
+    }
+  }
+
   val menuBar: MenuBar = new MenuBar() {
-    val styleToggle = new ToggleGroup
-    val colorToggle = new ToggleGroup
-    val regrTypeToggle = new ToggleGroup
     val open = new MenuItem("Open...")
     open.accelerator = new KeyCodeCombination(KeyCode.O, KeyCombination.ControlDown)
     open.onAction = e => {
@@ -29,12 +34,13 @@ class MainGUI extends BorderPane {
       )
       val selectedFile = fileChooser.showOpenDialog(stage)
       //If the user cancels the selection, it will be null
-      if (selectedFile != null){
+      if (selectedFile != null) {
         println("Selected: " + selectedFile.getAbsolutePath)
         val reader = selectedFile.getName.takeRight(3) match {
-            //These are the only cases since the extensionFilter limits to these types only
           case "txt" => new TXTReader(selectedFile.getAbsolutePath)
           case "csv" => new CSVReader(selectedFile.getAbsolutePath)
+          //These are the only cases since the extensionFilter limits to these types only
+          //That's why we don't need "case _ =>" here
         }
         reader.load()
         reader.getDataPoints(true)
@@ -50,34 +56,20 @@ class MainGUI extends BorderPane {
         items = List(open, save, exit)
       }, new Menu("Settings") {
         items = List(
-          new Menu("Regression type") {
-            items = DataPoints.regressionOptions.map(pair => new RadioMenuItem(pair._1.capitalize) {
-              toggleGroup = regrTypeToggle
-              selected = DataPoints.regressionOptions.head._1 == pair._1
-            }).toList
-          },
-          new Menu("Graph color"){
-            items = DataPoints.colorOptions.map(pair => new RadioMenuItem(pair._1.capitalize) {
-              toggleGroup = colorToggle
-              selected = DataPoints.colorOptions.head._1 == pair._1
-            }).toList
-          },
-          new Menu("Point style") {
-            items = DataPoints.styleOptions.map(pair => new RadioMenuItem(pair._1.capitalize) {
-              toggleGroup = styleToggle
-              selected = DataPoints.style == pair._2
-            }).toList
-          }
+          newMenuItem("Regression type", (GlobalVars.regressionOptions.map(_._1).toArray, GlobalVars.regrTypeToggle)),
+          newMenuItem("CSV Separator", (GlobalVars.csvSeparatorOptions.map(_._1).toArray, GlobalVars.csvSeparatorToggle)),
+          newMenuItem("Graph color", (GlobalVars.colorOptions.map(_._1).toArray, GlobalVars.colorToggle)),
+          newMenuItem("Point style", (GlobalVars.styleOptions.map(_._1).toArray, GlobalVars.styleToggle))
         )
       }, new Menu("Help") {
         items = List(
-            new MenuItem("About")
+          new MenuItem("About")
         )
       }
     )
   }
   this.top = menuBar
-  this.right =  new SidePanel()
+  this.right = new SidePanel()
   this.center = new StackPane() {
     children = new Button("testi") {
       prefHeight = 300

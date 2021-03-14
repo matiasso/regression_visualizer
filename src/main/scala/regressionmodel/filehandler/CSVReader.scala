@@ -42,7 +42,7 @@ class CSVReader (fileName: String) extends Reader {
   override def getDataPoints(leftIsX: Boolean): Array[PVector] = {
     val pointBuffer = new ArrayBuffer[PVector]()
     try {
-      val lineRgx = """^(\d+),(\d+)""".r
+      val lineRgx = """^(-?\d+[\.,]?\d*);\s*(-?\d+[\.,]?\d*)""".r
       for (line <- lines){
         val rgxMatch = lineRgx.findFirstMatchIn(line)
         val pVector = rgxMatch match {

@@ -42,13 +42,13 @@ class TXTReader (fileName: String) extends regressionmodel.filehandler.Reader {
   override def getDataPoints(leftIsX: Boolean): Array[PVector] = {
     val pointBuffer = new ArrayBuffer[PVector]()
     try {
-      val lineRgx = """^(\d+),(\d+)""".r
+      val lineRgx = """^(-?\d+\.?\d*)[,;]\s*(-?\d+\.?\d*)""".r
       for (line <- lines){
         val rgxMatch = lineRgx.findFirstMatchIn(line)
         val pVector = rgxMatch match {
           case None => throw InvalidDataFormat("The line didn't have correct 'X,Y' format.", line)
-          case Some(m:Match) => if (leftIsX) new PVector(m.group(1).toInt, m.group(2).toInt) else
-            new PVector(m.group(2).toInt, m.group(1).toInt)
+          case Some(m:Match) => if (leftIsX) new PVector(m.group(1).toDouble, m.group(2).toDouble) else
+            new PVector(m.group(2).toDouble, m.group(1).toDouble)
         }
         pointBuffer += pVector
       }
