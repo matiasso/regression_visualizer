@@ -1,5 +1,5 @@
 14.3.2020.
-I added FileReader classes, Created a simple GUI for testing features.
-I also implemented simple (not yet functional) ScatterChart for plotting the points
-Next week I'll spend on adding JSON file type, making the settings functional, and work on the plot itself.
+Every class that is shown here is new from this week. I created a simple GUI for testing things
+I also implemented simple TXT and CSV readers, which handle correctly formatted data (Exceptions will be handled later)
+Next week I'll spend on making the settings functional, and work on the plot itself to add the regression line too.
 I spent roughly 10 hours this week on my features, and I think I'm doing well with my schedule, maybe a bit ahead of it.

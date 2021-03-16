@@ -43,7 +43,9 @@ class MainGUI extends BorderPane {
           //That's why we don't need "case _ =>" here
         }
         reader.load()
-        reader.getDataPoints(true).foreach(println(_))
+        GlobalVars.dataPoints = reader.getDataPoints(true)
+        //Refresh plot?
+        println("Successfully loaded datapoints!")
       }
     }
     val save = new MenuItem("Save...")

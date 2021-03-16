@@ -10,7 +10,9 @@ object Main extends JFXApp {
   val view = new MainGUI()
 
   stage = new JFXApp.PrimaryStage {
-    scene = new Scene(view)
+    scene = new Scene(view) {
+      stylesheets.add("PlotStyle.css")
+    }
     title.value = "Regression Model"
     width = 900
     height = 650
