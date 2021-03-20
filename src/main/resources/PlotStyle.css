@@ -1,4 +1,5 @@
 /* Blue semi-transparent 4-pointed star, using SVG path. */
+/* From stackoverflow */
 .default-color0.chart-symbol {
     -fx-background-color: blue;
     -fx-scale-shape: true;

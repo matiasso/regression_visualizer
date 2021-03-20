@@ -1,6 +1,6 @@
 package regressionmodel.gui
 
-import regressionmodel.mathematics.RegressionModel
+import regressionmodel.mathematics.{LinearRegression, RegressionModel}
 import regressionmodel.PVector
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.chart.{NumberAxis, ScatterChart, XYChart}
@@ -10,6 +10,7 @@ import scalafx.scene.paint.Color.Purple
 
 object Plot extends StackPane {
 
+  var regrObject:RegressionModel = LinearRegression
   val dataPoints:ObservableBuffer[PVector] = ObservableBuffer[PVector]()
   dataPoints.onChange { updateData() }
   var pointRadius = 1.5
@@ -22,27 +23,32 @@ object Plot extends StackPane {
   pointSeries.setName("Points")
   val regrSeries: XYChart.Series[Number, Number] = new XYChart.Series()
   regrSeries.setName("Regression")
-  val sc: ScatterChart[Number, Number] =  ScatterChart[Number, Number](this.xAxis, this.yAxis)
-  sc.setTitle("Regression model by Matias")
-  this.children = sc
+  val scatterChart: ScatterChart[Number, Number] =  ScatterChart[Number, Number](this.xAxis, this.yAxis)
+  scatterChart.setTitle("Regression model by Matias")
+  scatterChart.getData.addAll(pointSeries, regrSeries)
+  this.children = scatterChart
+
+
+
 
 
   def updateData() : Unit = {
-    val series: XYChart.Series[Number, Number] = this.pointSeries
-    series.getData.clear()
-    for (p <- this.dataPoints){
-      series.getData.add(XYChart.Data(p.x, p.y))
+    if (this.dataPoints.length > 0){
+      pointSeries.getData.clear()
+      //Clear and add all new data to the series
+      for (p <- this.dataPoints){
+        pointSeries.getData.add(XYChart.Data(p.x, p.y))
+      }
+      regrObject.calculateCoefficients()
+      val coef:(Double, Double) = regrObject.getCoefficients
+      println("Coefficients: " + coef._1 + ", " + coef._2)
+      regrSeries.getData.clear()
+      //Clear and add the dots for the regressionModel
+      for (x <- -100 to 100){
+        //This only works for the linear model
+        regrSeries.getData.add(XYChart.Data(x/10.0, coef._1*(x/10.0)+coef._2))
+      }
     }
-    val regrInstance = new RegressionModel(this.dataPoints.toArray)
-    regrInstance.calculateCoefficients()
-    val coef:(Double, Double) = regrInstance.getCoefficients
-    println("Coefficients: " + coef._1 + ", " + coef._2)
-    regrSeries.getData.clear()
-    for (x <- -100 to 100){
-      regrSeries.getData.add(XYChart.Data(x/10.0, coef._1*(x/10.0)+coef._2))
-    }
-    sc.getData.clear()
-    sc.getData.addAll(series, regrSeries)
   }
 
   def addPoint(point: PVector) : Unit = {

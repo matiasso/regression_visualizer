@@ -1,9 +1,13 @@
 package regressionmodel
 
-import scalafx.scene.control.ToggleGroup
+import regressionmodel.gui.Plot
+import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
+import scalafx.Includes._
+import scalafx.scene.control.{RadioMenuItem, ToggleGroup}
 import scalafx.scene.paint.Color
 import scalafx.scene.paint.Color._
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
+
 
 object GlobalVars {
 
@@ -15,10 +19,13 @@ object GlobalVars {
   val styleToggle = new ToggleGroup
   val colorToggle = new ToggleGroup
   val regrTypeToggle = new ToggleGroup
+  regrTypeToggle.selectedToggle.onChange {
+    Plot.regrObject = regrTypeToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
+      case "exponential" => ExponentialRegression
+      case _ => LinearRegression
+    }
+    Plot.updateData()
+  }
   val csvSeparatorToggle = new ToggleGroup
-
-
-
-
 
 }
