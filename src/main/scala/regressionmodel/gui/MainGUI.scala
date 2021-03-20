@@ -43,8 +43,9 @@ class MainGUI extends BorderPane {
           //That's why we don't need "case _ =>" here
         }
         reader.load()
-        GlobalVars.dataPoints = reader.getDataPoints(true)
-        //Refresh plot?
+        Plot.dataPoints.clear()
+        //Since it's observableBuffer it'll auto-update
+        Plot.dataPoints.addAll(reader.getDataPoints(true))
         println("Successfully loaded datapoints!")
       }
     }
@@ -72,5 +73,5 @@ class MainGUI extends BorderPane {
   }
   this.top = menuBar
   this.right = new SidePanel()
-  this.center = new Plot()
+  this.center = Plot
 }

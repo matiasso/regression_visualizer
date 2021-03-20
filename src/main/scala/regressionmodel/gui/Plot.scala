@@ -1,33 +1,51 @@
 package regressionmodel.gui
 
 import regressionmodel.mathematics.RegressionModel
-import regressionmodel.{GlobalVars, PVector}
-import scalafx.scene.chart.{ScatterChart, XYChart}
+import regressionmodel.PVector
+import scalafx.collections.ObservableBuffer
+import scalafx.scene.chart.{NumberAxis, ScatterChart, XYChart}
 import scalafx.scene.layout.StackPane
+import scalafx.scene.paint.Color
+import scalafx.scene.paint.Color.Purple
 
-class Plot extends StackPane {
+object Plot extends StackPane {
 
-  val sc: ScatterChart[Number, Number] =  ScatterChart[Number, Number](GlobalVars.xAxis, GlobalVars.yAxis)
-  sc.setTitle("Regression model by Matias")
-  val series: XYChart.Series[Number, Number] = GlobalVars.pointSeries
-  val testArr:Array[PVector] = new Array[PVector](16)
-  series.getData.clear()
-  for (x <- testArr.indices){
-    val i = -8 + x
-    testArr(x) = new PVector(i, i+6*(0.5-math.random()))
-    series.getData.add(XYChart.Data(testArr(x).x, testArr(x).y))
-  }
-  series.setName("Points")
+  val dataPoints:ObservableBuffer[PVector] = ObservableBuffer[PVector]()
+  dataPoints.onChange { updateData() }
+  var pointRadius = 1.5
+  var graphColor:Color = Purple
+  val xAxis = new NumberAxis(-10, 10, 1)
+  xAxis.setLabel("X")
+  val yAxis = new NumberAxis(-10, 10, 1)
+  yAxis.setLabel("Y")
+  val pointSeries: XYChart.Series[Number, Number] = new XYChart.Series()
+  pointSeries.setName("Points")
   val regrSeries: XYChart.Series[Number, Number] = new XYChart.Series()
-  val regrInstance = new RegressionModel(testArr)
-  regrInstance.calculateCoefficients()
-  val coef:(Double, Double) = regrInstance.getCoefficients
-  println("Coefficients: " + coef._1 + ", " + coef._2)
-  for (x <- -100 to 100){
-    regrSeries.getData.add(XYChart.Data(x/10.0, coef._1*(x/10.0)+coef._2))
-  }
   regrSeries.setName("Regression")
-  sc.getData.addAll(series, regrSeries)
+  val sc: ScatterChart[Number, Number] =  ScatterChart[Number, Number](this.xAxis, this.yAxis)
+  sc.setTitle("Regression model by Matias")
   this.children = sc
 
+
+  def updateData() : Unit = {
+    val series: XYChart.Series[Number, Number] = this.pointSeries
+    series.getData.clear()
+    for (p <- this.dataPoints){
+      series.getData.add(XYChart.Data(p.x, p.y))
+    }
+    val regrInstance = new RegressionModel(this.dataPoints.toArray)
+    regrInstance.calculateCoefficients()
+    val coef:(Double, Double) = regrInstance.getCoefficients
+    println("Coefficients: " + coef._1 + ", " + coef._2)
+    regrSeries.getData.clear()
+    for (x <- -100 to 100){
+      regrSeries.getData.add(XYChart.Data(x/10.0, coef._1*(x/10.0)+coef._2))
+    }
+    sc.getData.clear()
+    sc.getData.addAll(series, regrSeries)
+  }
+
+  def addPoint(point: PVector) : Unit = {
+     this.dataPoints.add(point)
+  }
 }
