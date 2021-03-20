@@ -1,6 +1,6 @@
 package regressionmodel.filehandler
 
-class ImageWriter (fileName: String) extends Writer {
+class ImageWriter(fileName: String) extends Writer {
 
   override def save(): Unit = {
 

@@ -4,13 +4,12 @@ import regressionmodel.PVector
 
 import java.io.{BufferedReader, FileNotFoundException, FileReader, IOException}
 import scala.collection.mutable.ArrayBuffer
-import scala.util.matching.Regex.Match
 
 abstract class Reader(fileName: String) {
 
-  protected var lines:Array[String] = Array[String]()
+  protected var lines: Array[String] = Array[String]()
 
-  def load() : Unit = {
+  def load(): Unit = {
     try {
       // opens an incoming character stream from the file
       val fileIn = new FileReader(fileName)
@@ -43,7 +42,7 @@ abstract class Reader(fileName: String) {
     //This works for both TXT and CSV
     val pointBuffer = new ArrayBuffer[PVector]()
     try {
-      if (!this.verifyFormat()){
+      if (!this.verifyFormat()) {
         return pointBuffer.toArray
       }
       //This try is probably useless, since we first verifyFormat() with the other method, but it's here just in case
@@ -51,7 +50,7 @@ abstract class Reader(fileName: String) {
       for (line <- lines) {
         val rgxM = lineRgx.findFirstMatchIn(line).get
         val pVector = if (leftIsX) new PVector(rgxM.group(1).toDouble, rgxM.group(2).toDouble) else
-            new PVector(rgxM.group(2).toDouble, rgxM.group(1).toDouble)
+          new PVector(rgxM.group(2).toDouble, rgxM.group(1).toDouble)
         pointBuffer += pVector
       }
     } catch {
@@ -60,6 +59,6 @@ abstract class Reader(fileName: String) {
     pointBuffer.toArray
   }
 
-  def verifyFormat() : Boolean
+  def verifyFormat(): Boolean
 
 }

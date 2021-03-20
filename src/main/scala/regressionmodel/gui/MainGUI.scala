@@ -5,13 +5,13 @@ import regressionmodel.Main.stage
 import regressionmodel.filehandler._
 import scalafx.scene.control._
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
-import scalafx.scene.layout.{BorderPane, StackPane}
+import scalafx.scene.layout.BorderPane
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 
 class MainGUI extends BorderPane {
 
-  def newMenuItem(text:String, tuple: (Array[String], ToggleGroup)): Menu = {
+  def newMenuItem(text: String, tuple: (Array[String], ToggleGroup)): Menu = {
     //This is used for the settings menu, to create a menu item with first item selected
     new Menu(text) {
       items = tuple._1.map(name => new RadioMenuItem(name.capitalize) {

@@ -1,22 +1,22 @@
 package regressionmodel
 
-class PVector(var x:Double, var y:Double) {
+class PVector(var x: Double, var y: Double) {
 
-  def magnitude():Double = {
-    math.sqrt(x*x + y*y)
+  def magnitude(): Double = {
+    math.sqrt(x * x + y * y)
   }
 
-  def add(v: PVector):Unit = {
+  def add(v: PVector): Unit = {
     this.x += v.x
     this.y += v.y
   }
 
-  def add(dx: Double, dy: Double):Unit = {
+  def add(dx: Double, dy: Double): Unit = {
     this.x += dx
     this.y += dy
   }
 
-  def subtract(v: PVector):Unit = {
+  def subtract(v: PVector): Unit = {
     this.x -= v.x
     this.y -= v.y
   }
@@ -39,12 +39,12 @@ class PVector(var x:Double, var y:Double) {
   def distance(v: PVector): Double = {
     val dx = this.x - v.x
     val dy = this.y - v.y
-    math.sqrt(dx*dx + dy*dy)
+    math.sqrt(dx * dx + dy * dy)
   }
 
   def normalize(): Unit = {
     val m = this.magnitude()
-    if (m != 0 && m != 1){
+    if (m != 0 && m != 1) {
       this.divide(m)
     }
   }
