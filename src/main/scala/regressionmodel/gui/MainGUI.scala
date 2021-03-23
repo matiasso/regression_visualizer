@@ -3,9 +3,11 @@ package regressionmodel.gui
 import regressionmodel.GlobalVars
 import regressionmodel.Main.stage
 import regressionmodel.filehandler._
+import scalafx.geometry.Insets
+import scalafx.scene.control.ButtonBar.ButtonData
 import scalafx.scene.control._
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
-import scalafx.scene.layout.BorderPane
+import scalafx.scene.layout.{BorderPane, GridPane}
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 
@@ -58,14 +60,77 @@ class MainGUI extends BorderPane {
     menus = List(
       new Menu("File") {
         items = List(open, save, exit)
-      }, new Menu("Settings") {
+      },
+
+      new Menu("Settings") {
         items = List(
           newMenuItem("Regression type", (GlobalVars.regressionOptions.keys.toArray, GlobalVars.regrTypeToggle)),
           newMenuItem("Graph color", (GlobalVars.colorOptions.keys.toArray, GlobalVars.colorToggle)),
           newMenuItem("Point style", (GlobalVars.styleOptions.keys.toArray, GlobalVars.styleToggle)),
-          newMenuItem("Data format", (GlobalVars.dataFormatOptions.keys.toArray, GlobalVars.dataFormatToggle))
+          newMenuItem("Data format", (GlobalVars.dataFormatOptions.keys.toArray, GlobalVars.dataFormatToggle)),
+          new MenuItem("Plot limits") {
+            onAction = e => {
+              val dialog = new Dialog[LimitResult]() {
+                title = "Plot limits"
+                headerText = "Select the left and right limits for X"
+              }
+
+              val okButtonType = new ButtonType("OK", ButtonData.OKDone)
+              dialog.dialogPane().getButtonTypes.add(okButtonType)
+
+              val limA = new TextField() { promptText = "left limit" }
+              val limB = new TextField() { promptText = "right limit" }
+              val padAndGap = 10
+              val grid = new GridPane(){
+                hgap = padAndGap
+                vgap = padAndGap
+                padding = Insets(padAndGap, padAndGap, padAndGap, padAndGap)
+                addRow(0, new Label("Left:"), limA)
+                addRow(1, new Label("Right:"), limB)
+              }
+              val okButton = dialog.dialogPane().lookupButton(okButtonType)
+              okButton.setDisable(true)
+
+              //Add checks here for the double format, just as an extra feature :)
+              var leftFormatBool = false
+              var rightFormatBool = false
+
+              def checkEnableOkButton(): Unit = {
+                //Enable the button ONLY if both inputs are in Double format
+                if (leftFormatBool && rightFormatBool){
+                  okButton.setDisable(false)
+                } else{
+                  okButton.setDisable(true)
+                }
+              }
+              limA.text.onChange { (_, _, newVal) =>
+                leftFormatBool = newVal.toDoubleOption.isDefined
+                checkEnableOkButton()
+              }
+              limB.text.onChange { (_, _, newVal) =>
+                rightFormatBool = newVal.toDoubleOption.isDefined
+                checkEnableOkButton()
+              }
+
+              dialog.dialogPane().setContent(grid)
+              dialog.resultConverter = dButton =>
+                if (dButton == okButtonType)
+                  LimitResult(limA.text().toDoubleOption, limB.text().toDoubleOption)
+                else
+                  null
+              val result = dialog.showAndWait()
+              result match {
+                case Some(LimitResult(a, b)) =>
+                  println("Received a and b")
+                  //Send these values to the Plot graph!
+                case None => println("Received NONE!")
+              }
+            }
+          }
         )
-      }, new Menu("Help") {
+      },
+
+      new Menu("Help") {
         items = List(
           new MenuItem("About")
         )
@@ -76,3 +141,6 @@ class MainGUI extends BorderPane {
   this.bottom = SidePanel
   this.center = Plot
 }
+
+
+case class LimitResult(leftLimit: Option[Double], rightLimit: Option[Double])
