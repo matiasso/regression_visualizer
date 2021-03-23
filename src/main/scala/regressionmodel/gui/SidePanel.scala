@@ -15,13 +15,17 @@ object SidePanel extends GridPane {
   this.addRow(0, new Label("R squared:"), labelRSquared)
   this.addRow(1, new Label("Graph f(x): "), labelFunc)
 
-  def updateFunctionLabel(tuple: (Double, Double), linear: Boolean): Unit = {
+  def updateFunctionLabel(tuple: (Option[Double], Option[Double]), linear: Boolean): Unit = {
     //Check whether we're using linear or exponential graph
-    val b = if (tuple._2 >= 0) s"+${tuple._2}" else tuple._2
-    if (linear){
-      this.labelFunc.text = s"y=${tuple._1}x$b"
-    } else {
-      this.labelFunc.text = s"y=${tuple._1}^x+$b"
+    tuple match {
+      case (Some(m), Some(b)) =>
+        val bTex = if (b >= 0) s"+$b" else b
+        if (linear){
+          this.labelFunc.text = s"y=$m*x$bTex"
+        } else {
+          this.labelFunc.text = s"y=$b*e^($m*x)"
+        }
+      case _ => this.labelFunc.text = "???"
     }
   }
 }

@@ -47,18 +47,26 @@ object Plot extends StackPane {
         }
       }
       regrObject.calculateCoefficients(leftCoordinateIsX)
-      val coef: (Double, Double) = regrObject.getCoefficients
-      println("Coefficients: " + coef._1 + ", " + coef._2)
-
-      SidePanel.updateFunctionLabel(coef, this.regrObject == LinearRegression)
+      val coef: (Option[Double], Option[Double]) = regrObject.getCoefficients
+      SidePanel.updateFunctionLabel(coef, this.isLinear)
       regrSeries.getData.clear()
-      //Clear and add the dots for the regressionModel
-      for (x <- -100 to 100) {
-        //This only works for the linear model!
-        regrSeries.getData.add(XYChart.Data(x / 10.0, coef._1 * (x / 10.0) + coef._2))
+      coef match {
+        case (Some(m), Some(b)) =>
+          //Clear and add the dots for the regressionModel
+          for (x <- -100 to 100) {
+            //This only works for the linear model!
+            if (this.isLinear){
+              regrSeries.getData.add(XYChart.Data(x / 10.0, m * (x / 10.0) + b))
+            } else {
+              regrSeries.getData.add(XYChart.Data(x / 10.0, b*math.exp(m * (x / 10.0))))
+            }
+          }
+        case _ => println("Error in getCoefficients!")
       }
     }
   }
+
+  def isLinear: Boolean = this.regrObject == LinearRegression
 
   def addPoint(point: PVector): Unit = {
     this.dataPoints.add(point)
