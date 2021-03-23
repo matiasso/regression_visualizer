@@ -2,7 +2,9 @@ package regressionmodel.gui
 
 import regressionmodel.PVector
 import regressionmodel.mathematics.{LinearRegression, RegressionModel}
+import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
+import scalafx.geometry.Side
 import scalafx.scene.chart.{NumberAxis, ScatterChart, XYChart}
 import scalafx.scene.layout.StackPane
 import scalafx.scene.paint.Color
@@ -17,6 +19,7 @@ object Plot extends StackPane {
   }
   var pointRadius = 1.5
   var graphColor: Color = Purple
+  var leftCoordinateIsX = true
   val xAxis = new NumberAxis(-10, 10, 1)
   xAxis.setLabel("X")
   val yAxis = new NumberAxis(-10, 10, 1)
@@ -28,6 +31,7 @@ object Plot extends StackPane {
   val scatterChart: ScatterChart[Number, Number] = ScatterChart[Number, Number](this.xAxis, this.yAxis)
   scatterChart.setTitle("Regression model by Matias")
   scatterChart.getData.addAll(pointSeries, regrSeries)
+  scatterChart.legendSide = Side.Right
   this.children = scatterChart
 
 
@@ -36,15 +40,21 @@ object Plot extends StackPane {
       pointSeries.getData.clear()
       //Clear and add all new data to the series
       for (p <- this.dataPoints) {
-        pointSeries.getData.add(XYChart.Data(p.x, p.y))
+        if (leftCoordinateIsX){
+          pointSeries.getData.add(XYChart.Data(p.x, p.y))
+        } else{
+          pointSeries.getData.add(XYChart.Data(p.y, p.x))
+        }
       }
-      regrObject.calculateCoefficients()
+      regrObject.calculateCoefficients(leftCoordinateIsX)
       val coef: (Double, Double) = regrObject.getCoefficients
       println("Coefficients: " + coef._1 + ", " + coef._2)
+
+      SidePanel.updateFunctionLabel(coef, this.regrObject == LinearRegression)
       regrSeries.getData.clear()
       //Clear and add the dots for the regressionModel
       for (x <- -100 to 100) {
-        //This only works for the linear model
+        //This only works for the linear model!
         regrSeries.getData.add(XYChart.Data(x / 10.0, coef._1 * (x / 10.0) + coef._2))
       }
     }

@@ -26,5 +26,12 @@ object GlobalVars {
     Plot.updateData()
   }
   val dataFormatToggle = new ToggleGroup
+  dataFormatToggle.selectedToggle.onChange( {
+    Plot.leftCoordinateIsX = dataFormatToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
+      case "x;y" => true
+      case "y;x" => false
+    }
+    Plot.updateData()
+  })
 
 }

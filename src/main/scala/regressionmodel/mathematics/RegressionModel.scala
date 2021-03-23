@@ -14,7 +14,7 @@ trait RegressionModel {
 
   protected def getYValues: Array[Double] = Plot.dataPoints.map(_.y).toArray
 
-  def calculateCoefficients()
+  def calculateCoefficients(leftX: Boolean)
 
   def getCoefficients: (Double, Double) = (this.m, this.b)
 }

@@ -11,6 +11,7 @@ import scalafx.stage.FileChooser.ExtensionFilter
 
 class MainGUI extends BorderPane {
 
+
   def newMenuItem(text: String, tuple: (Array[String], ToggleGroup)): Menu = {
     //This is used for the settings menu, to create a menu item with first item selected
     new Menu(text) {
@@ -72,6 +73,6 @@ class MainGUI extends BorderPane {
     )
   }
   this.top = menuBar
-  this.right = new SidePanel()
+  this.bottom = SidePanel
   this.center = Plot
 }
