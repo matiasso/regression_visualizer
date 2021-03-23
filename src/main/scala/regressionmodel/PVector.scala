@@ -2,7 +2,7 @@ package regressionmodel
 
 class PVector(var x: Double, var y: Double) {
 
-  def magnitude(): Double = {
+  def magnitude: Double = {
     math.sqrt(x * x + y * y)
   }
 
@@ -43,7 +43,7 @@ class PVector(var x: Double, var y: Double) {
   }
 
   def normalize(): Unit = {
-    val m = this.magnitude()
+    val m = this.magnitude
     if (m != 0 && m != 1) {
       this.divide(m)
     }
@@ -54,6 +54,19 @@ class PVector(var x: Double, var y: Double) {
     this.multiply(len)
   }
 
+  def reverseXY(): Unit = {
+    val a = this.x
+    this.x = this.y
+    this.y = a
+  }
+
   override def toString: String = "X:" + this.x.toString + ", Y:" + this.y.toString
 
+}
+
+object PVector {
+
+  def reverse(arr: Array[PVector]): Unit = {
+    arr.foreach(_.reverseXY())
+  }
 }

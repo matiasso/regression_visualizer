@@ -45,7 +45,7 @@ class MainGUI extends BorderPane {
         reader.load()
         Plot.dataPoints.clear()
         //Since it's observableBuffer it'll auto-update
-        Plot.dataPoints.addAll(reader.getDataPoints(true))
+        Plot.dataPoints.addAll(reader.getDataPoints)
         println("Successfully loaded datapoints!")
       }
     }
@@ -60,9 +60,9 @@ class MainGUI extends BorderPane {
       }, new Menu("Settings") {
         items = List(
           newMenuItem("Regression type", (GlobalVars.regressionOptions.keys.toArray, GlobalVars.regrTypeToggle)),
-          newMenuItem("CSV Separator", (GlobalVars.csvSeparatorOptions.keys.toArray, GlobalVars.csvSeparatorToggle)),
           newMenuItem("Graph color", (GlobalVars.colorOptions.keys.toArray, GlobalVars.colorToggle)),
-          newMenuItem("Point style", (GlobalVars.styleOptions.keys.toArray, GlobalVars.styleToggle))
+          newMenuItem("Point style", (GlobalVars.styleOptions.keys.toArray, GlobalVars.styleToggle)),
+          newMenuItem("Data format", (GlobalVars.dataFormatOptions.keys.toArray, GlobalVars.dataFormatToggle))
         )
       }, new Menu("Help") {
         items = List(

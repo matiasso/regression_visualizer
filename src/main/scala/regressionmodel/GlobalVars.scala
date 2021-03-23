@@ -14,7 +14,7 @@ object GlobalVars {
   val colorOptions: Map[String, Color] = Map("red" -> Red, "green" -> Green, "blue" -> Blue, "purple" -> Purple,
     "yellow" -> Yellow, "black" -> Black, "orange" -> Orange, "cyan" -> Cyan)
   val regressionOptions: Map[String, String] = Map("linear" -> "linear", "exponential" -> "exponential")
-  val csvSeparatorOptions: Map[String, Char] = Map("comma" -> ',', "semicolon" -> ';')
+  val dataFormatOptions: Map[String, Boolean] = Map("X;Y" -> true, "Y;X" -> false)
   val styleToggle = new ToggleGroup
   val colorToggle = new ToggleGroup
   val regrTypeToggle = new ToggleGroup
@@ -25,6 +25,6 @@ object GlobalVars {
     }
     Plot.updateData()
   }
-  val csvSeparatorToggle = new ToggleGroup
+  val dataFormatToggle = new ToggleGroup
 
 }
