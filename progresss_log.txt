@@ -1,5 +1,15 @@
-14.3.2020.
+14.3.2021.
 Every class that is shown here is new from this week. I created a simple GUI for testing things
 I also implemented simple TXT and CSV readers, which handle correctly formatted data (Exceptions will be handled later)
 Next week I'll spend on making the settings functional, and work on the plot itself to add the regression line too.
 I spent roughly 10 hours this week on my features, and I think I'm doing well with my schedule, maybe a bit ahead of it.
+
+24.3.2021.
+I spent roughly 15 hours this week. I implemented functioning regression lines for both linear and exponential model
+I added R squared value, and the function text visible also and they seem to be matching with Excel's regressionlines.
+I added options for the user to specify lower and upper bounds for both X and Y-axis.
+I created a few warning dialogs in case errors happen when reading files.
+Most of the settings are already functional, but what seems to be the hardest part is changing the scatterchart symbols
+I can use a .css file to change them, but I haven't found a way (YET) for how to change them during runtime.
+Next week I'll add more dialogwindows for my settings and work on exceptions and errors and test what could go wrong.
+I am now for sure ahead of my schedule, which is of course a good thing.

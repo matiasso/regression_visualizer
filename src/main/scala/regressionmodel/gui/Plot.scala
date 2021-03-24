@@ -20,7 +20,8 @@ object Plot extends StackPane {
   var pointRadius = 1.5
   var graphColor: Color = Purple
   var leftCoordinateIsX = true
-  var limits: (Option[Double], Option[Double]) = (None, None)
+  var limitsX: (Option[Double], Option[Double]) = (None, None)
+  var limitsY: (Option[Double], Option[Double]) = (None, None)
   //Define both x and y axis
   val xAxis = new NumberAxis(-10, 10, 1)
   xAxis.setLabel("X")
@@ -66,9 +67,13 @@ object Plot extends StackPane {
       case (Some(m), Some(b)) =>
         //Clear and add the dots for the regressionModel
         val points = dataPoints.map(p => if (leftCoordinateIsX) p.x else p.y)
+        //As default we'll draw the regressionline with dots equally across
+        //From the smallest x-coordinate to the largest x-coordinate
         var start: Double = points.min
         var end: Double = points.max
-        this.limits match {
+        //But if the user has specified inputs, then we'll check if those limits are smaller
+        //So we don't draw "useless" dots that aren't even visible for the user
+        this.limitsX match {
           case (Some(a), Some(b)) =>
             if (a > start)
               start = a
@@ -77,6 +82,7 @@ object Plot extends StackPane {
           case _ =>
         }
         val width = end - start
+        //This will specify how often the dots for regressionline are drawn
         val iterations = 300
         for (i <- 0 to iterations) {
           val x = start + i * width / iterations
@@ -88,16 +94,31 @@ object Plot extends StackPane {
         }
       case _ => println("Error in getCoefficients!")
     }
+    //println("Set to green")
+    //scatterChart.lookup(".default-color1.chart-symbol").setStyle("-fx-background-color: black, white; -fx-background-insets: 2, 5; -fx-background-radius: 0px; -fx-padding: 3px;")
+    //println(scatterChart.lookup(".default-color1.chart-symbol"))
   }
 
-  def setLimits(limA: Option[Double], limB: Option[Double]): Unit = {
-    this.limits = (limA, limB)
+  def setLimitsX(limA: Option[Double], limB: Option[Double]): Unit = {
+    this.limitsX = (limA, limB)
     (limA, limB) match {
       case (Some(a), Some(b)) =>
         this.xAxis.autoRanging = false
         this.xAxis.lowerBound = a
         this.xAxis.upperBound = b
       case _ => this.xAxis.autoRanging = true
+    }
+    this.updateRegressionLine()
+  }
+
+  def setLimitsY(limA: Option[Double], limB: Option[Double]): Unit = {
+    this.limitsY = (limA, limB)
+    (limA, limB) match {
+      case (Some(a), Some(b)) =>
+        this.yAxis.autoRanging = false
+        this.yAxis.lowerBound = a
+        this.yAxis.upperBound = b
+      case _ => this.yAxis.autoRanging = true
     }
     this.updateRegressionLine()
   }
