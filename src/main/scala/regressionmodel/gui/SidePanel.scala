@@ -28,4 +28,11 @@ object SidePanel extends GridPane {
       case _ => this.labelFunc.text = "???"
     }
   }
+
+  def updateRSquared(rSquared: Option[Double]): Unit = {
+    rSquared match {
+      case Some(r) => this.labelRSquared.text = r.toString
+      case None => this.labelRSquared.text = "???"
+    }
+  }
 }

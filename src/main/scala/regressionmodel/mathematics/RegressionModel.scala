@@ -9,6 +9,7 @@ trait RegressionModel {
   //y = Be^(mx) where B = e^b and ln(y) = ln(b) + x*ln(m) is linear
   var m:Option[Double] = None
   var b:Option[Double] = None
+  var rSquared:Option[Double] = None
 
   protected def getXValues: Array[Double] = Plot.dataPoints.map(_.x).toArray
 

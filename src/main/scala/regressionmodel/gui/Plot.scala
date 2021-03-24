@@ -35,7 +35,7 @@ object Plot extends StackPane {
   val scatterChart: ScatterChart[Number, Number] = ScatterChart[Number, Number](this.xAxis, this.yAxis)
   scatterChart.setTitle("Regression model by Matias")
   scatterChart.getData.addAll(pointSeries, regrSeries)
-  scatterChart.legendSide = Side.Right
+  //scatterChart.legendSide = Side.Right
   this.children = scatterChart
 
 
@@ -60,6 +60,7 @@ object Plot extends StackPane {
     regrObject.calculateCoefficients(leftCoordinateIsX)
     val coef: (Option[Double], Option[Double]) = regrObject.getCoefficients
     SidePanel.updateFunctionLabel(coef, this.isLinear)
+    SidePanel.updateRSquared(regrObject.rSquared)
     regrSeries.getData.clear()
     coef match {
       case (Some(m), Some(b)) =>
