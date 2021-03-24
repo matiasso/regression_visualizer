@@ -6,7 +6,7 @@ trait RegressionModel {
 
   //These will be the coefficients for our graph
   //y = mx + b
-  //y = Be^(mx)
+  //y = Be^(mx) where B = e^b and ln(y) = ln(b) + x*ln(m) is linear
   var m:Option[Double] = None
   var b:Option[Double] = None
 

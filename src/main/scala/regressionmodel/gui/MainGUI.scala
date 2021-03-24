@@ -31,9 +31,7 @@ class MainGUI extends BorderPane {
       val fileChooser = new FileChooser
       fileChooser.setTitle("Select the datafile")
       fileChooser.extensionFilters.addAll(
-        //Why are these seperate ?? combine them later
-        new ExtensionFilter("Text and CSV files", Seq("*.txt", "*.csv")),
-        //new ExtensionFilter("CSV Files", "*.csv")
+        new ExtensionFilter("Text and CSV files", Seq("*.txt", "*.csv"))
       )
       val selectedFile = fileChooser.showOpenDialog(stage)
       //If the user cancels the selection, it will be null
@@ -49,7 +47,7 @@ class MainGUI extends BorderPane {
         Plot.dataPoints.clear()
         //Since it's observableBuffer it'll auto-update
         Plot.dataPoints.addAll(reader.getDataPoints)
-        println("Successfully loaded datapoints!")
+        println("Successfully loaded data points!")
       }
     }
     val save = new MenuItem("Save...")
@@ -76,7 +74,8 @@ class MainGUI extends BorderPane {
               }
 
               val okButtonType = new ButtonType("OK", ButtonData.OKDone)
-              dialog.dialogPane().getButtonTypes.add(okButtonType)
+              val cancelButtonType = new ButtonType("Clear", ButtonData.CancelClose)
+              dialog.dialogPane().getButtonTypes.addAll(okButtonType, cancelButtonType)
 
               val limA = new TextField() { promptText = "left limit" }
               val limB = new TextField() { promptText = "right limit" }
@@ -92,23 +91,19 @@ class MainGUI extends BorderPane {
               okButton.setDisable(true)
 
               //Add checks here for the double format, just as an extra feature :)
-              var leftFormatBool = false
-              var rightFormatBool = false
-
               def checkEnableOkButton(): Unit = {
                 //Enable the button ONLY if both inputs are in Double format
-                if (leftFormatBool && rightFormatBool){
-                  okButton.setDisable(false)
-                } else{
-                  okButton.setDisable(true)
+                val doubleOptA = limA.text.value.toDoubleOption
+                val doubleOptB = limB.text.value.toDoubleOption
+                (doubleOptA, doubleOptB) match {
+                  case (Some(a), Some(b)) => okButton.setDisable(a >= b) //if a >= b then disable the button
+                  case _ => okButton.setDisable(true)
                 }
               }
-              limA.text.onChange { (_, _, newVal) =>
-                leftFormatBool = newVal.toDoubleOption.isDefined
+              limA.text.onChange { (_, _, _) =>
                 checkEnableOkButton()
               }
-              limB.text.onChange { (_, _, newVal) =>
-                rightFormatBool = newVal.toDoubleOption.isDefined
+              limB.text.onChange { (_, _, _) =>
                 checkEnableOkButton()
               }
 
@@ -121,9 +116,12 @@ class MainGUI extends BorderPane {
               val result = dialog.showAndWait()
               result match {
                 case Some(LimitResult(a, b)) =>
-                  println("Received a and b")
+                  println(s"User gave inputs $a and $b for limits")
                   //Send these values to the Plot graph!
-                case None => println("Received NONE!")
+                  Plot.setLimits(a, b)
+                case None => println("Received None for the plot limits")
+                  //Empty the values in plot
+                  Plot.setLimits(None, None)
               }
             }
           }
@@ -141,6 +139,3 @@ class MainGUI extends BorderPane {
   this.bottom = SidePanel
   this.center = Plot
 }
-
-
-case class LimitResult(leftLimit: Option[Double], rightLimit: Option[Double])

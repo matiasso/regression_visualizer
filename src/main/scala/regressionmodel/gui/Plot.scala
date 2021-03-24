@@ -20,10 +20,14 @@ object Plot extends StackPane {
   var pointRadius = 1.5
   var graphColor: Color = Purple
   var leftCoordinateIsX = true
+  var limits: (Option[Double], Option[Double]) = (None, None)
+  //Define both x and y axis
   val xAxis = new NumberAxis(-10, 10, 1)
   xAxis.setLabel("X")
+  xAxis.autoRanging = true
   val yAxis = new NumberAxis(-10, 10, 1)
   yAxis.setLabel("Y")
+  yAxis.autoRanging = true
   val pointSeries: XYChart.Series[Number, Number] = new XYChart.Series()
   pointSeries.setName("Points")
   val regrSeries: XYChart.Series[Number, Number] = new XYChart.Series()
@@ -53,12 +57,17 @@ object Plot extends StackPane {
       coef match {
         case (Some(m), Some(b)) =>
           //Clear and add the dots for the regressionModel
-          for (x <- -100 to 100) {
-            //This only works for the linear model!
+          val points = dataPoints.map(p => if (leftCoordinateIsX) p.x else p.y)
+          val start: Double = points.min
+          val end: Double = points.max
+          val width = end - start
+          val iterations = 200
+          for (i <- 0 to iterations) {
+            val x = start + i * width / iterations
             if (this.isLinear){
-              regrSeries.getData.add(XYChart.Data(x / 10.0, m * (x / 10.0) + b))
+              regrSeries.getData.add(XYChart.Data(x, m * x + b))
             } else {
-              regrSeries.getData.add(XYChart.Data(x / 10.0, b*math.exp(m * (x / 10.0))))
+              regrSeries.getData.add(XYChart.Data(x, b*math.exp(m * x)))
             }
           }
         case _ => println("Error in getCoefficients!")
@@ -66,7 +75,18 @@ object Plot extends StackPane {
     }
   }
 
-  def isLinear: Boolean = this.regrObject == LinearRegression
+  private def isLinear: Boolean = this.regrObject == LinearRegression
+
+  def setLimits(limA: Option[Double], limB: Option[Double]): Unit = {
+    this.limits = (limA, limB)
+    (limA, limB) match {
+      case (Some(a), Some(b)) =>
+        this.xAxis.autoRanging = false
+        this.xAxis.lowerBound = a
+        this.xAxis.upperBound = b
+      case _ => this.xAxis.autoRanging = true
+    }
+  }
 
   def addPoint(point: PVector): Unit = {
     this.dataPoints.add(point)

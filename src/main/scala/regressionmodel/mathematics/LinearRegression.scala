@@ -10,8 +10,8 @@ object LinearRegression extends RegressionModel {
     this.b = None
     val xs = if (leftX) this.getXValues else this.getYValues
     val ys = if (leftX) this.getYValues else this.getYValues
-    val xAvg: Double = if (leftX) xs.sum / xs.length else ys.sum / ys.length
-    val yAvg: Double = if (leftX) ys.sum / ys.length else xs.sum / xs.length
+    val xAvg: Double = xs.sum / xs.length
+    val yAvg: Double = ys.sum / ys.length
     val nominator = xs.indices.map(i => (xs(i) - xAvg) * (ys(i) - yAvg)).sum
     val denominator = xs.indices.map(i => (xs(i) - xAvg) * (xs(i) - xAvg)).sum
     if (denominator != 0){

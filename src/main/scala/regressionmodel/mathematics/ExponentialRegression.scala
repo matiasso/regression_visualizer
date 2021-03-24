@@ -8,11 +8,13 @@ object ExponentialRegression extends RegressionModel {
     this.b = None
     //leftX boolean indicates whether "X;Y" coordinatepairs are given this way or the other way "Y;X"
     val xs = if (leftX) this.getXValues else this.getYValues
-    val yArr = if (leftX) this.getYValues else this.getXValues
-    if (yArr.forall(_ >= 0)){
+    val yValues = if (leftX) this.getYValues else this.getXValues
+    //We cannot take logarithms if some values of Y are negative.
+    if (yValues.forall(_ >= 0)){
+      //Take logarithms and fit a linear model for them
       val ys = if (leftX) this.getYlogs else this.getXlogs
-      val xAvg: Double = if (leftX) xs.sum / xs.length else ys.sum / ys.length
-      val yAvg: Double = if (leftX) ys.sum / ys.length else xs.sum / xs.length
+      val xAvg: Double = xs.sum / xs.length
+      val yAvg: Double = ys.sum / ys.length
 
       val nominator = xs.indices.map(i => (xs(i) - xAvg) * (ys(i) - yAvg)).sum
       val denominator = xs.indices.map(i => (xs(i) - xAvg) * (xs(i) - xAvg)).sum
