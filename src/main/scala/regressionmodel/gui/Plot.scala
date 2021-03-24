@@ -50,32 +50,44 @@ object Plot extends StackPane {
           pointSeries.getData.add(XYChart.Data(p.y, p.x))
         }
       }
-      regrObject.calculateCoefficients(leftCoordinateIsX)
-      val coef: (Option[Double], Option[Double]) = regrObject.getCoefficients
-      SidePanel.updateFunctionLabel(coef, this.isLinear)
-      regrSeries.getData.clear()
-      coef match {
-        case (Some(m), Some(b)) =>
-          //Clear and add the dots for the regressionModel
-          val points = dataPoints.map(p => if (leftCoordinateIsX) p.x else p.y)
-          val start: Double = points.min
-          val end: Double = points.max
-          val width = end - start
-          val iterations = 200
-          for (i <- 0 to iterations) {
-            val x = start + i * width / iterations
-            if (this.isLinear){
-              regrSeries.getData.add(XYChart.Data(x, m * x + b))
-            } else {
-              regrSeries.getData.add(XYChart.Data(x, b*math.exp(m * x)))
-            }
-          }
-        case _ => println("Error in getCoefficients!")
-      }
+      this.updateRegressionLine()
     }
   }
 
   private def isLinear: Boolean = this.regrObject == LinearRegression
+
+  private def updateRegressionLine(): Unit = {
+    regrObject.calculateCoefficients(leftCoordinateIsX)
+    val coef: (Option[Double], Option[Double]) = regrObject.getCoefficients
+    SidePanel.updateFunctionLabel(coef, this.isLinear)
+    regrSeries.getData.clear()
+    coef match {
+      case (Some(m), Some(b)) =>
+        //Clear and add the dots for the regressionModel
+        val points = dataPoints.map(p => if (leftCoordinateIsX) p.x else p.y)
+        var start: Double = points.min
+        var end: Double = points.max
+        this.limits match {
+          case (Some(a), Some(b)) =>
+            if (a > start)
+              start = a
+            if (b < end)
+              end = b
+          case _ =>
+        }
+        val width = end - start
+        val iterations = 300
+        for (i <- 0 to iterations) {
+          val x = start + i * width / iterations
+          if (this.isLinear){
+            regrSeries.getData.add(XYChart.Data(x, m * x + b))
+          } else {
+            regrSeries.getData.add(XYChart.Data(x, b*math.exp(m * x)))
+          }
+        }
+      case _ => println("Error in getCoefficients!")
+    }
+  }
 
   def setLimits(limA: Option[Double], limB: Option[Double]): Unit = {
     this.limits = (limA, limB)
@@ -86,6 +98,7 @@ object Plot extends StackPane {
         this.xAxis.upperBound = b
       case _ => this.xAxis.autoRanging = true
     }
+    this.updateRegressionLine()
   }
 
   def addPoint(point: PVector): Unit = {
