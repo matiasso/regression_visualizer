@@ -10,7 +10,7 @@ object ExponentialRegression extends RegressionModel {
     val xs = if (leftX) this.getXValues else this.getYValues
     val yValues = if (leftX) this.getYValues else this.getXValues
     //We cannot take logarithms if some values of Y are negative.
-    if (yValues.forall(_ >= 0)){
+    if (yValues.forall(_ >= 0)) {
       //Take logarithms and fit a linear model for them
       val ys = if (leftX) this.getYlogs else this.getXlogs
       val xAvg: Double = xs.sum / xs.length
@@ -18,7 +18,7 @@ object ExponentialRegression extends RegressionModel {
 
       val nominator = xs.indices.map(i => (xs(i) - xAvg) * (ys(i) - yAvg)).sum
       val denominator = xs.indices.map(i => (xs(i) - xAvg) * (xs(i) - xAvg)).sum
-      if (denominator != 0){
+      if (denominator != 0) {
         this.m = Some(nominator / denominator)
         this.m match {
           case Some(mVal) =>

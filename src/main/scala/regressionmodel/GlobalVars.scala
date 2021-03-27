@@ -2,6 +2,7 @@ package regressionmodel
 
 import regressionmodel.gui.Plot
 import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
+import scalafx.application.JFXApp
 import scalafx.scene.control.ToggleGroup
 import scalafx.scene.paint.Color
 import scalafx.scene.paint.Color._
@@ -10,6 +11,7 @@ import scalafx.scene.shape.{Circle, Rectangle, Shape}
 
 object GlobalVars {
 
+  var myStage: JFXApp.PrimaryStage = new JFXApp.PrimaryStage()
   val styleOptions: Map[String, Shape] = Map("dot" -> new Circle(), "rectangle" -> new Rectangle())
   val colorOptions: Map[String, Color] = Map("red" -> Red, "green" -> Green, "blue" -> Blue, "purple" -> Purple,
     "yellow" -> Yellow, "black" -> Black, "orange" -> Orange, "cyan" -> Cyan)
@@ -26,7 +28,7 @@ object GlobalVars {
     Plot.updateData()
   }
   val dataFormatToggle = new ToggleGroup
-  dataFormatToggle.selectedToggle.onChange( {
+  dataFormatToggle.selectedToggle.onChange({
     Plot.leftCoordinateIsX = dataFormatToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
       case "x;y" => true
       case "y;x" => false

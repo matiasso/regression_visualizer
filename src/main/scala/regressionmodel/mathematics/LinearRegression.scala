@@ -14,7 +14,7 @@ object LinearRegression extends RegressionModel {
     val yAvg: Double = ys.sum / ys.length
     val nominator = xs.indices.map(i => (xs(i) - xAvg) * (ys(i) - yAvg)).sum
     val denominator = xs.indices.map(i => (xs(i) - xAvg) * (xs(i) - xAvg)).sum
-    if (denominator != 0){
+    if (denominator != 0) {
       this.m = Some(nominator / denominator)
       //It would be safe to use "m.get" after this, but match case is probably better
       this.m match {

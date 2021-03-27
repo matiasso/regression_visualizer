@@ -45,9 +45,9 @@ object Plot extends StackPane {
       pointSeries.getData.clear()
       //Clear and add all new data to the series
       for (p <- this.dataPoints) {
-        if (leftCoordinateIsX){
+        if (leftCoordinateIsX) {
           pointSeries.getData.add(XYChart.Data(p.x, p.y))
-        } else{
+        } else {
           pointSeries.getData.add(XYChart.Data(p.y, p.x))
         }
       }
@@ -58,45 +58,47 @@ object Plot extends StackPane {
   private def isLinear: Boolean = this.regrObject == LinearRegression
 
   private def updateRegressionLine(): Unit = {
-    regrObject.calculateCoefficients(leftCoordinateIsX)
-    val coef: (Option[Double], Option[Double]) = regrObject.getCoefficients
-    SidePanel.updateFunctionLabel(coef, this.isLinear)
-    SidePanel.updateRSquared(regrObject.rSquared)
-    regrSeries.getData.clear()
-    coef match {
-      case (Some(m), Some(b)) =>
-        //Clear and add the dots for the regressionModel
-        val points = dataPoints.map(p => if (leftCoordinateIsX) p.x else p.y)
-        //As default we'll draw the regressionline with dots equally across
-        //From the smallest x-coordinate to the largest x-coordinate
-        var start: Double = points.min
-        var end: Double = points.max
-        //But if the user has specified inputs, then we'll check if those limits are smaller
-        //So we don't draw "useless" dots that aren't even visible for the user
-        this.limitsX match {
-          case (Some(a), Some(b)) =>
-            if (a > start)
-              start = a
-            if (b < end)
-              end = b
-          case _ =>
-        }
-        val width = end - start
-        //This will specify how often the dots for regressionline are drawn
-        val iterations = 300
-        for (i <- 0 to iterations) {
-          val x = start + i * width / iterations
-          if (this.isLinear){
-            regrSeries.getData.add(XYChart.Data(x, m * x + b))
-          } else {
-            regrSeries.getData.add(XYChart.Data(x, b*math.exp(m * x)))
+    if (this.dataPoints.length > 0) {
+      regrObject.calculateCoefficients(leftCoordinateIsX)
+      val coef: (Option[Double], Option[Double]) = regrObject.getCoefficients
+      SidePanel.updateFunctionLabel(coef, this.isLinear)
+      SidePanel.updateRSquared(regrObject.rSquared)
+      regrSeries.getData.clear()
+      coef match {
+        case (Some(m), Some(b)) =>
+          //Clear and add the dots for the regressionModel
+          val points = dataPoints.map(p => if (leftCoordinateIsX) p.x else p.y)
+          //As default we'll draw the regressionline with dots equally across
+          //From the smallest x-coordinate to the largest x-coordinate
+          var start: Double = points.min
+          var end: Double = points.max
+          //But if the user has specified inputs, then we'll check if those limits are smaller
+          //So we don't draw "useless" dots that aren't even visible for the user
+          this.limitsX match {
+            case (Some(a), Some(b)) =>
+              if (a > start)
+                start = a
+              if (b < end)
+                end = b
+            case _ =>
           }
-        }
-      case _ => println("Error in getCoefficients!")
+          val width = end - start
+          //This will specify how often the dots for regressionline are drawn
+          val iterations = 300
+          for (i <- 0 to iterations) {
+            val x = start + i * width / iterations
+            if (this.isLinear) {
+              regrSeries.getData.add(XYChart.Data(x, m * x + b))
+            } else {
+              regrSeries.getData.add(XYChart.Data(x, b * math.exp(m * x)))
+            }
+          }
+        case _ => println("Error in getCoefficients!")
+      }
+      //println("Set to green")
+      //scatterChart.lookup(".default-color1.chart-symbol").setStyle("-fx-background-color: black, white; -fx-background-insets: 2, 5; -fx-background-radius: 0px; -fx-padding: 3px;")
+      //println(scatterChart.lookup(".default-color1.chart-symbol"))
     }
-    //println("Set to green")
-    //scatterChart.lookup(".default-color1.chart-symbol").setStyle("-fx-background-color: black, white; -fx-background-insets: 2, 5; -fx-background-radius: 0px; -fx-padding: 3px;")
-    //println(scatterChart.lookup(".default-color1.chart-symbol"))
   }
 
   def setLimitsX(limA: Option[Double], limB: Option[Double]): Unit = {

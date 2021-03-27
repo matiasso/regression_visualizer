@@ -20,7 +20,7 @@ object SidePanel extends GridPane {
     tuple match {
       case (Some(m), Some(b)) =>
         val bTex = if (b >= 0) s"+$b" else b
-        if (linear){
+        if (linear) {
           this.labelFunc.text = s"y=$m*x$bTex"
         } else {
           this.labelFunc.text = s"y=$b*e^($m*x)"

@@ -1,6 +1,7 @@
 package regressionmodel.filehandler
 
 import regressionmodel.PVector
+import regressionmodel.gui.Dialogs
 import scalafx.scene.control.{Alert, ButtonType}
 import scalafx.scene.control.Alert.AlertType
 
@@ -14,7 +15,7 @@ abstract class Reader(fileName: String) {
   //This method is from A+ materials
   //It works for both CSV and TXT files
   def load(): Unit = {
-    if (!this.verifyFileType){
+    if (!this.verifyFileType) {
       //This should never occur, but it's here just in case
       throw new Exception(s"The filetype for $fileName is invalid!")
     }
@@ -51,9 +52,9 @@ abstract class Reader(fileName: String) {
     val pointBuffer = new ArrayBuffer[PVector]()
     //Old regex that I used
     //val lineRgx = """(-?\d+\.?\d*)[,;]\s*(-?\d+\.?\d*)""".r
-    for (line <- lines){
+    for (line <- lines) {
       val nums = line.replace(',', '.').replace("\uFEFF", "").split(';')
-      if (nums.length == 2){
+      if (nums.length == 2) {
         val x = nums(0).trim.toDoubleOption
         val y = nums(1).trim.toDoubleOption
 
@@ -62,12 +63,12 @@ abstract class Reader(fileName: String) {
           case _ =>
             nums(0).foreach(c => println(s"C: $c INT ${c.toInt}"))
             nums(1).foreach(c => println(s"C: $c INT ${c.toInt}"))
-            showWarning("Incorrect number format!",
+            Dialogs.showError("Incorrect number format!",
               s"The line '$line' had incorrect format!",
               "Format should be 'XX.xx;YY.yy")
         }
       } else {
-        this.showWarning("Incorrect data format",
+        Dialogs.showError("Incorrect data format",
           s"The line '$line' had incorrect format!",
           "Format should be 'XX.xx;YY.yy (semicolon separator)")
       }
@@ -76,13 +77,5 @@ abstract class Reader(fileName: String) {
   }
 
   def verifyFileType: Boolean
-
-  def showWarning(titleStr: String, header: String, content: String): Option[ButtonType]= {
-    new Alert(AlertType.Warning) {
-      title = titleStr
-      headerText = header
-      contentText = content
-    }.showAndWait()
-  }
 
 }

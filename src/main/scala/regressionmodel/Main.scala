@@ -17,4 +17,5 @@ object Main extends JFXApp {
     width = 900
     height = 650
   }
+  GlobalVars.myStage = stage
 }
