@@ -1,5 +1,7 @@
 package regressionmodel.mathematics
 
+import regressionmodel.gui.Dialogs
+
 
 object LinearRegression extends RegressionModel {
 
@@ -13,7 +15,7 @@ object LinearRegression extends RegressionModel {
     val xAvg: Double = xs.sum / xs.length
     val yAvg: Double = ys.sum / ys.length
     val nominator = xs.indices.map(i => (xs(i) - xAvg) * (ys(i) - yAvg)).sum
-    val denominator = xs.indices.map(i => (xs(i) - xAvg) * (xs(i) - xAvg)).sum
+    val denominator = xs.indices.map(i => xs(i) - xAvg).map(n => n * n).sum
     if (denominator != 0) {
       this.m = Some(nominator / denominator)
       //It would be safe to use "m.get" after this, but match case is probably better
@@ -36,7 +38,7 @@ object LinearRegression extends RegressionModel {
         case None => println("m was NOT defined for some reason, even though it SHOULD be!")
       }
     } else {
-      //Show warning!
+      Dialogs.showWarning("Warning", "Zero division", "Could not calculate exponential regression!")
     }
   }
 }

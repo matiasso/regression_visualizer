@@ -29,6 +29,7 @@ object GlobalVars {
   }
   val dataFormatToggle = new ToggleGroup
   dataFormatToggle.selectedToggle.onChange({
+    //This should return to the old value IF there is duplicate error!
     Plot.leftCoordinateIsX = dataFormatToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
       case "x;y" => true
       case "y;x" => false

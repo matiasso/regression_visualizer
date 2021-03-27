@@ -15,7 +15,7 @@ object Plot extends StackPane {
   var regrObject: RegressionModel = LinearRegression
   val dataPoints: ObservableBuffer[PVector] = ObservableBuffer[PVector]()
   dataPoints.onChange {
-    updateData()
+    this.updateData()
   }
   var pointRadius = 1.5
   var graphColor: Color = Purple
@@ -41,7 +41,7 @@ object Plot extends StackPane {
 
 
   def updateData(): Unit = {
-    if (this.dataPoints.length > 0) {
+    if (this.dataPoints.length > 0 && !this.checkForDuplicates) {
       pointSeries.getData.clear()
       //Clear and add all new data to the series
       for (p <- this.dataPoints) {
@@ -58,7 +58,8 @@ object Plot extends StackPane {
   private def isLinear: Boolean = this.regrObject == LinearRegression
 
   private def updateRegressionLine(): Unit = {
-    if (this.dataPoints.length > 0) {
+    //it is impossible to draw a regression line if there is ONLY ONE (or less) points
+    if (this.dataPoints.length > 1 && !this.checkForDuplicates) {
       regrObject.calculateCoefficients(leftCoordinateIsX)
       val coef: (Option[Double], Option[Double]) = regrObject.getCoefficients
       SidePanel.updateFunctionLabel(coef, this.isLinear)
@@ -68,7 +69,7 @@ object Plot extends StackPane {
         case (Some(m), Some(b)) =>
           //Clear and add the dots for the regressionModel
           val points = dataPoints.map(p => if (leftCoordinateIsX) p.x else p.y)
-          //As default we'll draw the regressionline with dots equally across
+          //As default we'll draw the regression line with dots equally across
           //From the smallest x-coordinate to the largest x-coordinate
           var start: Double = points.min
           var end: Double = points.max
@@ -101,6 +102,20 @@ object Plot extends StackPane {
     }
   }
 
+  //This should be checked everytime we change XY / YX format and when data changes
+  def checkForDuplicates: Boolean = {
+    val duplicatesFound = if (this.leftCoordinateIsX) this.dataPoints.exists(p1 =>
+      this.dataPoints.exists(p2 => p2.x == p1.x && p2.y != p1.y)) else this.dataPoints.exists(p1 =>
+      this.dataPoints.exists(p2 => p2.y == p1.y && p2.x != p1.x))
+    if (duplicatesFound){
+      Dialogs.showError("Duplicate Error",
+        "There was duplicate values for same X-coordinate!",
+        "Check your data or change between X;Y and Y;X formats!")
+    }
+    duplicatesFound
+  }
+
+
   def setLimitsX(limA: Option[Double], limB: Option[Double]): Unit = {
     this.limitsX = (limA, limB)
     (limA, limB) match {
@@ -108,6 +123,7 @@ object Plot extends StackPane {
         this.xAxis.autoRanging = false
         this.xAxis.lowerBound = a
         this.xAxis.upperBound = b
+        this.xAxis.tickUnit = math.abs(a-b) / 20
       case _ => this.xAxis.autoRanging = true
     }
     this.updateRegressionLine()
@@ -120,6 +136,7 @@ object Plot extends StackPane {
         this.yAxis.autoRanging = false
         this.yAxis.lowerBound = a
         this.yAxis.upperBound = b
+        this.yAxis.tickUnit = math.abs(a-b) / 10
       case _ => this.yAxis.autoRanging = true
     }
     this.updateRegressionLine()

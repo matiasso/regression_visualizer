@@ -16,6 +16,7 @@ abstract class Reader(fileName: String) {
   //It works for both CSV and TXT files
   def load(): Unit = {
     if (!this.verifyFileType) {
+      //I check the fileType with extension filters in the file chooser window
       //This should never occur, but it's here just in case
       throw new Exception(s"The filetype for $fileName is invalid!")
     }
@@ -59,13 +60,12 @@ abstract class Reader(fileName: String) {
         val y = nums(1).trim.toDoubleOption
 
         (x, y) match {
-          case (Some(v), Some(w)) => pointBuffer += new PVector(v, w)
+          case (Some(v), Some(w)) =>
+            pointBuffer += new PVector(v, w)
           case _ =>
-            nums(0).foreach(c => println(s"C: $c INT ${c.toInt}"))
-            nums(1).foreach(c => println(s"C: $c INT ${c.toInt}"))
             Dialogs.showError("Incorrect number format!",
               s"The line '$line' had incorrect format!",
-              "Format should be 'XX.xx;YY.yy")
+              "Format should be 'XX.xxxx;YY.yyyy")
         }
       } else {
         Dialogs.showError("Incorrect data format",
