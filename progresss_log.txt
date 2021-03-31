@@ -13,3 +13,8 @@ Most of the settings are already functional, but what seems to be the hardest pa
 I can use a .css file to change them, but I haven't found a way (YET) for how to change them during runtime.
 Next week I'll add more dialogwindows for my settings and work on exceptions and errors and test what could go wrong.
 I am now for sure ahead of my schedule, which is of course a good thing.
+
+31.3.2021
+I quickly icluded the option to change graph point colors, but will be working on making it better
+I will also add the option to change the icons, and make things better organized.
+Next week I'll clean my code and test the existing features more.

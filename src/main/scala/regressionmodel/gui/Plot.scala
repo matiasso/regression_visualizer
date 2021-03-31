@@ -17,11 +17,11 @@ object Plot extends StackPane {
   dataPoints.onChange {
     this.updateData()
   }
-  var pointRadius = 1.5
-  var graphColor: Color = Purple
   var leftCoordinateIsX = true
   var limitsX: (Option[Double], Option[Double]) = (None, None)
   var limitsY: (Option[Double], Option[Double]) = (None, None)
+  var pointStyle: String = ""
+  var regrStyle: String = ""
   //Define both x and y axis
   val xAxis = new NumberAxis(-10, 10, 1)
   xAxis.setLabel("X")
@@ -41,6 +41,7 @@ object Plot extends StackPane {
 
 
   def updateData(): Unit = {
+    //Maybe this should always clear the data, even if there is duplicates?
     if (this.dataPoints.length > 0 && !this.checkForDuplicates) {
       pointSeries.getData.clear()
       //Clear and add all new data to the series
@@ -53,6 +54,7 @@ object Plot extends StackPane {
       }
       this.updateRegressionLine()
     }
+    this.updateStyles()
   }
 
   private def isLinear: Boolean = this.regrObject == LinearRegression
@@ -96,10 +98,29 @@ object Plot extends StackPane {
           }
         case _ => println("Error in getCoefficients!")
       }
-      //println("Set to green")
-      //scatterChart.lookup(".default-color1.chart-symbol").setStyle("-fx-background-color: black, white; -fx-background-insets: 2, 5; -fx-background-radius: 0px; -fx-padding: 3px;")
-      //println(scatterChart.lookup(".default-color1.chart-symbol"))
     }
+  }
+
+  def clearPlot(): Unit = {
+    this.pointSeries.getData.clear()
+    this.regrSeries.getData.clear()
+  }
+
+  def setPointStyle(styleStr: String):Unit = {
+    this.pointStyle = styleStr
+    this.updateStyles()
+  }
+
+  def setRegrStyle(styleStr: String): Unit = {
+    this.regrStyle = styleStr
+    this.updateStyles()
+  }
+
+  def updateStyles(): Unit = {
+    if (this.pointStyle.nonEmpty)
+      this.scatterChart.lookupAll(".series0").forEach(_.setStyle(this.pointStyle))
+    if (this.regrStyle.nonEmpty)
+      this.scatterChart.lookupAll(".series1").forEach(_.setStyle(this.regrStyle))
   }
 
   //This should be checked everytime we change XY / YX format and when data changes

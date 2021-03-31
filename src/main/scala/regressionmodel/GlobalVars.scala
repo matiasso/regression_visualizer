@@ -12,13 +12,18 @@ import scalafx.scene.shape.{Circle, Rectangle, Shape}
 object GlobalVars {
 
   var myStage: JFXApp.PrimaryStage = new JFXApp.PrimaryStage()
-  val styleOptions: Map[String, Shape] = Map("dot" -> new Circle(), "rectangle" -> new Rectangle())
-  val colorOptions: Map[String, Color] = Map("red" -> Red, "green" -> Green, "blue" -> Blue, "purple" -> Purple,
-    "yellow" -> Yellow, "black" -> Black, "orange" -> Orange, "cyan" -> Cyan)
-  val regressionOptions: Map[String, String] = Map("linear" -> "linear", "exponential" -> "exponential")
-  val dataFormatOptions: Map[String, Boolean] = Map("X;Y" -> true, "Y;X" -> false)
-  val styleToggle = new ToggleGroup
-  val colorToggle = new ToggleGroup
+  val styleOptions: Map[String, String] = Map("dot" -> "",
+    "rectangle" -> "")
+  val colorOptions: Map[String, String] = Map("red" -> "red",
+    "green" -> "green",
+    "blue" -> "blue",
+    "purple" -> "purple",
+    "yellow" -> "yellow",
+    "black" -> "black",
+    "orange" -> "orange",
+    "cyan" -> "cyan")
+  val regressionOptions: Array[String] = Array("linear", "exponential")
+  val dataFormatOptions: Array[String] = Array("X;Y", "Y;X")
   val regrTypeToggle = new ToggleGroup
   regrTypeToggle.selectedToggle.onChange {
     Plot.regrObject = regrTypeToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
@@ -35,6 +40,15 @@ object GlobalVars {
       case "y;x" => false
     }
     Plot.updateData()
+  })
+  val styleToggle = new ToggleGroup
+  val colorToggle = new ToggleGroup
+  colorToggle.selectedToggle.onChange({
+    val key = colorToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase
+    //This if sentence shouldn't be needed but its here just in case
+    if (colorOptions.contains(key)){
+      Plot.setPointStyle("-fx-background-color: " + colorOptions(key))
+    }
   })
 
 }

@@ -54,19 +54,23 @@ class MainGUI extends BorderPane {
     val save = new MenuItem("Save...")
     save.accelerator = new KeyCodeCombination(KeyCode.S, KeyCombination.ControlDown)
     //save.onAction = e =>
+    val close = new MenuItem("Close")
+    close.onAction = e => {
+      Plot.dataPoints.clear()
+      Plot.clearPlot()
+    }
     val exit = new MenuItem("Exit")
     exit.onAction = e => sys.exit(0)
     menus = List(
       new Menu("File") {
-        items = List(open, save, exit)
+        items = List(open, save, close, exit)
       },
-
       new Menu("Settings") {
         items = List(
-          newMenuItem("Regression type", (GlobalVars.regressionOptions.keys.toArray, GlobalVars.regrTypeToggle)),
+          newMenuItem("Regression type", (GlobalVars.regressionOptions, GlobalVars.regrTypeToggle)),
           newMenuItem("Graph color", (GlobalVars.colorOptions.keys.toArray, GlobalVars.colorToggle)),
           newMenuItem("Point style", (GlobalVars.styleOptions.keys.toArray, GlobalVars.styleToggle)),
-          newMenuItem("Data format", (GlobalVars.dataFormatOptions.keys.toArray, GlobalVars.dataFormatToggle)),
+          newMenuItem("Data format", (GlobalVars.dataFormatOptions, GlobalVars.dataFormatToggle)),
           new MenuItem("X-axis limits") {
             onAction = _ => Dialogs.showLimitDialog(true)
           },
