@@ -1,44 +1,44 @@
 package regressionmodel
 
-class PVector(var x: Double, var y: Double) {
+class PVector(var first: Double, var second: Double) {
 
   def magnitude: Double = {
-    math.sqrt(x * x + y * y)
+    math.sqrt(first * first + second * second)
   }
 
   def add(v: PVector): Unit = {
-    this.x += v.x
-    this.y += v.y
+    this.first += v.first
+    this.second += v.second
   }
 
   def add(dx: Double, dy: Double): Unit = {
-    this.x += dx
-    this.y += dy
+    this.first += dx
+    this.second += dy
   }
 
   def subtract(v: PVector): Unit = {
-    this.x -= v.x
-    this.y -= v.y
+    this.first -= v.first
+    this.second -= v.second
   }
 
   def subtract(dx: Double, dy: Double): Unit = {
-    this.x -= dx
-    this.y -= dy
+    this.first -= dx
+    this.second -= dy
   }
 
   def multiply(d: Double): Unit = {
-    this.x *= d
-    this.y *= d
+    this.first *= d
+    this.second *= d
   }
 
   def divide(d: Double): Unit = {
-    this.x /= d
-    this.y /= d
+    this.first /= d
+    this.second /= d
   }
 
   def distance(v: PVector): Double = {
-    val dx = this.x - v.x
-    val dy = this.y - v.y
+    val dx = this.first - v.first
+    val dy = this.second - v.second
     math.sqrt(dx * dx + dy * dy)
   }
 
@@ -55,12 +55,12 @@ class PVector(var x: Double, var y: Double) {
   }
 
   def reverseXY(): Unit = {
-    val a = this.x
-    this.x = this.y
-    this.y = a
+    val a = this.first
+    this.first = this.second
+    this.second = a
   }
 
-  override def toString: String = "X:" + this.x.toString + ", Y:" + this.y.toString
+  override def toString: String = "FIRST:" + this.first.toString + ", SECOND:" + this.second.toString
 
 }
 

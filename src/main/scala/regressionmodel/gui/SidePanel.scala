@@ -10,7 +10,7 @@ object SidePanel extends GridPane {
   val labelFunc = new Label("???")
   val debugButton: Button = new Button("Print points!") {
     onAction = _ => {
-      Plot.setPointStyle("-fx-background-color: green, white;")
+      //Plot.setPointStyle("-fx-background-color: green, white;")
       Plot.dataPoints.foreach(println)
     }
   }

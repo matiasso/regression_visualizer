@@ -2,17 +2,15 @@
 /* From stackoverflow */
 .default-color0.chart-symbol {
     -fx-background-color: blue;
-    -fx-scale-shape: true;
-    -fx-shape: "M 0.0 10.0 L 3.0 3.0 L 10.0 0.0 L 3.0 -3.0 L 0.0 -10.0 L -3.0 -3.0 L -10.0 0.0 L -3.0 3.0 Z ";
-    -fx-opacity: 9;
+    -fx-background-radius: 4px;
+    -fx-padding: 3px;
 }
 
 /* Default shape is a rectangle. Here, we round it to become a red circle with a white
  * center. Change the radius to control the size.
  */
 .default-color1.chart-symbol {
-    -fx-background-color: red, white;
-    -fx-background-insets: 2, 5;
-    -fx-background-radius: 0px;
-    -fx-padding: 3px;
+    -fx-background-color: red;
+    -fx-background-radius: 2px;
+    -fx-padding: 2px;
 }
