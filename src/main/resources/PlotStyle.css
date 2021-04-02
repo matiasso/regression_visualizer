@@ -11,6 +11,6 @@
  */
 .default-color1.chart-symbol {
     -fx-background-color: red;
-    -fx-background-radius: 2px;
-    -fx-padding: 2px;
+    -fx-background-radius: 1px;
+    -fx-padding: 1px;
 }

@@ -3,16 +3,44 @@ package regressionmodel.gui
 import regressionmodel.GlobalVars
 import regressionmodel.Main.stage
 import regressionmodel.filehandler._
-import scalafx.geometry.Insets
-import scalafx.scene.control.ButtonBar.ButtonData
+import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
 import scalafx.scene.control._
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
-import scalafx.scene.layout.{BorderPane, GridPane}
+import scalafx.scene.layout.BorderPane
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 
 class MainGUI extends BorderPane {
 
+
+  val regressionTypeToggle = new ToggleGroup
+  regressionTypeToggle.selectedToggle.onChange {
+    Plot.regressionSeries.regressionObject = regressionTypeToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
+      case "exponential" => ExponentialRegression
+      case _ => LinearRegression
+    }
+    Plot.update()
+  }
+
+  val dataFormatToggle = new ToggleGroup
+  dataFormatToggle.selectedToggle.onChange({
+    //This should return to the old value IF there is duplicate error!
+    GlobalVars.leftCoordinateIsX = dataFormatToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
+      case "x;y" => true
+      //case "y;x" => false
+      case _ => false
+    }
+    Plot.update()
+  })
+  val styleToggle = new ToggleGroup
+  styleToggle.selectedToggle.onChange({
+    val key = styleToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase
+    if (GlobalVars.styleOptions.contains(key)) {
+      Plot.pointSeries.setStyle(GlobalVars.styleOptions(key))
+    } else {
+      println("A weird error occurred in styleToggle.onChange")
+    }
+  })
 
   def newMenuItem(text: String, tuple: (Array[String], ToggleGroup)): Menu = {
     //This is used for the settings menu, to create a menu item with first item selected
@@ -28,7 +56,7 @@ class MainGUI extends BorderPane {
   val menuBar: MenuBar = new MenuBar() {
     val open = new MenuItem("Open...")
     open.accelerator = new KeyCodeCombination(KeyCode.O, KeyCombination.ControlDown)
-    open.onAction = e => {
+    open.onAction = _ => {
       val fileChooser = new FileChooser
       fileChooser.setTitle("Select the datafile")
       fileChooser.extensionFilters.addAll(
@@ -55,22 +83,23 @@ class MainGUI extends BorderPane {
     save.accelerator = new KeyCodeCombination(KeyCode.S, KeyCombination.ControlDown)
     //save.onAction = e =>
     val close = new MenuItem("Close")
-    close.onAction = e => {
+    close.onAction = _ => {
       Plot.dataPoints.clear()
-      Plot.clearPlot()
     }
     val exit = new MenuItem("Exit")
-    exit.onAction = e => sys.exit(0)
+    exit.onAction = _ => sys.exit(0)
     menus = List(
       new Menu("File") {
         items = List(open, save, close, exit)
       },
       new Menu("Settings") {
         items = List(
-          newMenuItem("Regression type", (GlobalVars.regressionOptions, GlobalVars.regrTypeToggle)),
-          newMenuItem("Graph color", (GlobalVars.colorOptions.keys.toArray, GlobalVars.colorToggle)),
-          newMenuItem("Point style", (GlobalVars.styleOptions.keys.toArray, GlobalVars.styleToggle)),
-          newMenuItem("Data format", (GlobalVars.dataFormatOptions, GlobalVars.dataFormatToggle)),
+          newMenuItem("Regression type", (GlobalVars.regressionOptions, regressionTypeToggle)),
+          newMenuItem("Data format", (GlobalVars.dataFormatOptions, dataFormatToggle)),
+          new MenuItem("Point color") {
+            onAction = _ => Dialogs.showColorMenu()
+          },
+          newMenuItem("Point style", (GlobalVars.styleOptions.keys.toArray, styleToggle)),
           new MenuItem("X-axis limits") {
             onAction = _ => Dialogs.showLimitDialog(true)
           },
