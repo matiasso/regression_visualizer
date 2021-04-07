@@ -5,9 +5,12 @@ import regressionmodel.Main.stage
 import regressionmodel.filehandler._
 import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
 import scalafx.embed.swing.SwingFXUtils
+import scalafx.scene.SnapshotParameters
 import scalafx.scene.control._
+import scalafx.scene.image.WritableImage
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
 import scalafx.scene.layout.BorderPane
+import scalafx.scene.transform.Transform
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 
@@ -98,20 +101,25 @@ class MainGUI extends BorderPane {
         format match {
           case "png" =>
             try {
-              // The 4 lines inside this try phrase are from stack-overflow
-              val img = Plot.snapshot(null, null)
+              val smallerSide = math.min(Plot.getWidth, Plot.getHeight)
+              val scale = 1200 / smallerSide  // The smaller side will always be ~1200px
+              val sp = new SnapshotParameters {
+                transform = Transform.scale(scale, scale)
+              }
+              // The 3 lines below this are from stack-overflow
+              val img: WritableImage = Plot.snapshot(sp, null)
               val bufferedImage = SwingFXUtils.fromFXImage(img, null)
-              assert(bufferedImage ne null)
               ImageIO.write(bufferedImage, "png", filePath)
+              println("Image written successfully!")
             } catch {
-              case e:Exception =>
+              case e: Exception =>
                 println("Something went wrong with ImageSave:")
                 println(e.getMessage)
             }
           case _ =>
             Dialogs.showError("Wrong extension!",
-            "Image has to be in PNG format",
-            s"You chose format: '$format'")
+              "Image has to be in PNG format",
+              s"You chose format: '$format'")
         }
       }
     }
