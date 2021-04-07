@@ -4,11 +4,14 @@ import regressionmodel.GlobalVars
 import regressionmodel.Main.stage
 import regressionmodel.filehandler._
 import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
+import scalafx.embed.swing.SwingFXUtils
 import scalafx.scene.control._
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
 import scalafx.scene.layout.BorderPane
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
+
+import javax.imageio.ImageIO
 
 class MainGUI extends BorderPane {
 
@@ -57,8 +60,9 @@ class MainGUI extends BorderPane {
     val open = new MenuItem("Open...")
     open.accelerator = new KeyCodeCombination(KeyCode.O, KeyCombination.ControlDown)
     open.onAction = _ => {
-      val fileChooser = new FileChooser
-      fileChooser.setTitle("Select the datafile")
+      val fileChooser = new FileChooser {
+        title = "Select the datafile"
+      }
       fileChooser.extensionFilters.addAll(
         new ExtensionFilter("Text and CSV files", Seq("*.txt", "*.csv"))
       )
@@ -81,7 +85,36 @@ class MainGUI extends BorderPane {
     }
     val save = new MenuItem("Save...")
     save.accelerator = new KeyCodeCombination(KeyCode.S, KeyCombination.ControlDown)
-    //save.onAction = e =>
+    save.onAction = _ => {
+      val fileChooser = new FileChooser {
+        title = "Image destination"
+      }
+      fileChooser.extensionFilters.addAll(
+        new ExtensionFilter("PNG files", "*.png")
+      )
+      val filePath = fileChooser.showSaveDialog(stage)
+      if (filePath != null) {
+        val format = filePath.getName.takeRight(3)
+        format match {
+          case "png" =>
+            try {
+              // The 4 lines inside this try phrase are from stack-overflow
+              val img = Plot.snapshot(null, null)
+              val bufferedImage = SwingFXUtils.fromFXImage(img, null)
+              assert(bufferedImage ne null)
+              ImageIO.write(bufferedImage, "png", filePath)
+            } catch {
+              case e:Exception =>
+                println("Something went wrong with ImageSave:")
+                println(e.getMessage)
+            }
+          case _ =>
+            Dialogs.showError("Wrong extension!",
+            "Image has to be in PNG format",
+            s"You chose format: '$format'")
+        }
+      }
+    }
     val close = new MenuItem("Close")
     close.onAction = _ => {
       Plot.dataPoints.clear()
@@ -111,7 +144,10 @@ class MainGUI extends BorderPane {
 
       new Menu("Help") {
         items = List(
-          new MenuItem("About")
+          new MenuItem("About") {
+            onAction = _ => Dialogs.showInfo("About", "This program was made by Matias",
+              "This is a project for CS-C2120 course")
+          }
         )
       }
     )

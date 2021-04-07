@@ -46,8 +46,10 @@ object Plot extends StackPane {
   }
 
   def clearPlot(): Unit = {
-    this.pointSeries.series.getData.clear()
-    this.regressionSeries.series.getData.clear()
+    this.pointSeries.clear()
+    this.regressionSeries.clear()
+    SidePanel.labelFunc.text = "???"
+    SidePanel.labelRSquared.text = "???"
     if (PlotLimits.xMax.isEmpty && PlotLimits.xMin.isEmpty) {
       this.xAxis.lowerBound = -10
       this.xAxis.upperBound = 10

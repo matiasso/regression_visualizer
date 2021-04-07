@@ -13,9 +13,11 @@ abstract class PointSeries(val name: String) {
 
   def update()
 
+  def clear(): Unit = this.series.getData.clear()
+
   def applyStyles(): Unit = {
     if (this.style.nonEmpty || this.colorStyle.nonEmpty) {
-      Plot.scatterChart.lookupAll(s".series$index").forEach(_.setStyle(this.style + this.colorStyle))
+      Plot.scatterChart.lookupAll(s".series$index").foreach(_.setStyle(this.style + this.colorStyle))
     }
   }
 
