@@ -93,7 +93,6 @@ class MainGUI extends BorderPane {
           val points = reader.getDataPoints
           println("Successfully loaded data points!")
           onFX {
-            //Optimize these later with a busy worker
             Plot.dataPoints.clear()
             Plot.dataPoints.addAll(points)
             Plot.updateLimits()
@@ -118,15 +117,15 @@ class MainGUI extends BorderPane {
           case "png" =>
             try {
               val smallerSide = math.min(Plot.getWidth, Plot.getHeight)
-              val scale = 1200 / smallerSide // The smaller side will always be ~1200px
+              val scale = 1200 / smallerSide  // The smaller side will always be ~1200px
               val sp = new SnapshotParameters {
                 transform = Transform.scale(scale, scale)
               }
               // The 3 lines below this are from stack-overflow
               val img: WritableImage = Plot.snapshot(sp, null)
               val bufferedImage = SwingFXUtils.fromFXImage(img, null)
-              ImageIO.write(bufferedImage, "png", filePath)
-              println("Image written successfully!")
+              new ImageWriter(filePath).saveImage(bufferedImage)
+              Dialogs.showInfo("Image saved!", "Snapshot was saved successfully!", "")
             } catch {
               case e: Exception =>
                 println("Something went wrong with ImageSave:")

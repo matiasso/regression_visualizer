@@ -1,6 +1,8 @@
 package regressionmodel.filehandler
 
+import java.awt.image.BufferedImage
+
 trait Writer {
 
-  def save()
+  def saveImage(img: BufferedImage): Unit
 }
