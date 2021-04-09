@@ -15,16 +15,19 @@ object Plot extends StackPane {
     this.update()
   })
   //Define both x and y axis
-  val xAxis = new NumberAxis(-10, 10, 1)
-  xAxis.setLabel("X-axis")
-  xAxis.minorTickCount = 5
-  val yAxis = new NumberAxis(-10, 10, 1)
-  yAxis.setLabel("Y-axis")
-  yAxis.minorTickCount = 5
+  val xAxis: NumberAxis = new NumberAxis(-10, 10, 1) {
+    label = "X-axis"
+    minorTickCount = 5
+  }
+  val yAxis: NumberAxis = new NumberAxis(-10, 10, 1) {
+    label = "Y-axis"
+    minorTickCount = 5
+  }
   val pointSeries: DataPointSeries = new DataPointSeries("Points")
   val regressionSeries: RegressionSeries = new RegressionSeries("Regression")
-  val scatterChart: ScatterChart[Number, Number] = ScatterChart[Number, Number](this.xAxis, this.yAxis)
-  scatterChart.setTitle("Regression model by Matias")
+  val scatterChart: ScatterChart[Number, Number] = new ScatterChart[Number, Number](this.xAxis, this.yAxis) {
+    title = "Regression model by Matias"
+  }
   scatterChart.getData.addAll(pointSeries.series, regressionSeries.series)
   this.children = scatterChart
 
@@ -43,14 +46,7 @@ object Plot extends StackPane {
   def updateRegressionSeries(): Unit = {
     if (this.dataPoints.length > 0) {
       this.regressionSeries.update()
-      this.regressionSeries.applyStyles()
     }
-  }
-
-  @deprecated("Reason: There's really no need to update both at the same time...")
-  private def applyStyles(): Unit = {
-    this.pointSeries.applyStyles()
-    this.regressionSeries.applyStyles()
   }
 
   def clearPlot(): Unit = {
@@ -80,61 +76,63 @@ object Plot extends StackPane {
 
 
   def updateLimits(): Unit = {
-    //Update the limits to either given ones or the smallest and largest ones
-    if (this.dataPoints.length == 1) {
-      // This is mostly useless and nobody would want to test this but whatever
-      // If there's exactly one point we want to pad around it
-      val head = this.dataPoints.head
-      this.xAxis.tickUnit = 1
-      this.xAxis.lowerBound = (if (GlobalVars.leftCoordinateIsX) head.first else head.second) - 5
-      this.xAxis.upperBound = (if (GlobalVars.leftCoordinateIsX) head.first else head.second) + 5
-      // And the same for Y-axis
-      this.yAxis.autoRanging = false
-      this.yAxis.tickUnit = 1
-      this.yAxis.lowerBound = (if (GlobalVars.leftCoordinateIsX) head.second else head.first) - 5
-      this.yAxis.upperBound = (if (GlobalVars.leftCoordinateIsX) head.second else head.first) + 5
-    } else {
-      (PlotLimits.xMin, PlotLimits.xMax) match {
-        case (Some(a), Some(b)) =>
-          this.xAxis.lowerBound = a
-          this.xAxis.upperBound = b
-        case _ =>
-          if (this.dataPoints.length > 1) {
-            this.xAxis.lowerBound = if (GlobalVars.leftCoordinateIsX)
-              this.dataPoints.minBy(_.first).first else this.dataPoints.minBy(_.second).second
-            this.xAxis.lowerBound = this.xAxis.getLowerBound - math.abs(this.xAxis.getLowerBound) / 50
-            this.xAxis.upperBound = if (GlobalVars.leftCoordinateIsX)
-              this.dataPoints.maxBy(_.first).first else this.dataPoints.maxBy(_.second).second
-            this.xAxis.upperBound = this.xAxis.getUpperBound + math.abs(this.xAxis.getUpperBound) / 50
-          } else {
-            this.xAxis.lowerBound = -10
-            this.xAxis.upperBound = 10
-          }
-      }
-      this.setTickUnit(this.xAxis)
-      //Then the same for Y-axis
-      //Set the defaults to -10 and 10
-      this.yAxis.lowerBound = -10
-      this.yAxis.upperBound = 10
-      (PlotLimits.yMin, PlotLimits.yMax) match {
-        case (Some(a), Some(b)) =>
-          this.yAxis.autoRanging = false
-          this.yAxis.lowerBound = a
-          this.yAxis.upperBound = b
-          this.setTickUnit(this.yAxis)
-        case _ =>
-          this.yAxis.autoRanging = true
-      }
+    this.limitsHelper(PlotLimits.xMin, PlotLimits.xMax, this.xAxis, xAxisBool = true)
+    this.limitsHelper(PlotLimits.yMin, PlotLimits.yMax, this.yAxis, xAxisBool = false)
+  }
+
+  private def limitsHelper(limA: Option[Double], limB: Option[Double], axis: NumberAxis, xAxisBool: Boolean): Unit = {
+    def takeFirst(xyFormat: Boolean, xBool: Boolean): Boolean = {
+      // "X;Y" format and xBool --> true
+      // "X;Y" format and !xBool --> false
+      // "Y;X" format and xBool --> false
+      // "Y;X" format and !xBool --> true
+      (xyFormat && xBool) || (!xyFormat && !xBool)
     }
+
+    axis.autoRanging = false
+    (limA, limB) match {
+      case (Some(a), Some(b)) =>
+        // If the user has specified certain limits, we'll use those!
+        axis.lowerBound = a
+        axis.upperBound = b
+      case _ =>
+        if (this.dataPoints.length > 1) {
+          if (xAxisBool) {
+            axis.lowerBound = if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
+              this.dataPoints.minBy(_.first).first else this.dataPoints.minBy(_.second).second
+            axis.upperBound = if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
+              this.dataPoints.maxBy(_.first).first else this.dataPoints.maxBy(_.second).second
+            axis.lowerBound = math.floor(axis.getLowerBound - math.abs(axis.getLowerBound) / 50)
+            axis.upperBound = math.ceil(axis.getUpperBound + math.abs(axis.getUpperBound) / 50)
+          } else {
+            axis.autoRanging = true
+          }
+        } else if (this.dataPoints.length == 1) {
+          // If theres exactly one point we want to "pad" around it
+          val head = this.dataPoints.head
+          axis.lowerBound = math.floor((if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
+            head.first else head.second) - 5)
+          axis.upperBound = math.ceil((if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
+            head.first else head.second) + 5)
+        } else {
+          // If there's no points available we'll use default -10 and 10
+          axis.lowerBound = -10
+          axis.upperBound = 10
+        }
+    }
+    this.setTickUnit(axis)
   }
 
   def setTickUnit(axis: NumberAxis): Unit = {
     val diff = axis.getUpperBound - axis.getLowerBound
     if (diff > 20) {
       axis.tickUnit = math.round(diff / 20)
-    } else if (diff >= 8) {
+    } else if (diff >= 7) {
       axis.tickUnit = 1
+    } else if (diff >= 2) {
+      axis.tickUnit = 0.25
     } else {
+      // This will sometimes show weird values
       axis.tickUnit = diff / 20
     }
   }

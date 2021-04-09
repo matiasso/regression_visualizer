@@ -5,6 +5,7 @@ import scalafx.scene.chart.XYChart
 abstract class PointSeries(val name: String) {
 
   var style: String = ""
+  var size: String = ""
   var colorStyle: String = ""
   val index: Int
   val series: XYChart.Series[Number, Number] = new XYChart.Series()
@@ -16,10 +17,13 @@ abstract class PointSeries(val name: String) {
   def clear(): Unit = this.series.getData.clear()
 
   def applyStyles(): Unit = {
+    println(this.styleString)
     if (this.style.nonEmpty || this.colorStyle.nonEmpty) {
-      Plot.scatterChart.lookupAll(s".series$index").foreach(_.setStyle(this.style + this.colorStyle))
+      Plot.scatterChart.lookupAll(s".series$index").foreach(_.setStyle(this.styleString))
     }
   }
+
+  def styleString: String = this.style + this.colorStyle + this.size
 
   def setStyle(styleStr: String): Unit = {
     this.style = styleStr
@@ -28,6 +32,11 @@ abstract class PointSeries(val name: String) {
 
   def setColor(styleStr: String): Unit = {
     this.colorStyle = styleStr
+    this.applyStyles()
+  }
+
+  def setSize(size: Int): Unit = {
+    this.size = "-fx-background-insets: " + -size + "px;"
     this.applyStyles()
   }
 

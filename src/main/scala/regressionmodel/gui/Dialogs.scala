@@ -94,7 +94,7 @@ object Dialogs {
           PlotLimits.setLimitsX(a, b)
         else
           PlotLimits.setLimitsY(a, b)
-      case None => println("Received None for the plot limits")
+      case None => println("Received None for the plot limits for axis: " + (if (xDialog) "X" else "Y"))
         //Empty the values in plot
         if (xDialog)
           PlotLimits.setLimitsX(None, None)
@@ -158,6 +158,31 @@ object Dialogs {
       //Send this color code to the PointSeries
       case None => println("Received no color")
     }
+  }
+
+  def showSizeDialog(): Unit = {
+    val SmallButton = new ButtonType("Small")
+    val MediumButton = new ButtonType("Medium")
+    val LargeButton = new ButtonType("Large")
+    val XXLButton = new ButtonType("Extra Large")
+
+    val alert = new Alert(AlertType.Confirmation) {
+      initOwner(GlobalVars.myStage)
+      title = "Symbol size dialog"
+      headerText = "Custom size selector"
+      contentText = "Choose the size of the symbols"
+      buttonTypes = Seq(SmallButton, MediumButton, LargeButton, XXLButton, ButtonType.Cancel)
+    }
+    val result = alert.showAndWait()
+    val size = result match {
+      case Some(SmallButton) => 0
+      case Some(MediumButton) => 2
+      case Some(LargeButton) => 4
+      case Some(XXLButton) => 6
+      case _ => -1
+    }
+    if (size >= 0)
+      Plot.pointSeries.setSize(size)
   }
 
   def showWarning(titleStr: String, header: String, content: String): Option[ButtonType] = {

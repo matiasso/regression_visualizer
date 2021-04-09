@@ -15,8 +15,6 @@ import scalafx.scene.transform.Transform
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 
-import javax.imageio.ImageIO
-
 class MainGUI extends BorderPane {
 
 
@@ -24,11 +22,15 @@ class MainGUI extends BorderPane {
   regressionTypeToggle.selectedToggle.onChange((_, oldVal, newVal) => {
     //If oldVal is null, it's the first (instantion) selection and theres no need to update anything
     if (oldVal != null) {
-      Plot.regressionSeries.regressionObject = regressionTypeToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
-        case "exponential" => ExponentialRegression
-        case _ => LinearRegression
+      newVal match {
+        case menuItem: javafx.scene.control.RadioMenuItem =>
+          Plot.regressionSeries.regressionObject = menuItem.getText.toLowerCase match {
+            case "exponential" => ExponentialRegression
+            case _ => LinearRegression
+          }
+          Plot.updateRegressionSeries()
+        case _ =>
       }
-      Plot.updateRegressionSeries()
     }
   })
 
@@ -37,10 +39,13 @@ class MainGUI extends BorderPane {
     //If oldVal is null, it's the first (instantion) selection and theres no need to update anything
     if (oldVal != null) {
       //This should return to the old value IF there is duplicate error!
-      GlobalVars.leftCoordinateIsX = dataFormatToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
-        case "x;y" => true
-        //case "y;x" => false
-        case _ => false
+      newVal match {
+        case menuItem: javafx.scene.control.RadioMenuItem =>
+          GlobalVars.leftCoordinateIsX = menuItem.getText.toLowerCase match {
+            case "x;y" => true
+            case _ => false
+          }
+        case _ =>
       }
       Plot.update()
       Plot.updateLimits()
@@ -49,11 +54,15 @@ class MainGUI extends BorderPane {
   })
   val styleToggle = new ToggleGroup
   styleToggle.selectedToggle.onChange({
-    val key = styleToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase
+    val key = styleToggle.getSelectedToggle match {
+      case menuItem: javafx.scene.control.RadioMenuItem =>
+        menuItem.getText.toLowerCase
+      case _ => "NONE"
+    }
     if (GlobalVars.styleOptions.contains(key)) {
       Plot.pointSeries.setStyle(GlobalVars.styleOptions(key))
     } else {
-      println("A weird error occurred in styleToggle.onChange")
+      println("Error in styleToggle.onChange()")
     }
   })
 
@@ -117,7 +126,7 @@ class MainGUI extends BorderPane {
           case "png" =>
             try {
               val smallerSide = math.min(Plot.getWidth, Plot.getHeight)
-              val scale = 1200 / smallerSide  // The smaller side will always be ~1200px
+              val scale = 1200 / smallerSide // The smaller side will always be ~1200px
               val sp = new SnapshotParameters {
                 transform = Transform.scale(scale, scale)
               }
@@ -156,6 +165,9 @@ class MainGUI extends BorderPane {
             onAction = _ => Dialogs.showColorMenu()
           },
           newMenuItem("Point style", (GlobalVars.styleOptions.keys.toArray, styleToggle)),
+          new MenuItem("Point size") {
+            onAction = _ => Dialogs.showSizeDialog()
+          },
           new MenuItem("X-axis limits") {
             onAction = _ => Dialogs.showLimitDialog(true)
           },
