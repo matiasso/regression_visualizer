@@ -16,11 +16,11 @@ object Plot extends StackPane {
   })
   //Define both x and y axis
   val xAxis = new NumberAxis(-10, 10, 1)
-  xAxis.setLabel("X")
-  xAxis.autoRanging = true
+  xAxis.setLabel("X-axis")
+  xAxis.minorTickCount = 5
   val yAxis = new NumberAxis(-10, 10, 1)
-  yAxis.setLabel("Y")
-  yAxis.autoRanging = true
+  yAxis.setLabel("Y-axis")
+  yAxis.minorTickCount = 5
   val pointSeries: DataPointSeries = new DataPointSeries("Points")
   val regressionSeries: RegressionSeries = new RegressionSeries("Regression")
   val scatterChart: ScatterChart[Number, Number] = ScatterChart[Number, Number](this.xAxis, this.yAxis)
@@ -33,14 +33,22 @@ object Plot extends StackPane {
     if (this.dataPoints.length == 0) {
       //If it's empty, we can simply remove our data
       this.clearPlot()
-    }
-    else if (!this.checkForDuplicates) {
-      // Check that there are no duplicates with same X value but different Y value
-      // If everything is as it should be, we update the points
+    } else {
       this.pointSeries.update()
-      this.regressionSeries.update()
     }
     // The last thing is to apply styles (We have to do this each time)
+    this.pointSeries.applyStyles()
+  }
+
+  def updateRegressionSeries(): Unit = {
+    if (this.dataPoints.length > 0) {
+      this.regressionSeries.update()
+      this.regressionSeries.applyStyles()
+    }
+  }
+
+  @deprecated("Reason: There's really no need to update both at the same time...")
+  private def applyStyles(): Unit = {
     this.pointSeries.applyStyles()
     this.regressionSeries.applyStyles()
   }
@@ -48,24 +56,16 @@ object Plot extends StackPane {
   def clearPlot(): Unit = {
     this.pointSeries.clear()
     this.regressionSeries.clear()
-    SidePanel.labelFunc.text = "???"
-    SidePanel.labelRSquared.text = "???"
-    if (PlotLimits.xMax.isEmpty && PlotLimits.xMin.isEmpty) {
-      this.xAxis.lowerBound = -10
-      this.xAxis.upperBound = 10
-      this.xAxis.tickUnit = 1
-    }
-    if (PlotLimits.yMax.isEmpty && PlotLimits.yMin.isEmpty) {
-      this.yAxis.lowerBound = -10
-      this.yAxis.upperBound = 10
-      this.yAxis.tickUnit = 1
-    }
+    BottomPanel.labelFunc.text = GlobalVars.labelUnknownText
+    BottomPanel.labelRSquared.text = GlobalVars.labelUnknownText
+    // If the user hasn't specified any limits, we'll make both axis in range [-10, 10]
+    this.updateLimits()
   }
 
 
   //This should be checked everytime we change XY / YX format and when data changes
-  def checkForDuplicates: Boolean = {
-    val duplicatesFound = if (GlobalVars.leftCoordinateIsX) {
+  def checkForDuplicates(leftX: Boolean): Boolean = {
+    val duplicatesFound = if (leftX) {
       this.dataPoints.exists(p1 => this.dataPoints.exists(p2 => p2.first == p1.first && p2.second != p1.second))
     } else {
       this.dataPoints.exists(p1 => this.dataPoints.exists(p2 => p2.second == p1.second && p2.first != p1.first))
@@ -79,36 +79,63 @@ object Plot extends StackPane {
   }
 
 
-  def setLimitsX(limA: Option[Double], limB: Option[Double]): Unit = {
-    PlotLimits.xMin = limA
-    PlotLimits.xMax = limB
-    (limA, limB) match {
-      case (Some(a), Some(b)) =>
-        this.xAxis.autoRanging = false
-        this.xAxis.lowerBound = a
-        this.xAxis.upperBound = b
-        this.xAxis.tickUnit = math.abs(a - b) / 20
-      case _ => this.xAxis.autoRanging = true
+  def updateLimits(): Unit = {
+    //Update the limits to either given ones or the smallest and largest ones
+    if (this.dataPoints.length == 1) {
+      // This is mostly useless and nobody would want to test this but whatever
+      // If there's exactly one point we want to pad around it
+      val head = this.dataPoints.head
+      this.xAxis.tickUnit = 1
+      this.xAxis.lowerBound = (if (GlobalVars.leftCoordinateIsX) head.first else head.second) - 5
+      this.xAxis.upperBound = (if (GlobalVars.leftCoordinateIsX) head.first else head.second) + 5
+      // And the same for Y-axis
+      this.yAxis.autoRanging = false
+      this.yAxis.tickUnit = 1
+      this.yAxis.lowerBound = (if (GlobalVars.leftCoordinateIsX) head.second else head.first) - 5
+      this.yAxis.upperBound = (if (GlobalVars.leftCoordinateIsX) head.second else head.first) + 5
+    } else {
+      (PlotLimits.xMin, PlotLimits.xMax) match {
+        case (Some(a), Some(b)) =>
+          this.xAxis.lowerBound = a
+          this.xAxis.upperBound = b
+        case _ =>
+          if (this.dataPoints.length > 1) {
+            this.xAxis.lowerBound = if (GlobalVars.leftCoordinateIsX)
+              this.dataPoints.minBy(_.first).first else this.dataPoints.minBy(_.second).second
+            this.xAxis.lowerBound = this.xAxis.getLowerBound - math.abs(this.xAxis.getLowerBound) / 50
+            this.xAxis.upperBound = if (GlobalVars.leftCoordinateIsX)
+              this.dataPoints.maxBy(_.first).first else this.dataPoints.maxBy(_.second).second
+            this.xAxis.upperBound = this.xAxis.getUpperBound + math.abs(this.xAxis.getUpperBound) / 50
+          } else {
+            this.xAxis.lowerBound = -10
+            this.xAxis.upperBound = 10
+          }
+      }
+      this.setTickUnit(this.xAxis)
+      //Then the same for Y-axis
+      //Set the defaults to -10 and 10
+      this.yAxis.lowerBound = -10
+      this.yAxis.upperBound = 10
+      (PlotLimits.yMin, PlotLimits.yMax) match {
+        case (Some(a), Some(b)) =>
+          this.yAxis.autoRanging = false
+          this.yAxis.lowerBound = a
+          this.yAxis.upperBound = b
+          this.setTickUnit(this.yAxis)
+        case _ =>
+          this.yAxis.autoRanging = true
+      }
     }
-    this.regressionSeries.update()
   }
 
-  def setLimitsY(limA: Option[Double], limB: Option[Double]): Unit = {
-    PlotLimits.yMin = limA
-    PlotLimits.yMax = limB
-    (limA, limB) match {
-      case (Some(a), Some(b)) =>
-        this.yAxis.autoRanging = false
-        this.yAxis.lowerBound = a
-        this.yAxis.upperBound = b
-        this.yAxis.tickUnit = math.abs(a - b) / 10
-      case _ => this.yAxis.autoRanging = true
+  def setTickUnit(axis: NumberAxis): Unit = {
+    val diff = axis.getUpperBound - axis.getLowerBound
+    if (diff > 20) {
+      axis.tickUnit = math.round(diff / 20)
+    } else if (diff >= 8) {
+      axis.tickUnit = 1
+    } else {
+      axis.tickUnit = diff / 20
     }
-    this.regressionSeries.update()
-  }
-
-  //This is/was mainly used for debugging purposes
-  def addPoint(point: PVector): Unit = {
-    this.dataPoints.add(point)
   }
 }

@@ -7,6 +7,7 @@ object GlobalVars {
 
   var myStage: JFXApp.PrimaryStage = new JFXApp.PrimaryStage()
   var leftCoordinateIsX: Boolean = true
+  val labelUnknownText: String = "???"
   val styleOptions: Map[String, String] = Map(
     // These were done with https://svg-path-visualizer.netlify.app/ with LOTS of experimenting
     "dot" -> "-fx-background-radius: 4px; -fx-background-padding: 3px;",

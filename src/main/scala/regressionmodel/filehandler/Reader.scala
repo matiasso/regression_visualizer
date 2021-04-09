@@ -2,8 +2,6 @@ package regressionmodel.filehandler
 
 import regressionmodel.PVector
 import regressionmodel.gui.Dialogs
-import scalafx.scene.control.{Alert, ButtonType}
-import scalafx.scene.control.Alert.AlertType
 
 import java.io.{BufferedReader, FileNotFoundException, FileReader, IOException}
 import scala.collection.mutable.ArrayBuffer

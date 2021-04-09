@@ -15,11 +15,11 @@ object ExponentialRegression extends RegressionModel {
     if (yValues.forall(_ >= 0)) {
       //Take logarithms and fit a linear model for them
       val ys = if (leftX) this.getYlogs else this.getXlogs
-      val xAvg: Double = xs.sum / xs.length
-      val yAvg: Double = ys.sum / ys.length
+      val xAvg: Double = xs.iterator.sum / xs.length
+      val yAvg: Double = ys.iterator.sum / ys.length
 
       val nominator = xs.indices.map(i => (xs(i) - xAvg) * (ys(i) - yAvg)).sum
-      val denominator = xs.indices.map(i => xs(i) - xAvg).map(n => n * n).sum
+      val denominator = xs.indices.map(i => xs(i) - xAvg).iterator.map(n => n * n).sum
       if (denominator != 0) {
         this.m = Some(nominator / denominator)
         this.m match {

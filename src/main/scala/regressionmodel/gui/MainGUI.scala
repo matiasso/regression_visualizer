@@ -1,5 +1,6 @@
 package regressionmodel.gui
 
+import org.scalafx.extras.{offFXAndWait, onFX}
 import regressionmodel.GlobalVars
 import regressionmodel.Main.stage
 import regressionmodel.filehandler._
@@ -20,23 +21,31 @@ class MainGUI extends BorderPane {
 
 
   val regressionTypeToggle = new ToggleGroup
-  regressionTypeToggle.selectedToggle.onChange {
-    Plot.regressionSeries.regressionObject = regressionTypeToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
-      case "exponential" => ExponentialRegression
-      case _ => LinearRegression
+  regressionTypeToggle.selectedToggle.onChange((_, oldVal, newVal) => {
+    //If oldVal is null, it's the first (instantion) selection and theres no need to update anything
+    if (oldVal != null) {
+      Plot.regressionSeries.regressionObject = regressionTypeToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
+        case "exponential" => ExponentialRegression
+        case _ => LinearRegression
+      }
+      Plot.updateRegressionSeries()
     }
-    Plot.update()
-  }
+  })
 
   val dataFormatToggle = new ToggleGroup
-  dataFormatToggle.selectedToggle.onChange({
-    //This should return to the old value IF there is duplicate error!
-    GlobalVars.leftCoordinateIsX = dataFormatToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
-      case "x;y" => true
-      //case "y;x" => false
-      case _ => false
+  dataFormatToggle.selectedToggle.onChange((_, oldVal, newVal) => {
+    //If oldVal is null, it's the first (instantion) selection and theres no need to update anything
+    if (oldVal != null) {
+      //This should return to the old value IF there is duplicate error!
+      GlobalVars.leftCoordinateIsX = dataFormatToggle.getSelectedToggle.asInstanceOf[javafx.scene.control.RadioMenuItem].getText.toLowerCase match {
+        case "x;y" => true
+        //case "y;x" => false
+        case _ => false
+      }
+      Plot.update()
+      Plot.updateLimits()
+      Plot.updateRegressionSeries()
     }
-    Plot.update()
   })
   val styleToggle = new ToggleGroup
   styleToggle.selectedToggle.onChange({
@@ -79,11 +88,18 @@ class MainGUI extends BorderPane {
           //These are the only cases since the extensionFilter limits to these types only
           //That's why we don't need "case _ =>" here
         }
-        reader.load()
-        Plot.dataPoints.clear()
-        //Since it's observableBuffer it'll auto-update
-        Plot.dataPoints.addAll(reader.getDataPoints)
-        println("Successfully loaded data points!")
+        offFXAndWait {
+          reader.load()
+          val points = reader.getDataPoints
+          println("Successfully loaded data points!")
+          onFX {
+            //Optimize these later with a busy worker
+            Plot.dataPoints.clear()
+            Plot.dataPoints.addAll(points)
+            Plot.updateLimits()
+            Plot.updateRegressionSeries()
+          }
+        }
       }
     }
     val save = new MenuItem("Save...")
@@ -102,7 +118,7 @@ class MainGUI extends BorderPane {
           case "png" =>
             try {
               val smallerSide = math.min(Plot.getWidth, Plot.getHeight)
-              val scale = 1200 / smallerSide  // The smaller side will always be ~1200px
+              val scale = 1200 / smallerSide // The smaller side will always be ~1200px
               val sp = new SnapshotParameters {
                 transform = Transform.scale(scale, scale)
               }
@@ -161,8 +177,8 @@ class MainGUI extends BorderPane {
     )
   }
   this.top = menuBar
-  this.bottom = SidePanel
+  this.bottom = BottomPanel
   this.center = Plot
-
+  Plot.clearPlot() //We want to clear the first initial value (After the legend has been created)
 }
 
