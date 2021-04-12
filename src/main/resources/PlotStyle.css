@@ -14,3 +14,18 @@
     -fx-background-radius: 1px;
     -fx-padding: 1px;
 }
+
+/*Dark mode still in progress
+.chart-plot-background {
+   -fx-background-color: #202020;
+}
+.chart {
+   -fx-padding: 10px;
+   -fx-background-color: #202020;
+}
+.chart-vertical-grid-lines {
+   -fx-stroke: #0099FF; -fx-stroke-width: 2;
+}
+.chart-horizontal-grid-lines {
+   -fx-stroke: #0099FF; -fx-stroke-width: 2;
+}*/

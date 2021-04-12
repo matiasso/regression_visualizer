@@ -15,7 +15,7 @@ class RegressionSeries(name: String) extends PointSeries(name) {
   override def update(): Unit = {
     this.series.getData.clear()
     if (Plot.dataPoints.length > 1) {
-      offFXAndWait {
+      offFXAndWait{
         regressionObject.calculateCoefficients(GlobalVars.leftCoordinateIsX)
       }
       val coefficients: (Option[Double], Option[Double]) = regressionObject.getCoefficients
@@ -42,10 +42,11 @@ class RegressionSeries(name: String) extends PointSeries(name) {
       }
     } else {
       //We can't draw a regression line for 0 or 1 points
-      println(s"Impossible to draw a regression line for ${Plot.dataPoints.length} points")
+      val pointStr = if (Plot.dataPoints.length == 1) "point" else "points"
+      println(s"Impossible to draw a regression line for ${Plot.dataPoints.length} $pointStr")
       Dialogs.showError("Regression line error",
         "Impossible to draw a regression line",
-        s"Reason: Only ${Plot.dataPoints.length} points given!")
+        s"Reason: Only ${Plot.dataPoints.length} $pointStr given!")
     }
   }
 }

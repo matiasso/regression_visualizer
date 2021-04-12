@@ -1,19 +1,13 @@
 package regressionmodel.gui
 
 import regressionmodel.{GlobalVars, PVector}
-import scalafx.collections.ObservableBuffer
 import scalafx.scene.chart.{NumberAxis, ScatterChart}
 import scalafx.scene.layout.StackPane
 
 object Plot extends StackPane {
 
-  val dataPoints: ObservableBuffer[PVector] = ObservableBuffer[PVector]()
-  dataPoints.onChange((buffer, changes) => {
-    // Everytime we remove or add to our dataPoints
-    /*println(buffer)
-    println(changes)*/
-    this.update()
-  })
+  var dataPoints: Array[PVector] = new Array[PVector](0)
+
   //Define both x and y axis
   val xAxis: NumberAxis = new NumberAxis(-10, 10, 1) {
     label = "X-axis"
@@ -34,9 +28,10 @@ object Plot extends StackPane {
 
   def update(): Unit = {
     if (this.dataPoints.length == 0) {
-      //If it's empty, we can simply remove our data
+      // If it's empty, we can simply remove our data
       this.clearPlot()
     } else {
+      // Add a progress bar to this update()
       this.pointSeries.update()
     }
     // The last thing is to apply styles (We have to do this each time)
@@ -50,6 +45,7 @@ object Plot extends StackPane {
   }
 
   def clearPlot(): Unit = {
+    this.dataPoints = new Array[PVector](0)
     this.pointSeries.clear()
     this.regressionSeries.clear()
     BottomPanel.labelFunc.text = GlobalVars.labelUnknownText
@@ -60,18 +56,10 @@ object Plot extends StackPane {
 
 
   //This should be checked everytime we change XY / YX format and when data changes
-  def checkForDuplicates(leftX: Boolean): Boolean = {
-    val duplicatesFound = if (leftX) {
-      this.dataPoints.exists(p1 => this.dataPoints.exists(p2 => p2.first == p1.first && p2.second != p1.second))
-    } else {
-      this.dataPoints.exists(p1 => this.dataPoints.exists(p2 => p2.second == p1.second && p2.first != p1.first))
-    }
-    if (duplicatesFound) {
-      Dialogs.showError("Duplicate Error",
-        "There was duplicate values for same X-coordinate!",
-        "Check your data or change between X;Y and Y;X formats!")
-    }
-    duplicatesFound
+  def checkForDuplicates: (Boolean, Boolean) = {
+    val xyDuplicates = this.dataPoints.groupBy(_.first).exists(_._2.length > 1)
+    val yxDuplicates = this.dataPoints.groupBy(_.second).exists(_._2.length > 1)
+    (xyDuplicates, yxDuplicates)
   }
 
 

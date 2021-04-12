@@ -18,3 +18,14 @@ I am now for sure ahead of my schedule, which is of course a good thing.
 I quickly icluded the option to change graph point colors, but will be working on making it better
 I will also add the option to change the icons, and make things better organized.
 Next week I'll clean my code and test the existing features more.
+
+12.4.2021
+I have worked a lot on my program and it's starting to look pretty nice. I have spent roughly 20 hours during the past two weeks.
+I managed to make the symbols and their sizes and colors customizable. That took a lot of time due to some weird errors issues with the CSS
+I also fixed a few bugs, made automatic checks for X;Y and Y;X formats so the data can't contain duplicate X-values in either format.
+Oh and I also added an option to save the plots as PNG images. That wasn't too hard.
+There's also more message dialogs and both the Y and X axis now scale up better than before.
+I will spend the last weeks on making unit tests, and trying to break my program on purpose.
+Currently I know that large datafiles (for example 30 000 data points) will freeze my program for some time.
+I tried to search for solutions but it seems like there's no "easy fix" available. I might just add a progress bar to show how long it'll take
+Only new feature that I thought of is a dark mode for my program. I'm not sure if I have time for that, but we'll see.

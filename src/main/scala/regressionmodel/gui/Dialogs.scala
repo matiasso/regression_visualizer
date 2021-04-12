@@ -94,7 +94,7 @@ object Dialogs {
           PlotLimits.setLimitsX(a, b)
         else
           PlotLimits.setLimitsY(a, b)
-      case None => println("Received None for the plot limits for axis: " + (if (xDialog) "X" else "Y"))
+      case _ => println("Received None for the plot limits for axis: " + (if (xDialog) "X" else "Y"))
         //Empty the values in plot
         if (xDialog)
           PlotLimits.setLimitsX(None, None)

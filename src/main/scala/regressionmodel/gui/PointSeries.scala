@@ -17,7 +17,6 @@ abstract class PointSeries(val name: String) {
   def clear(): Unit = this.series.getData.clear()
 
   def applyStyles(): Unit = {
-    println(this.styleString)
     if (this.style.nonEmpty || this.colorStyle.nonEmpty) {
       Plot.scatterChart.lookupAll(s".series$index").foreach(_.setStyle(this.styleString))
     }
@@ -36,6 +35,7 @@ abstract class PointSeries(val name: String) {
   }
 
   def setSize(size: Int): Unit = {
+    // For some reason the insets have to be negative size, otherwice it mirrors my symbols upside down
     this.size = "-fx-background-insets: " + -size + "px;"
     this.applyStyles()
   }

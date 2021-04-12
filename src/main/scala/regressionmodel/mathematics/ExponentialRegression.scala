@@ -1,5 +1,6 @@
 package regressionmodel.mathematics
 
+import org.scalafx.extras.onFX
 import regressionmodel.gui.Dialogs
 
 
@@ -10,9 +11,10 @@ object ExponentialRegression extends RegressionModel {
     this.b = None
     //leftX boolean indicates whether "X;Y" coordinate pairs are given this way or the other way "Y;X"
     val xs = if (leftX) this.getXValues else this.getYValues
+    // Even tho we check for positive y-values when selecting the toggle, we want to make sure that this works
     val yValues = if (leftX) this.getYValues else this.getXValues
-    //We cannot take logarithms if some values of Y are negative.
-    if (yValues.forall(_ >= 0)) {
+    //We cannot take logarithms if some values of Y are negative or zero
+    if (yValues.forall(_ > 0)) {
       //Take logarithms and fit a linear model for them
       val ys = if (leftX) this.getYlogs else this.getXlogs
       val xAvg: Double = xs.iterator.sum / xs.length
@@ -39,7 +41,17 @@ object ExponentialRegression extends RegressionModel {
           case None => println("m was NOT defined for some reason, even though it SHOULD be!")
         }
       } else {
-        Dialogs.showWarning("Warning", "Zero division", "Could not calculate exponential regression!")
+        onFX {
+          Dialogs.showWarning("Warning",
+            "Zero division",
+            "Could not calculate exponential regression!")
+        }
+      }
+    } else {
+      onFX {
+        Dialogs.showWarning("Warning",
+          "Some Y-values were below or equal to 0",
+          "Could not calculate exponential regression!")
       }
     }
   }
