@@ -47,9 +47,7 @@ class MainGUI extends BorderPane {
           }
         case _ =>
       }
-      Plot.update()
-      Plot.updateLimits()
-      Plot.updateRegressionSeries()
+      updateAllPlots()
     }
   })
   val styleToggle = new ToggleGroup
@@ -66,7 +64,7 @@ class MainGUI extends BorderPane {
     }
   })
 
-  def newMenuItem(text: String, tuple: (Array[String], ToggleGroup), defaultValStr: String): Menu = {
+  private def newMenuItem(text: String, tuple: (Array[String], ToggleGroup), defaultValStr: String): Menu = {
     //This is used for the settings menu, to create a menu item with first item selected
     new Menu(text) {
       items = tuple._1.map(name => new RadioMenuItem(name.capitalize) {
@@ -76,7 +74,7 @@ class MainGUI extends BorderPane {
     }
   }
 
-  def disableAndSelectDataFormat(disableString: String, selectText: String): Unit = {
+  private def disableAndSelectDataFormat(disableString: String, selectText: String): Unit = {
     for (toggle <- this.dataFormatToggle.toggles) {
       toggle match {
         case radioMenuItem: javafx.scene.control.RadioMenuItem =>
@@ -89,17 +87,73 @@ class MainGUI extends BorderPane {
     }
   }
 
-  def clearPlotRestoreDataFormats(): Unit = {
+  private def restoreDataFormatOptions(): Unit = {
     for (toggle <- this.dataFormatToggle.toggles) {
       toggle match {
         case radioMenuItem: javafx.scene.control.RadioMenuItem => radioMenuItem.setDisable(false)
         case _ =>
       }
     }
-    Plot.clearPlot()
+  }
+
+  private def updateAllPlots(): Unit = {
+    // First update all the points
+    Plot.update()
+    // Then update the limits
+    Plot.updateLimits()
+    // Then draw the regression line with given limits
+    Plot.updateRegressionSeries()
+  }
+
+  private def checkForDuplicates(): Unit = {
+    val boolTuple = Plot.checkForDuplicates
+    boolTuple match {
+      case (true, true) =>
+        // Neither XY or YX format is available because of duplicates
+        Dialogs.showError("Duplicate error!",
+          "Your data was corrupted! (Reason: Duplicate X-values)",
+          "Please choose another file.")
+        restoreDataFormatOptions()
+        Plot.clearPlot()
+      case (false, true) =>
+        // YX format contains duplicates, so we need to disable that button
+        // and select "XY" format as default and show a message
+        if (!GlobalVars.leftCoordinateIsX) {
+          Dialogs.showInfo("Data format info",
+            "Your data contained duplicates in Y;X format",
+            "Solution: Automatically switched to X;Y format")
+        }
+        disableAndSelectDataFormat("Y;X", "X;Y") // This will also call onChange() which calls updates
+      case (true, false) =>
+        // XY format contains duplicates, so we need to disable that button
+        // and select "YX" format as default and show a message
+        if (GlobalVars.leftCoordinateIsX) {
+          Dialogs.showInfo("Data format info",
+            "Your data contained duplicates in X;Y format",
+            "Solution: Automatically switched to Y;X format")
+        }
+        disableAndSelectDataFormat("X;Y", "Y;X") // This will also call onChange() which calls updates
+      case (false, false) =>
+        disableAndSelectDataFormat("", "") // This will enable both dataFormats
+        updateAllPlots()
+    }
   }
 
   val menuBar: MenuBar = new MenuBar() {
+    val uniqueCheckMenuItem = new CheckMenuItem("Unique X [OFF]")
+    uniqueCheckMenuItem.onAction = event => {
+      event.getTarget match {
+        case checkItem: javafx.scene.control.CheckMenuItem =>
+          if (!checkItem.isSelected) { // We want to restore both options if it was selected
+            restoreDataFormatOptions()
+            uniqueCheckMenuItem.text = "Unique X [OFF]"
+          } else {
+            checkForDuplicates()
+            uniqueCheckMenuItem.text = "Unique X [ON]"
+          }
+        case _ =>
+      }
+    }
     val open = new MenuItem("Open...")
     open.accelerator = new KeyCodeCombination(KeyCode.O, KeyCombination.ControlDown)
     open.onAction = _ => {
@@ -131,37 +185,10 @@ class MainGUI extends BorderPane {
         }
         // Check for duplicates
         Plot.dataPoints = points
-        val boolTuple = Plot.checkForDuplicates
-        boolTuple match {
-          case (true, true) =>
-            // Neither XY or YX format is available because of duplicates
-            Dialogs.showError("Duplicate error!",
-              "Your data was corrupted! (Reason: Duplicate X-values)",
-              "Please choose another file.")
-            clearPlotRestoreDataFormats()
-          case (false, true) =>
-            // YX format contains duplicates, so we need to disable that button
-            // and select "XY" format as default and show a message
-            if (!GlobalVars.leftCoordinateIsX) {
-              Dialogs.showInfo("Data format info",
-                "Your data contained duplicates in Y;X format",
-                "Solution: Automatically switched to X;Y format")
-            }
-            disableAndSelectDataFormat("Y;X", "X;Y") // This will also call onChange() which calls updates
-          case (true, false) =>
-            // XY format contains duplicates, so we need to disable that button
-            // and select "YX" format as default and show a message
-            if (GlobalVars.leftCoordinateIsX) {
-              Dialogs.showInfo("Data format info",
-              "Your data contained duplicates in X;Y format",
-              "Solution: Automatically switched to Y;X format")
-            }
-            disableAndSelectDataFormat("X;Y", "Y;X") // This will also call onChange() which calls updates
-          case (false, false) =>
-            disableAndSelectDataFormat("", "") // This will enable both dataFormats
-            Plot.update()
-            Plot.updateLimits()
-            Plot.updateRegressionSeries()
+        if (uniqueCheckMenuItem.isSelected) {
+          checkForDuplicates()
+        } else {
+          updateAllPlots()
         }
       }
     }
@@ -204,18 +231,23 @@ class MainGUI extends BorderPane {
     }
     val close = new MenuItem("Close")
     close.onAction = _ => {
-      clearPlotRestoreDataFormats()
+      restoreDataFormatOptions()
+      Plot.clearPlot()
     }
     val exit = new MenuItem("Exit")
     exit.onAction = _ => sys.exit(0)
     menus = List(
-      new Menu("File") {
+      new Menu("_File") {
+        mnemonicParsing = true
         items = List(open, save, close, exit)
       },
-      new Menu("Settings") {
+      new Menu("_Settings") {
+        mnemonicParsing = true
         items = List(
           newMenuItem("Regression type", (GlobalVars.regressionOptions.sorted, regressionTypeToggle), "linear"),
           newMenuItem("Data format", (GlobalVars.dataFormatOptions.sorted, dataFormatToggle), "x;y"),
+          uniqueCheckMenuItem,
+          new SeparatorMenuItem,
           new MenuItem("Point color") {
             onAction = _ => Dialogs.showColorMenu()
           },
@@ -223,6 +255,7 @@ class MainGUI extends BorderPane {
           new MenuItem("Point size") {
             onAction = _ => Dialogs.showSizeDialog()
           },
+          new SeparatorMenuItem,
           new MenuItem("X-axis limits") {
             onAction = _ => Dialogs.showLimitDialog(true)
           },
@@ -232,7 +265,8 @@ class MainGUI extends BorderPane {
         )
       },
 
-      new Menu("Help") {
+      new Menu("_Help") {
+        mnemonicParsing = true
         items = List(
           new MenuItem("About") {
             onAction = _ => Dialogs.showInfo("About", "This program was made by Matias",

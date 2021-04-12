@@ -2,7 +2,7 @@ package regressionmodel.gui
 
 import regressionmodel.GlobalVars
 import scalafx.geometry.Insets
-import scalafx.scene.control.{Button, Label, ProgressBar}
+import scalafx.scene.control.{Button, Label, ProgressBar, Tooltip}
 import scalafx.scene.layout.GridPane
 
 object BottomPanel extends GridPane {
