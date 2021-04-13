@@ -1,41 +1,53 @@
 package regressionmodel.gui
 
-import javafx.scene.layout.ColumnConstraints
+import org.scalafx.extras.BusyWorker
 import regressionmodel.GlobalVars
 import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Label, ProgressBar}
-import scalafx.scene.layout.{GridPane, Priority}
+import scalafx.scene.layout.{HBox, Priority, VBox}
 
-object BottomPanel extends GridPane {
+object BottomPanel extends VBox {
+
   val paddingInt = 10
-  val labelRSquared = new Label("R² value:")
-  val labelFunc = new Label("Graph f(x): ")
+  val labelRSquared = new Label(GlobalVars.textRSquared)
+  val labelFunc = new Label(GlobalVars.textForGraphLabel)
   val progressBar: ProgressBar = new ProgressBar() {
-    hgrow = Priority.Always
-    maxWidth = 600
-    minWidth = 150
     progress = 0
   }
-  val debugButton: Button = new Button("Print points!") {
+  val progressLabel: Label = new Label()
+  var busyworker: BusyWorker = _  // Define this later in DataPointSeries.update()
+  // Add "Copy graph string" button
+  val buttonLess: Button = new Button("←") {
     onAction = _ => {
-      //Plot.setPointStyle("-fx-background-color: green, white;")
-      Plot.dataPoints.foreach(println)
+
     }
   }
+  val buttonMore: Button = new Button("→") {
+    onAction = _ => {
+    }
+  }
+  val secondHBox: HBox = new HBox() {
+    spacing = paddingInt
+    children = Seq(buttonLess, new Label("Decimal amount"), buttonMore, progressLabel)
+  }
+  for (node <- Seq(labelRSquared, labelFunc, progressBar, secondHBox)) {
+    node.hgrow = Priority.Always
+    node.maxWidth = Double.MaxValue
+  }
 
-  this.padding = Insets(paddingInt, paddingInt, paddingInt, paddingInt)
-  this.hgap = paddingInt
-
-  this.addRow(0, labelRSquared)
-  this.addRow(1, labelFunc, progressBar)
-
-  val cc = new ColumnConstraints()
-  cc.setPercentWidth(50)
-  this.getColumnConstraints.add(cc)
+  this.padding = Insets(paddingInt)
+  this.spacing = paddingInt
+  this.children = Seq(new HBox() {
+    children = Seq(labelRSquared, secondHBox)
+    spacing = paddingInt
+  }, new HBox() {
+    children = Seq(labelFunc, progressBar)
+    spacing = paddingInt
+  })
 
   def updateFunctionLabel(tuple: (Option[Double], Option[Double]), linear: Boolean): Unit = {
     //Check whether we're using linear or exponential graph
-    this.labelFunc.text = "Graph f(x):\t" + (tuple match {
+    this.labelFunc.text = GlobalVars.textForGraphLabel + "\t" + (tuple match {
       case (Some(m), Some(b)) =>
         val bWithSign = if (b >= 0) s"+$b" else b
         if (linear) {
@@ -43,14 +55,14 @@ object BottomPanel extends GridPane {
         } else {
           s"y=$b*e${this.expPowerToSuperscript(m + "x")}"
         }
-      case _ => GlobalVars.labelUnknownText
+      case _ => GlobalVars.textUnknownCoefficients
     })
   }
 
   def updateRSquared(rSquared: Option[Double]): Unit = {
-    this.labelRSquared.text = "R² value:\t" + (rSquared match {
+    this.labelRSquared.text = GlobalVars.textRSquared + "\t" + (rSquared match {
       case Some(r) => r.toString
-      case None => GlobalVars.labelUnknownText
+      case None => GlobalVars.textUnknownCoefficients
     })
   }
 

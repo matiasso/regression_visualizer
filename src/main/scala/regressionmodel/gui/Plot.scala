@@ -31,7 +31,7 @@ object Plot extends StackPane {
       // If it's empty, we can simply remove our data
       this.clearPlot()
     } else {
-      // Add a progress bar to this update()
+      // Optimize this later
       this.pointSeries.update()
     }
     // The last thing is to apply styles (We have to do this each time)
@@ -48,11 +48,10 @@ object Plot extends StackPane {
     this.dataPoints = new Array[PVector](0)
     this.pointSeries.clear()
     this.regressionSeries.clear()
-    BottomPanel.labelFunc.text = "Graph f(x):\t" + GlobalVars.labelUnknownText
-    BottomPanel.labelRSquared.text = "R² value:\t" + GlobalVars.labelUnknownText
+    BottomPanel.labelFunc.text = GlobalVars.textForGraphLabel + "\t" + GlobalVars.textUnknownCoefficients
+    BottomPanel.labelRSquared.text = GlobalVars.textRSquared +"\t" + GlobalVars.textUnknownCoefficients
     // If the user hasn't specified any limits, we'll make both axis in range [-10, 10]
     this.updateLimits()
-    BottomPanel.progressBar.progress = 0
   }
 
 

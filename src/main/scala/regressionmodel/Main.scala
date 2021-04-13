@@ -7,10 +7,10 @@ import scalafx.scene.Scene
 
 object Main extends JFXApp {
   //I created my own class for the Graphical user interface part
-  val view = new MainGUI()
+  GlobalVars.myView = new MainGUI()
 
-  stage = new JFXApp.PrimaryStage {
-    scene = new Scene(view) {
+  GlobalVars.myStage = new JFXApp.PrimaryStage {
+    scene = new Scene(GlobalVars.myView) {
       stylesheets.add("DefaultStyle.css")
     }
     title.value = "Regression Model"
@@ -19,5 +19,4 @@ object Main extends JFXApp {
     minHeight = 400
     minWidth = 400
   }
-  GlobalVars.myStage = stage
 }

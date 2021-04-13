@@ -1,13 +1,18 @@
 package regressionmodel
 
+import regressionmodel.gui.MainGUI
 import scalafx.application.JFXApp
+import scalafx.scene.layout.BorderPane
 
 
 object GlobalVars {
 
+  var myView: MainGUI = _
   var myStage: JFXApp.PrimaryStage = _
   var leftCoordinateIsX: Boolean = true
-  val labelUnknownText: String = ""
+  val textUnknownCoefficients: String = ""
+  val textForGraphLabel = "Graph:\t"
+  val textRSquared = "R² value:\t"
   val styleOptions: Map[String, String] = Map(
     // These were done with https://svg-path-visualizer.netlify.app/ with LOTS of experimenting
     "circle" -> "-fx-shape: \"M 25,50 a25,25 0 1,1 50,0 a25,25 0 1,1 -50,0\";",

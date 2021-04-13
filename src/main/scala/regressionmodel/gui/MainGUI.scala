@@ -178,7 +178,7 @@ class MainGUI extends BorderPane {
         }
         val points = reader.getDataPoints
         println("Successfully loaded data points!")
-        if (points.length > 2500) {
+        if (points.length > 4000) {
           Dialogs.showWarning("Data size warning!",
             "This might take some time to process...",
             s"Your data contains ${points.length} points")

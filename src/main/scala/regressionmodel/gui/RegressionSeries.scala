@@ -13,7 +13,7 @@ class RegressionSeries(name: String) extends PointSeries(name) {
   private def isLinear: Boolean = this.regressionObject == LinearRegression
 
   override def update(): Unit = {
-    this.series.getData.clear()
+    this.clear()
     if (Plot.dataPoints.length > 1) {
       offFXAndWait{
         regressionObject.calculateCoefficients(GlobalVars.leftCoordinateIsX)

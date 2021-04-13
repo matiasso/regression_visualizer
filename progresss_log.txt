@@ -35,3 +35,6 @@ In case it does contain duplicates, it automatically switches from X;Y format to
 In case that no format will work (there's duplicates in both X;Y and Y;X formats) the datafile will be closed and an error dialog will pop up.
 Currently I think I'm on the last steps of my program. I have done a LOT of testing, but there's still a few bugs.
 I haven't found a way to fix my program from freezing when loading huge data files. That's annoying.
+
+UPDATE 13.4.2021
+I FINALLY fixed the freezing issue with busyworker from scalafx-extras!

@@ -31,7 +31,7 @@ object LinearRegression extends RegressionModel {
               val rNominator = xs.indices.map(i => mVal * xs(i) + bVal - yAvg).map(n => n * n).sum
               val rDenominator = ys.indices.map(i => ys(i) - yAvg).map(n => n * n).sum
               if (rDenominator != 0)
-                this.rSquared = Some(rNominator / rDenominator)
+                this.rSquared = Some(math.min(rNominator / rDenominator, 1.0))
 
             case None => println("b was NOT defined for some odd reason!")
           }

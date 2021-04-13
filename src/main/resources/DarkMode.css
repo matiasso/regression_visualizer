@@ -53,3 +53,6 @@ GridPane {
     -fx-border-color: #999999 transparent transparent transparent;
     -fx-font-size: 14px;
 }
+menuBar {
+    -fx-border-color: transparent transparent #999999 transparent;
+}
