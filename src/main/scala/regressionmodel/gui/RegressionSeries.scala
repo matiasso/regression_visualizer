@@ -10,18 +10,18 @@ class RegressionSeries(name: String) extends PointSeries(name) {
   val index = 1
   var regressionObject: RegressionModel = LinearRegression // As a default this will be linear regression
 
-  private def isLinear: Boolean = this.regressionObject == LinearRegression
+  def isLinear: Boolean = this.regressionObject == LinearRegression
 
   override def update(): Unit = {
     this.clear()
     if (Plot.dataPoints.length > 1) {
-      offFXAndWait{
+      offFXAndWait {
         regressionObject.calculateCoefficients(GlobalVars.leftCoordinateIsX)
       }
       val coefficients: (Option[Double], Option[Double]) = regressionObject.getCoefficients
       //Update the labels to show this regression line and R^2 value
-      BottomPanel.updateFunctionLabel(coefficients, this.isLinear)
-      BottomPanel.updateRSquared(regressionObject.rSquared)
+      BottomPanel.updateFunctionLabel()
+      BottomPanel.updateRSquared()
       coefficients match {
         case (Some(m), Some(b)) =>
           //Add the dots for the regressionModel

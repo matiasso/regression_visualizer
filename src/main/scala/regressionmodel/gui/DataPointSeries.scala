@@ -13,15 +13,16 @@ class DataPointSeries(name: String) extends PointSeries(name) {
 
   override def update(): Unit = {
     this.clear()
-    if (BottomPanel.busyworker == null) {
+    if (BottomPanel.busyWorker == null) {
       // Now GlobalVars.myView isn't null
-      BottomPanel.busyworker = new BusyWorker("Busyworker", GlobalVars.myView) {
+      BottomPanel.busyWorker = new BusyWorker("Busyworker", GlobalVars.myView) {
         BottomPanel.progressBar.progress <== progressValue
         BottomPanel.progressLabel.text <== progressMessage
       }
     }
-    BottomPanel.busyworker.doTask("Datapoint-drawing")(new SimpleTask[Unit] {
+    BottomPanel.busyWorker.doTask("Datapoint-drawing")(new SimpleTask[Unit] {
       override def call(): Unit = {
+        BottomPanel.progressBar.visible = true
         var i = 0
         for (point <- Plot.dataPoints) {
 
@@ -47,15 +48,18 @@ class DataPointSeries(name: String) extends PointSeries(name) {
           // The window freezes with big datafiles so I'd like to slow this down and show progress instead
           i += 1
           progress() = i * 1.0 / Plot.dataPoints.length
-          message() = i.toString + "/" + Plot.dataPoints.length + "(" + math.round(progress.toDouble * 100) + "%)"
+          message() = s"Progress: $i/${Plot.dataPoints.length}(${math.round(progress.toDouble * 100)}%)"
           if (i % 25 == 0) {
-            // Sleep on the busyworker so the window doesn't freeze!
+            // Sleep on the busyWorker so the window doesn't freeze!
             Thread.sleep(20)
           }
         }
       }
 
-      override def onFinish(result: Future[Unit], successful: Boolean): Unit = println("Drawing finished!")
+      override def onFinish(result: Future[Unit], successful: Boolean): Unit = {
+        BottomPanel.progressBar.visible = false
+        println("Drawing finished!")
+      }
     })
 
   }

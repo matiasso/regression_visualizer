@@ -17,7 +17,9 @@
 .chart {
     -fx-padding: 10px;
 }
-GridPane {
-    -fx-border-color: #161616 transparent transparent transparent;
+HBox {
     -fx-font-size: 14px;
+}
+VBox {
+    -fx-border-color: #161616 transparent transparent transparent;
 }

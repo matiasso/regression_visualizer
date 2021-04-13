@@ -3,34 +3,59 @@ package regressionmodel.gui
 import org.scalafx.extras.BusyWorker
 import regressionmodel.GlobalVars
 import scalafx.geometry.Insets
-import scalafx.scene.control.{Button, Label, ProgressBar}
+import scalafx.scene.control.{Button, Label, ProgressBar, Tooltip}
+import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{HBox, Priority, VBox}
 
 object BottomPanel extends VBox {
 
   val paddingInt = 10
+  var decimalCount: Int = 6
   val labelRSquared = new Label(GlobalVars.textRSquared)
   val labelFunc = new Label(GlobalVars.textForGraphLabel)
   val progressBar: ProgressBar = new ProgressBar() {
     progress = 0
+    visible = false
   }
   val progressLabel: Label = new Label()
-  var busyworker: BusyWorker = _  // Define this later in DataPointSeries.update()
+  var busyWorker: BusyWorker = _ // Define this later in DataPointSeries.update()
   // Add "Copy graph string" button
-  val buttonLess: Button = new Button("←") {
-    onAction = _ => {
 
-    }
+  private def updateAllLabels(): Unit = {
+    this.decimalLabel.text = s"Decimals: $decimalCount"
+    this.updateRSquared()
+    this.updateFunctionLabel()
   }
-  val buttonMore: Button = new Button("→") {
+
+  val decimalTooltip = new Tooltip("Range is limited to 1—16")
+  val buttonLess: Button = new Button() {
+    graphic = new ImageView(new Image("left-arrow.png")) {
+      preserveRatio = true
+      fitHeight = 15
+    }
+    tooltip = decimalTooltip
     onAction = _ => {
+      decimalCount = math.max(decimalCount - 1, 1)
+      updateAllLabels()
     }
   }
+  val buttonMore: Button = new Button() {
+    graphic = new ImageView(new Image("right-arrow.png")) {
+      preserveRatio = true
+      fitHeight = 15
+    }
+    tooltip = decimalTooltip
+    onAction = _ => {
+      decimalCount = math.min(decimalCount + 1, 16)
+      updateAllLabels()
+    }
+  }
+  val decimalLabel = new Label(s"Decimals: $decimalCount")
   val secondHBox: HBox = new HBox() {
     spacing = paddingInt
-    children = Seq(buttonLess, new Label("Decimal amount"), buttonMore, progressLabel)
+    children = Seq(buttonLess, decimalLabel, buttonMore, progressLabel)
   }
-  for (node <- Seq(labelRSquared, labelFunc, progressBar, secondHBox)) {
+  for (node <- Seq(labelRSquared, labelFunc, progressBar)) {
     node.hgrow = Priority.Always
     node.maxWidth = Double.MaxValue
   }
@@ -45,23 +70,27 @@ object BottomPanel extends VBox {
     spacing = paddingInt
   })
 
-  def updateFunctionLabel(tuple: (Option[Double], Option[Double]), linear: Boolean): Unit = {
+
+  def updateFunctionLabel(): Unit = {
     //Check whether we're using linear or exponential graph
-    this.labelFunc.text = GlobalVars.textForGraphLabel + "\t" + (tuple match {
-      case (Some(m), Some(b)) =>
-        val bWithSign = if (b >= 0) s"+$b" else b
-        if (linear) {
-          s"y=$m*x$bWithSign"
-        } else {
-          s"y=$b*e${this.expPowerToSuperscript(m + "x")}"
-        }
-      case _ => GlobalVars.textUnknownCoefficients
-    })
+    this.labelFunc.text = GlobalVars.textForGraphLabel + "\t" +
+      (Plot.regressionSeries.regressionObject.getCoefficients match {
+        case (Some(m), Some(b)) =>
+          val bStr = s"%.${decimalCount}f".format(b)
+          val bWithSign = (if (b >= 0) "+" else "") + bStr
+          val mStr = s"%.${decimalCount}f".format(m)
+          if (Plot.regressionSeries.isLinear) {
+            s"y = $mStr * x $bWithSign"
+          } else {
+            s"y = $bStr * e${this.expPowerToSuperscript(mStr + "x")}"
+          }
+        case _ => GlobalVars.textUnknownCoefficients
+      })
   }
 
-  def updateRSquared(rSquared: Option[Double]): Unit = {
-    this.labelRSquared.text = GlobalVars.textRSquared + "\t" + (rSquared match {
-      case Some(r) => r.toString
+  def updateRSquared(): Unit = {
+    this.labelRSquared.text = GlobalVars.textRSquared + "\t" + (Plot.regressionSeries.regressionObject.rSquared match {
+      case Some(r) => s"%.${decimalCount}f".format(r)
       case None => GlobalVars.textUnknownCoefficients
     })
   }
@@ -78,7 +107,7 @@ object BottomPanel extends VBox {
       case '7' => '\u2077' // ⁷
       case '8' => '\u2078' // ⁸
       case '9' => '\u2079' // ⁹
-      case '.' => '\u02D9' // ˙
+      case '.' | ',' => '\u02D9' // ˙
       case 'x' => '\u02E3' // ˣ
       case _ => ' '
     }

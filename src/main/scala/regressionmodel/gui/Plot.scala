@@ -1,5 +1,6 @@
 package regressionmodel.gui
 
+import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
 import regressionmodel.{GlobalVars, PVector}
 import scalafx.scene.chart.{NumberAxis, ScatterChart}
 import scalafx.scene.layout.StackPane
@@ -48,8 +49,11 @@ object Plot extends StackPane {
     this.dataPoints = new Array[PVector](0)
     this.pointSeries.clear()
     this.regressionSeries.clear()
-    BottomPanel.labelFunc.text = GlobalVars.textForGraphLabel + "\t" + GlobalVars.textUnknownCoefficients
-    BottomPanel.labelRSquared.text = GlobalVars.textRSquared +"\t" + GlobalVars.textUnknownCoefficients
+    // Since LinearRegression and ExponentialRegression are both objects we can clear their values this way
+    LinearRegression.clearAll()
+    ExponentialRegression.clearAll()
+    BottomPanel.updateRSquared()
+    BottomPanel.updateFunctionLabel()
     // If the user hasn't specified any limits, we'll make both axis in range [-10, 10]
     this.updateLimits()
   }

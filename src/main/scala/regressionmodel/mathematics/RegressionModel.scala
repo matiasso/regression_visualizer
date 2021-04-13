@@ -11,13 +11,19 @@ trait RegressionModel {
   var b: Option[Double] = None
   var rSquared: Option[Double] = None
 
-  protected def getXValues: Array[Double] = Plot.dataPoints.map(_.first).toArray
+  def clearAll(): Unit = {
+    this.m = None
+    this.b = None
+    this.rSquared = None
+  }
 
-  protected def getYValues: Array[Double] = Plot.dataPoints.map(_.second).toArray
+  protected def getXValues: Array[Double] = Plot.dataPoints.map(_.first)
 
-  protected def getXlogs: Array[Double] = Plot.dataPoints.map(p => math.log(p.first)).toArray
+  protected def getYValues: Array[Double] = Plot.dataPoints.map(_.second)
 
-  protected def getYlogs: Array[Double] = Plot.dataPoints.map(p => math.log(p.second)).toArray
+  protected def getXlogs: Array[Double] = Plot.dataPoints.map(p => math.log(p.first))
+
+  protected def getYlogs: Array[Double] = Plot.dataPoints.map(p => math.log(p.second))
 
   def calculateCoefficients(leftX: Boolean)
 

@@ -2,7 +2,6 @@ package regressionmodel
 
 import regressionmodel.gui.MainGUI
 import scalafx.application.JFXApp
-import scalafx.scene.layout.BorderPane
 
 
 object GlobalVars {
