@@ -1,15 +1,19 @@
 package regressionmodel.gui
 
-import regressionmodel.{GlobalVars, Main}
+import javafx.scene.layout.ColumnConstraints
+import regressionmodel.GlobalVars
 import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Label, ProgressBar}
-import scalafx.scene.layout.GridPane
+import scalafx.scene.layout.{GridPane, Priority}
 
 object BottomPanel extends GridPane {
   val paddingInt = 10
-  val labelRSquared = new Label(GlobalVars.labelUnknownText)
-  val labelFunc = new Label(GlobalVars.labelUnknownText)
+  val labelRSquared = new Label("R² value:")
+  val labelFunc = new Label("Graph f(x): ")
   val progressBar: ProgressBar = new ProgressBar() {
+    hgrow = Priority.Always
+    maxWidth = 600
+    minWidth = 150
     progress = 0
   }
   val debugButton: Button = new Button("Print points!") {
@@ -22,21 +26,32 @@ object BottomPanel extends GridPane {
   this.padding = Insets(paddingInt, paddingInt, paddingInt, paddingInt)
   this.hgap = paddingInt
 
-  this.addRow(0, new Label("R squared: "), labelRSquared, debugButton)
-  this.addRow(1, new Label("Graph f(x): "), labelFunc, progressBar)
+  this.addRow(0, labelRSquared)
+  this.addRow(1, labelFunc, progressBar)
+
+  val cc = new ColumnConstraints()
+  cc.setPercentWidth(50)
+  this.getColumnConstraints.add(cc)
 
   def updateFunctionLabel(tuple: (Option[Double], Option[Double]), linear: Boolean): Unit = {
     //Check whether we're using linear or exponential graph
-    tuple match {
+    this.labelFunc.text = "Graph f(x):\t" + (tuple match {
       case (Some(m), Some(b)) =>
-        val bTex = if (b >= 0) s"+$b" else b
+        val bWithSign = if (b >= 0) s"+$b" else b
         if (linear) {
-          this.labelFunc.text = s"y=$m*x$bTex"
+          s"y=$m*x$bWithSign"
         } else {
-          this.labelFunc.text = s"y=$b*e${this.expPowerToSuperscript(m + "x")}"
+          s"y=$b*e${this.expPowerToSuperscript(m + "x")}"
         }
-      case _ => this.labelFunc.text = GlobalVars.labelUnknownText
-    }
+      case _ => GlobalVars.labelUnknownText
+    })
+  }
+
+  def updateRSquared(rSquared: Option[Double]): Unit = {
+    this.labelRSquared.text = "R² value:\t" + (rSquared match {
+      case Some(r) => r.toString
+      case None => GlobalVars.labelUnknownText
+    })
   }
 
   private def getSuperscript(char: Char): Char = {
@@ -52,19 +67,12 @@ object BottomPanel extends GridPane {
       case '8' => '\u2078' // ⁸
       case '9' => '\u2079' // ⁹
       case '.' => '\u02D9' // ˙
-      case 'x' => '\u02D9' // ˣ
+      case 'x' => '\u02E3' // ˣ
       case _ => ' '
     }
   }
 
   private def expPowerToSuperscript(exp: String): String = {
     exp.foldLeft("")((prev, cur) => prev + this.getSuperscript(cur))
-  }
-
-  def updateRSquared(rSquared: Option[Double]): Unit = {
-    rSquared match {
-      case Some(r) => this.labelRSquared.text = r.toString
-      case None => this.labelRSquared.text = GlobalVars.labelUnknownText
-    }
   }
 }

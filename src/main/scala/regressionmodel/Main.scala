@@ -14,10 +14,10 @@ object Main extends JFXApp {
       stylesheets.add("DefaultStyle.css")
     }
     title.value = "Regression Model"
-    width = 900
-    height = 650
-    minHeight = 250
-    minWidth = 250
+    width = 950
+    height = 700
+    minHeight = 400
+    minWidth = 400
   }
   GlobalVars.myStage = stage
 }

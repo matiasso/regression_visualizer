@@ -51,4 +51,5 @@
 GridPane {
     -fx-background-color: #161616;
     -fx-border-color: #999999 transparent transparent transparent;
+    -fx-font-size: 14px;
 }

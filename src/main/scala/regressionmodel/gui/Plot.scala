@@ -48,10 +48,11 @@ object Plot extends StackPane {
     this.dataPoints = new Array[PVector](0)
     this.pointSeries.clear()
     this.regressionSeries.clear()
-    BottomPanel.labelFunc.text = GlobalVars.labelUnknownText
-    BottomPanel.labelRSquared.text = GlobalVars.labelUnknownText
+    BottomPanel.labelFunc.text = "Graph f(x):\t" + GlobalVars.labelUnknownText
+    BottomPanel.labelRSquared.text = "R² value:\t" + GlobalVars.labelUnknownText
     // If the user hasn't specified any limits, we'll make both axis in range [-10, 10]
     this.updateLimits()
+    BottomPanel.progressBar.progress = 0
   }
 
 

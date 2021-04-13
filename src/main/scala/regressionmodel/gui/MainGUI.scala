@@ -261,6 +261,24 @@ class MainGUI extends BorderPane {
           },
           new MenuItem("Y-axis limits") {
             onAction = _ => Dialogs.showLimitDialog(false)
+          },
+          new SeparatorMenuItem,
+          new CheckMenuItem("Dark mode [OFF]") {
+            onAction = event => {
+              event.getTarget match {
+                case checkItem: javafx.scene.control.CheckMenuItem =>
+                  if (!checkItem.isSelected) {
+                    GlobalVars.myStage.getScene.getStylesheets.clear()
+                    GlobalVars.myStage.getScene.getStylesheets.add("DefaultStyle.css")
+                    this.text = "Dark mode [OFF]"
+                  } else {
+                    GlobalVars.myStage.getScene.getStylesheets.clear()
+                    GlobalVars.myStage.getScene.getStylesheets.add("DarkMode.css")
+                    this.text = "Dark mode [ON]"
+                  }
+                case _ =>
+              }
+            }
           }
         )
       },
