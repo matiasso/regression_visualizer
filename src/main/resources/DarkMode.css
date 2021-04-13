@@ -1,0 +1,54 @@
+/*Dark mode for the application*/
+.root {
+    -fx-base: #161616;
+    -fx-accent: #2069E0;
+    -fx-default-button: #444444;
+    -fx-text-fill: #FF0000
+}
+/*Style for the datapoints: blue circles*/
+.default-color0.chart-symbol {
+    -fx-background-color: blue;
+    -fx-background-radius: 4px;
+    -fx-padding: 3px;
+}
+/*Style for the regressionline: SMALL red circles*/
+.default-color1.chart-symbol {
+    -fx-background-color: red;
+    -fx-background-radius: 1px;
+    -fx-padding: 1px;
+}
+/*Adjust the scatterChart to match the dark mode*/
+.chart-plot-background {
+    -fx-background-color: #161616;
+}
+.chart {
+    -fx-padding: 10px;
+    -fx-background-color: #161616;
+}
+.axis-tick-mark,
+.axis-minor-tick-mark {
+    -fx-stroke: #BEBEBE;
+}
+.chart-vertical-grid-lines,
+.chart-horizontal-grid-lines{
+    -fx-stroke-dash-array: 1, 0;
+    -fx-stroke-width: 0.7;
+    -fx-stroke: #999999
+}
+.chart-vertical-zero-line,
+.chart-horizontal-zero-line {
+    -fx-stroke-width: 2;
+    -fx-stroke: white
+}
+.chart-legend {
+    -fx-background-color: #161616;
+    -fx-border-color: #BEBEBE;
+}
+.chart-title {
+    -fx-text-fill: #2069E0;
+}
+/* Then the gridpane at the bottom */
+GridPane {
+    -fx-background-color: #161616;
+    -fx-border-color: #999999 transparent transparent transparent;
+}

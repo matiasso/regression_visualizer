@@ -1,0 +1,23 @@
+.default-color0.chart-symbol {
+    -fx-background-color: blue;
+    -fx-background-radius: 4px;
+    -fx-padding: 3px;
+}
+/* Default shape is a rectangle. Here, we round it to become a red circle*/
+.default-color1.chart-symbol {
+    -fx-background-color: red;
+    -fx-background-radius: 1px;
+    -fx-padding: 1px;
+}
+.chart-vertical-grid-lines,
+.chart-horizontal-grid-lines {
+    -fx-stroke-dash-array: 1, 0;
+    -fx-stroke-width: 0.7;
+}
+.chart {
+    -fx-padding: 10px;
+}
+GridPane {
+    -fx-border-color: #161616 transparent transparent transparent;
+    -fx-font-size: 16px;
+}

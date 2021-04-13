@@ -11,7 +11,7 @@ object Main extends JFXApp {
 
   stage = new JFXApp.PrimaryStage {
     scene = new Scene(view) {
-      stylesheets.add("PlotStyle.css")
+      stylesheets.add("DefaultStyle.css")
     }
     title.value = "Regression Model"
     width = 900
