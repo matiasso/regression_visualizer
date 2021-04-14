@@ -25,9 +25,8 @@ class DataPointSeries(name: String) extends PointSeries(name) {
         BottomPanel.progressBar.visible = true
         var i = 0
         for (point <- Plot.dataPoints) {
-
-          if (i % 200 == 0) {
-            //onFXAndWait is better, but it's way too slow for big datafiles, so I use it only every 200th time
+          if (i % 100 == 0) {
+            //onFXAndWait is better, but it's way too slow for big datafiles, so I don't want to use it for all dots
             onFXAndWait {
               if (GlobalVars.leftCoordinateIsX) {
                 series.getData.add(XYChart.Data(point.first, point.second))
@@ -49,8 +48,9 @@ class DataPointSeries(name: String) extends PointSeries(name) {
           i += 1
           progress() = i * 1.0 / Plot.dataPoints.length
           message() = s"Progress: $i/${Plot.dataPoints.length}(${math.round(progress.toDouble * 100)}%)"
+
+          // Sleep on the busyWorker so the window doesn't freeze!
           if (i % 25 == 0) {
-            // Sleep on the busyWorker so the window doesn't freeze!
             Thread.sleep(20)
           }
         }

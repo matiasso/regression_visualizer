@@ -2,10 +2,11 @@ package regressionmodel.gui
 
 import org.scalafx.extras.BusyWorker
 import regressionmodel.GlobalVars
-import scalafx.geometry.Insets
+import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.{Button, Label, ProgressBar, Tooltip}
 import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.layout.{HBox, Priority, VBox}
+import scalafx.scene.input.{Clipboard, ClipboardContent}
+import scalafx.scene.layout.{HBox, Priority, StackPane, VBox}
 
 object BottomPanel extends VBox {
 
@@ -17,9 +18,10 @@ object BottomPanel extends VBox {
     progress = 0
     visible = false
   }
-  val progressLabel: Label = new Label()
+  val progressLabel: Label = new Label() {
+    alignment = Pos.Center
+  }
   var busyWorker: BusyWorker = _ // Define this later in DataPointSeries.update()
-  // Add "Copy graph string" button
 
   private def updateAllLabels(): Unit = {
     this.decimalLabel.text = s"Decimals: $decimalCount"
@@ -50,12 +52,29 @@ object BottomPanel extends VBox {
       updateAllLabels()
     }
   }
-  val decimalLabel = new Label(s"Decimals: $decimalCount")
-  val secondHBox: HBox = new HBox() {
-    spacing = paddingInt
-    children = Seq(buttonLess, decimalLabel, buttonMore, progressLabel)
+  val decimalLabel: Label = new Label(s"Decimals: $decimalCount")
+  val copyButton: Button = new Button("Copy values") {
+    visible = false
+    onAction = _ => {
+      try {
+        val clipboard = Clipboard.systemClipboard
+        val content = new ClipboardContent()
+        content.putString(s"${GlobalVars.textRSquared}$getRSquaredStr\n" +
+          s"${GlobalVars.textForGraphLabel}${getFunctionStr(false)}")
+        clipboard.content = content
+      } catch {
+        case e:Throwable => println("Error in copy button action!\n" + e.getMessage)
+      }
+    }
   }
-  for (node <- Seq(labelRSquared, labelFunc, progressBar)) {
+  val secondHBox: HBox = new HBox() { // This takes ~50% of the width, leaving 50% for R^2 value label
+    spacing = paddingInt
+    children = Seq(copyButton, buttonLess, decimalLabel, buttonMore)
+  }
+  val progressStackPane: StackPane = new StackPane() {
+    children = Seq(progressBar, progressLabel)
+  }
+  for (node <- Seq(labelRSquared, labelFunc, progressStackPane, progressBar)) {
     node.hgrow = Priority.Always
     node.maxWidth = Double.MaxValue
   }
@@ -66,33 +85,52 @@ object BottomPanel extends VBox {
     children = Seq(labelRSquared, secondHBox)
     spacing = paddingInt
   }, new HBox() {
-    children = Seq(labelFunc, progressBar)
+    children = Seq(labelFunc, progressStackPane)
     spacing = paddingInt
   })
 
 
+  private def getFunctionStr(superscripted: Boolean): String = {
+    Plot.regressionSeries.regressionObject.getCoefficients match {
+      case (Some(m), Some(b)) =>
+        val bStr = s"%.${decimalCount}f".format(b)
+        val bWithSign = (if (b >= 0) "+" else "") + bStr
+        val mStr = s"%.${decimalCount}f".format(m)
+        if (Plot.regressionSeries.isLinear) {
+          s"y = $mStr * x $bWithSign"
+        } else {
+          if (superscripted)
+            s"y = $bStr * e${this.expPowerToSuperscript(mStr + "x")}"
+          else
+            s"y = $bStr * e^($mStr*x)"
+        }
+      case _ => GlobalVars.textUnknownCoefficients
+    }
+  }
+
+  private def checkEnableCopyButton(): Unit = {
+    (Plot.regressionSeries.regressionObject.getCoefficients, Plot.regressionSeries.regressionObject.rSquared) match {
+      case ((Some(a), Some(b)), Some(c)) => this.copyButton.visible = true
+      case _ => this.copyButton.visible = false
+    }
+  }
+
   def updateFunctionLabel(): Unit = {
     //Check whether we're using linear or exponential graph
-    this.labelFunc.text = GlobalVars.textForGraphLabel + "\t" +
-      (Plot.regressionSeries.regressionObject.getCoefficients match {
-        case (Some(m), Some(b)) =>
-          val bStr = s"%.${decimalCount}f".format(b)
-          val bWithSign = (if (b >= 0) "+" else "") + bStr
-          val mStr = s"%.${decimalCount}f".format(m)
-          if (Plot.regressionSeries.isLinear) {
-            s"y = $mStr * x $bWithSign"
-          } else {
-            s"y = $bStr * e${this.expPowerToSuperscript(mStr + "x")}"
-          }
-        case _ => GlobalVars.textUnknownCoefficients
-      })
+    this.labelFunc.text = GlobalVars.textForGraphLabel + "\t" + this.getFunctionStr(true)
+    this.checkEnableCopyButton()
+  }
+
+  private def getRSquaredStr: String = {
+    Plot.regressionSeries.regressionObject.rSquared match {
+      case Some(r) => s"%.${decimalCount}f".format(r)
+      case None => GlobalVars.textUnknownCoefficients
+    }
   }
 
   def updateRSquared(): Unit = {
-    this.labelRSquared.text = GlobalVars.textRSquared + "\t" + (Plot.regressionSeries.regressionObject.rSquared match {
-      case Some(r) => s"%.${decimalCount}f".format(r)
-      case None => GlobalVars.textUnknownCoefficients
-    })
+    this.labelRSquared.text = GlobalVars.textRSquared + "\t" + this.getRSquaredStr
+    this.checkEnableCopyButton()
   }
 
   private def getSuperscript(char: Char): Char = {

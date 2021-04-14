@@ -22,6 +22,7 @@ object Plot extends StackPane {
   val regressionSeries: RegressionSeries = new RegressionSeries("Regression")
   val scatterChart: ScatterChart[Number, Number] = new ScatterChart[Number, Number](this.xAxis, this.yAxis) {
     title = "Regression model by Matias"
+    animated = false
   }
   scatterChart.getData.addAll(pointSeries.series, regressionSeries.series)
   this.children = scatterChart
@@ -118,7 +119,7 @@ object Plot extends StackPane {
           axis.upperBound = 10
         }
     }
-    this.setTickUnit(axis)
+    setTickUnit(axis)
   }
 
   def setTickUnit(axis: NumberAxis): Unit = {

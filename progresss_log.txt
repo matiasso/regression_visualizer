@@ -38,3 +38,10 @@ I haven't found a way to fix my program from freezing when loading huge data fil
 
 UPDATE 13.4.2021
 I FINALLY fixed the freezing issue with busyworker from scalafx-extras!
+
+14.4.2021
+I found out that the reason why my Y-axis was sometimes "bugging" was because of the animations and autoranging.
+I added a button to Copy the values of R^2 and f(x) graph to clipboard.
+I added a progressbar with progress label on top of it to show the user how the data is being loaded.
+Fixed all bugs that I had found so far. I'm really starting to like how the program looks :)!
+Probably spent way more than my previous "20h" estimation, maybe more like 30-35h during the past two weeks.

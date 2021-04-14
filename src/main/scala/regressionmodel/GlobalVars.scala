@@ -8,11 +8,11 @@ object GlobalVars {
 
   var myView: MainGUI = _
   var myStage: JFXApp.PrimaryStage = _
-  val correctFormatExamples = "1;2\n1; 2\n1 ;2\n1 ; 2\n2.5 ;4\n3; 5.6725\n4.98765;6.1234"
+  val correctFormatExamples = "1;2\n1; 2\n1 ;2\n1 ; 2\n2.5 ;4\n3; 5.6725\n4.98765;6.1234\n5E-3;10E3"
   var leftCoordinateIsX: Boolean = true
   val textUnknownCoefficients: String = ""
-  val textForGraphLabel = "Graph:\t"
-  val textRSquared = "R² value:\t"
+  val textForGraphLabel = "Graph: "
+  val textRSquared = "R² value: "
   val styleOptions: Map[String, String] = Map(
     // These were done with https://svg-path-visualizer.netlify.app/ with LOTS of experimenting
     "circle" -> "-fx-shape: \"M 25,50 a25,25 0 1,1 50,0 a25,25 0 1,1 -50,0\";",
