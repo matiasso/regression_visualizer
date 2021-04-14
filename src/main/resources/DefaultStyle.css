@@ -1,13 +1,13 @@
 .default-color0.chart-symbol {
     -fx-background-color: blue;
-    -fx-background-radius: 4px;
+    -fx-background-radius: 3px;
     -fx-padding: 3px;
 }
 /* Default shape is a rectangle. Here, we round it to become a red circle*/
 .default-color1.chart-symbol {
     -fx-background-color: red;
-    -fx-background-radius: 1px;
-    -fx-padding: 1px;
+    -fx-background-radius: 1.2px;
+    -fx-padding: 1.2px;
 }
 .chart-vertical-grid-lines,
 .chart-horizontal-grid-lines {

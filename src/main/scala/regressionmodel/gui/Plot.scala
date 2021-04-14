@@ -88,24 +88,30 @@ object Plot extends StackPane {
         axis.lowerBound = a
         axis.upperBound = b
       case _ =>
-        if (this.dataPoints.length > 1) {
-          if (xAxisBool) {
-            axis.lowerBound = if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
-              this.dataPoints.minBy(_.first).first else this.dataPoints.minBy(_.second).second
-            axis.upperBound = if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
-              this.dataPoints.maxBy(_.first).first else this.dataPoints.maxBy(_.second).second
-            axis.lowerBound = math.floor(axis.getLowerBound - math.abs(axis.getLowerBound) / 50)
-            axis.upperBound = math.ceil(axis.getUpperBound + math.abs(axis.getUpperBound) / 50)
+        if (this.dataPoints.length > 0) {
+          val axisValues = if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
+            this.dataPoints.groupBy(_.first) else this.dataPoints.groupBy(_.second)
+          // Check whether there are DIFFERENT values on this axis
+          if (axisValues.size > 1) {
+            if (xAxisBool) {
+              axis.lowerBound = if (GlobalVars.leftCoordinateIsX)
+                dataPoints.minBy(_.first).first else dataPoints.minBy(_.second).second
+              axis.upperBound = if (GlobalVars.leftCoordinateIsX)
+                dataPoints.maxBy(_.first).first else dataPoints.maxBy(_.second).second
+              val axisLength = axis.getUpperBound - axis.getLowerBound
+              axis.lowerBound = math.floor(axis.getLowerBound - axisLength / 50)
+              axis.upperBound = math.ceil(axis.getUpperBound + axisLength / 50)
+            } else {
+              axis.autoRanging = true
+            }
           } else {
-            axis.autoRanging = true
+            // We'll pad +5 and -5 around this axis since all values are equal
+            val head = this.dataPoints.head
+            axis.lowerBound = math.floor((if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
+              head.first else head.second) - 5)
+            axis.upperBound = math.ceil((if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
+              head.first else head.second) + 5)
           }
-        } else if (this.dataPoints.length == 1) {
-          // If theres exactly one point we want to "pad" around it
-          val head = this.dataPoints.head
-          axis.lowerBound = math.floor((if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
-            head.first else head.second) - 5)
-          axis.upperBound = math.ceil((if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
-            head.first else head.second) + 5)
         } else {
           // If there's no points available we'll use default -10 and 10
           axis.lowerBound = -10

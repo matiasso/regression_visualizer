@@ -8,14 +8,14 @@
 /*Style for the datapoints: blue circles*/
 .default-color0.chart-symbol {
     -fx-background-color: blue;
-    -fx-background-radius: 4px;
+    -fx-background-radius: 3px;
     -fx-padding: 3px;
 }
 /*Style for the regressionline: SMALL red circles*/
 .default-color1.chart-symbol {
     -fx-background-color: red;
-    -fx-background-radius: 1px;
-    -fx-padding: 1px;
+    -fx-background-radius: 1.2px;
+    -fx-padding: 1.2px;
 }
 /*Adjust the scatterChart to match the dark mode*/
 .chart-plot-background {
@@ -31,7 +31,7 @@
 }
 .chart-vertical-grid-lines,
 .chart-horizontal-grid-lines{
-    -fx-stroke-dash-array: 1, 0;
+    /*-fx-stroke-dash-array: 1, 0;*/
     -fx-stroke-width: 0.7;
     -fx-stroke: #999999
 }

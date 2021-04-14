@@ -1,12 +1,13 @@
 package regressionmodel.mathematics
 
-import regressionmodel.gui.Plot
+import regressionmodel.gui.{Dialogs, Plot}
+import scalafx.scene.control.ButtonType
 
 trait RegressionModel {
 
   //These will be the coefficients for our graph
   //y = mx + b
-  //y = Be^(mx) where B = e^b and ln(y) = ln(b) + x*ln(m) is linear
+  //y = Be^(mx) where B = e^b (meaning B > 0) and ln(y) = ln(b) + x*ln(m) is linear
   var m: Option[Double] = None
   var b: Option[Double] = None
   var rSquared: Option[Double] = None
@@ -28,4 +29,10 @@ trait RegressionModel {
   def calculateCoefficients(leftX: Boolean)
 
   def getCoefficients: (Option[Double], Option[Double]) = (this.m, this.b)
+
+  protected def showZeroWarning(): Option[ButtonType] = {
+    Dialogs.showWarning("Warning",
+      "All of your X values were equal to each other",
+      "Impossible to fit a regression line!")
+  }
 }

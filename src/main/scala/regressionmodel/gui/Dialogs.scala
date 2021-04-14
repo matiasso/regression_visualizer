@@ -2,10 +2,11 @@ package regressionmodel.gui
 
 import regressionmodel.GlobalVars
 import scalafx.geometry.Insets
+import scalafx.scene.Node
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.ButtonBar.ButtonData
 import scalafx.scene.control._
-import scalafx.scene.layout.{GridPane, HBox, VBox}
+import scalafx.scene.layout.{GridPane, HBox, Priority, StackPane, VBox}
 
 object Dialogs {
 
@@ -156,7 +157,7 @@ object Dialogs {
         println(s"User gave color code $clr")
         Plot.pointSeries.setColor(s"-fx-background-color: #$clr;")
       //Send this color code to the PointSeries
-      case None => println("Received no color")
+      case _ => println("Received no color")
     }
   }
 
@@ -203,6 +204,32 @@ object Dialogs {
       title = titleStr
       headerText = header
       contentText = content
+    }.showAndWait()
+  }
+
+  def showDialogWithExpandedText(alertType: AlertType, titleStr: String, header: String, content: String, expandedStr: String): Option[ButtonType] = {
+    val textArea = new TextArea {
+      text = expandedStr
+      editable = false
+      wrapText = true
+      maxWidth = Double.MaxValue
+      maxHeight = Double.MaxValue
+      vgrow = Priority.Always
+      hgrow = Priority.Always
+    }
+    val expandingNode = new StackPane() {
+      children = textArea
+    }
+    this.showDialogWithExpandableContent(alertType, titleStr, header, content, expandingNode)
+  }
+
+  private def showDialogWithExpandableContent(alertType: AlertType, titleStr: String, header: String, content: String, exp: Node): Option[ButtonType] = {
+    new Alert(alertType) {
+      initOwner(GlobalVars.myStage)
+      title = titleStr
+      headerText = header
+      contentText = content
+      dialogPane().setExpandableContent(exp)
     }.showAndWait()
   }
 

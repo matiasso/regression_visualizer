@@ -1,7 +1,8 @@
 package regressionmodel.filehandler
 
-import regressionmodel.PVector
 import regressionmodel.gui.Dialogs
+import regressionmodel.{GlobalVars, PVector}
+import scalafx.scene.control.Alert.AlertType
 
 import java.io.{BufferedReader, FileNotFoundException, FileReader, IOException}
 import scala.collection.mutable.ArrayBuffer
@@ -29,9 +30,10 @@ abstract class Reader(fileName: String) {
 
         // Read the text from the stream line by line until the read line is null
         var oneLine = linesIn.readLine()
-        var lineBuffer = new ArrayBuffer[String]()
+        val lineBuffer = new ArrayBuffer[String]()
         while (oneLine != null) {
-          lineBuffer += oneLine.strip()
+          // Use regex here to remove all not needed characters from the line
+          lineBuffer += oneLine.replaceAll(raw"[^-\d;,.E]", "")
           oneLine = linesIn.readLine()
         }
         this.lines = lineBuffer.toArray
@@ -47,12 +49,13 @@ abstract class Reader(fileName: String) {
   }
 
   def getDataPoints: Array[PVector] = {
-    //This works for both TXT and CSV
+    //This works for both TXT and CSV, so no need to override it in subclasses
     val pointBuffer = new ArrayBuffer[PVector]()
     //Old regex that I used
     //val lineRgx = """(-?\d+\.?\d*)[,;]\s*(-?\d+\.?\d*)""".r
+    var incorrectCount = 0
     for (line <- lines) {
-      val nums = line.replace(',', '.').replace("\uFEFF", "").split(';')
+      val nums = line.replace(',', '.').split(';')
       if (nums.length == 2) {
         val x = nums(0).trim.toDoubleOption
         val y = nums(1).trim.toDoubleOption
@@ -61,15 +64,29 @@ abstract class Reader(fileName: String) {
           case (Some(v), Some(w)) =>
             pointBuffer += new PVector(v, w)
           case _ =>
-            Dialogs.showError("Incorrect number format!",
-              s"The line '$line' had incorrect format!",
-              "Format should be 'XX.xxxx;YY.yyyy")
+            incorrectCount += 1
         }
       } else {
-        Dialogs.showError("Incorrect data format",
-          s"The line '$line' had incorrect format!",
-          "Format should be 'XX.xx;YY.yy (semicolon separator)")
+        incorrectCount += 1
       }
+    }
+    if (lines.length == 0) {
+      Dialogs.showError("Empty file!",
+        "There was no proper data in the file you selected.",
+        "Please choose another file.")
+    }
+    else if (incorrectCount == lines.length) {
+      Dialogs.showDialogWithExpandedText(AlertType.Error,
+        "Invalid data!",
+        "No line in your data had the correct data format.",
+        "Correct format is \"X;Y\" or \"Y;X\"",
+        "Notice the semicolon separator! Examples of correct format:\n" + GlobalVars.correctFormatExamples)
+    } else if (incorrectCount > 0) {
+      Dialogs.showDialogWithExpandedText(AlertType.Warning,
+        "File contained invalid data!",
+        s"$incorrectCount/${lines.length} of your lines had incorrect format",
+        "Correct format is \"X;Y\" or \"Y;X\"",
+        "Notice the semicolon separator! Examples of correct format:\n" + GlobalVars.correctFormatExamples)
     }
     pointBuffer.toArray
   }

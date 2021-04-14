@@ -1,15 +1,15 @@
 package regressionmodel.mathematics
 
-import regressionmodel.gui.Dialogs
+import org.scalafx.extras.onFX
 
 
 object LinearRegression extends RegressionModel {
 
   override def calculateCoefficients(leftX: Boolean): Unit = {
-    // This formula was found online.
+    // This formula was found online. (From a video https://www.youtube.com/watch?v=szXbuO3bVRk )
     // Basic idea is "Sum(x_avg*y_avg) / Sum(x_avg^2)"
-    this.m = None
-    this.b = None
+
+    this.clearAll() // Clear existing m, b, R^2 values
     val xs = if (leftX) this.getXValues else this.getYValues
     val ys = if (leftX) this.getYValues else this.getXValues
     val xAvg: Double = xs.iterator.sum / xs.length
@@ -28,17 +28,21 @@ object LinearRegression extends RegressionModel {
             case Some(bVal) =>
               //Then calculate R squared by sum(f_i - y_avg)^2 / sum(y_i - y_avg)^2
               //For the linear model f_i equals mx+b
-              val rNominator = xs.indices.map(i => mVal * xs(i) + bVal - yAvg).map(n => n * n).sum
-              val rDenominator = ys.indices.map(i => ys(i) - yAvg).map(n => n * n).sum
+              val rNominator = xs.indices.map(i => mVal * xs(i) + bVal - yAvg).iterator.map(n => n * n).sum
+              val rDenominator = ys.indices.map(i => ys(i) - yAvg).iterator.map(n => n * n).sum
               if (rDenominator != 0)
                 this.rSquared = Some(math.min(rNominator / rDenominator, 1.0))
+              else
+                this.rSquared = Some(1.0) // Since all Y values are the same as yAvg, our y=0x+b line fits perfectly
 
             case None => println("b was NOT defined for some odd reason!")
           }
         case None => println("m was NOT defined for some reason, even though it SHOULD be!")
       }
     } else {
-      Dialogs.showWarning("Warning", "Zero division", "Could not calculate exponential regression!")
+      onFX {
+        this.showZeroWarning()
+      }
     }
   }
 }
