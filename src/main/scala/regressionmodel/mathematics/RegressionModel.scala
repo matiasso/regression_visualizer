@@ -18,15 +18,15 @@ trait RegressionModel {
     this.rSquared = None
   }
 
-  protected def getXValues: Array[Double] = Plot.dataPoints.map(_.first)
+  protected def getXValues: Array[Double] = Plot.dataPoints.map(_.x)
 
-  protected def getYValues: Array[Double] = Plot.dataPoints.map(_.second)
+  protected def getYValues: Array[Double] = Plot.dataPoints.map(_.y)
 
-  protected def getXlogs: Array[Double] = Plot.dataPoints.map(p => math.log(p.first))
+  protected def getXlogs: Array[Double] = Plot.dataPoints.map(p => math.log(p.x))
 
-  protected def getYlogs: Array[Double] = Plot.dataPoints.map(p => math.log(p.second))
+  protected def getYlogs: Array[Double] = Plot.dataPoints.map(p => math.log(p.y))
 
-  def calculateCoefficients(leftX: Boolean)
+  def calculateCoefficients()
 
   def getCoefficients: (Option[Double], Option[Double]) = (this.m, this.b)
 

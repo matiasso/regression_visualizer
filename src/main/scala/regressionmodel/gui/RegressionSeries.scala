@@ -16,7 +16,7 @@ class RegressionSeries(name: String) extends PointSeries(name) {
     this.clear()
     if (Plot.dataPoints.length > 1) {
       offFXAndWait {
-        regressionObject.calculateCoefficients(GlobalVars.leftCoordinateIsX)
+        regressionObject.calculateCoefficients()
       }
       val coefficients: (Option[Double], Option[Double]) = regressionObject.getCoefficients
       //Update the labels to show this regression line and R^2 value

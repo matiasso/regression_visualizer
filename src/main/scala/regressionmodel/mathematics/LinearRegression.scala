@@ -5,13 +5,13 @@ import org.scalafx.extras.onFX
 
 object LinearRegression extends RegressionModel {
 
-  override def calculateCoefficients(leftX: Boolean): Unit = {
+  override def calculateCoefficients(): Unit = {
     // This formula was found online. (From a video https://www.youtube.com/watch?v=szXbuO3bVRk )
     // Basic idea is "Sum(x_avg*y_avg) / Sum(x_avg^2)"
 
     this.clearAll() // Clear existing m, b, R^2 values
-    val xs = if (leftX) this.getXValues else this.getYValues
-    val ys = if (leftX) this.getYValues else this.getXValues
+    val xs = this.getXValues
+    val ys = this.getYValues
     val xAvg: Double = xs.iterator.sum / xs.length
     val yAvg: Double = ys.iterator.sum / ys.length
     val nominator = xs.indices.map(i => (xs(i) - xAvg) * (ys(i) - yAvg)).sum

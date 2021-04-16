@@ -28,20 +28,12 @@ class DataPointSeries(name: String) extends PointSeries(name) {
           if (i % 100 == 0) {
             //onFXAndWait is better, but it's way too slow for big datafiles, so I don't want to use it for all dots
             onFXAndWait {
-              if (GlobalVars.leftCoordinateIsX) {
-                series.getData.add(XYChart.Data(point.first, point.second))
-              } else {
-                series.getData.add(XYChart.Data(point.second, point.first))
-              }
+              series.getData.add(XYChart.Data(point.x, point.y))
             }
           } else {
             // onFX Usually freezes, but with busyWorker and 20ms wait time here and there this should work!
             onFX {
-              if (GlobalVars.leftCoordinateIsX) {
-                series.getData.add(XYChart.Data(point.first, point.second))
-              } else {
-                series.getData.add(XYChart.Data(point.second, point.first))
-              }
+              series.getData.add(XYChart.Data(point.x, point.y))
             }
           }
           // The window freezes with big datafiles so I'd like to slow this down and show progress instead

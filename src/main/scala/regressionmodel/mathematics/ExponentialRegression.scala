@@ -6,16 +6,14 @@ import regressionmodel.gui.Dialogs
 
 object ExponentialRegression extends RegressionModel {
 
-  override def calculateCoefficients(leftX: Boolean): Unit = {
+  override def calculateCoefficients(): Unit = {
     this.clearAll() // Clear existing m, b, R^2 values
-    //leftX boolean indicates whether "X;Y" coordinate pairs are given this way or the other way "Y;X"
-    val xs = if (leftX) this.getXValues else this.getYValues
-    // Even tho we check for positive y-values when selecting the toggle, we want to make sure that this works
-    val yValues = if (leftX) this.getYValues else this.getXValues
+    val xs = this.getXValues
+    val yValues = this.getYValues
     //We cannot take logarithms if some values of Y are negative or zero
     if (yValues.forall(_ > 0)) {
       //Take logarithms and fit a linear model for them
-      val ys = if (leftX) this.getYlogs else this.getXlogs
+      val ys = this.getYlogs
       val xAvg: Double = xs.iterator.sum / xs.length
       val yAvg: Double = ys.iterator.sum / ys.length
 

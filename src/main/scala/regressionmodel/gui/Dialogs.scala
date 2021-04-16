@@ -6,14 +6,14 @@ import scalafx.scene.Node
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.ButtonBar.ButtonData
 import scalafx.scene.control._
-import scalafx.scene.layout.{GridPane, HBox, Priority, StackPane, VBox}
+import scalafx.scene.layout._
 
 object Dialogs {
 
-  def showLimitDialog(xDialog: Boolean): Unit = {
+  def showLimitDialog(xAxis: Boolean): Unit = {
     val dialog = new Dialog[LimitResult]() {
       initOwner(GlobalVars.myStage)
-      title = "Plot limits for " + (if (xDialog) "X" else "Y") + "-axis"
+      title = "Plot limits for " + (if (xAxis) "X" else "Y") + "-axis"
       headerText = "Please input lower and upper bounds"
     }
     /*dialog.dialogPane().setMinWidth(280)
@@ -21,14 +21,15 @@ object Dialogs {
 
 
     val okButtonType = new ButtonType("OK", ButtonData.OKDone)
-    val cancelButtonType = new ButtonType("Clear", ButtonData.CancelClose)
-    dialog.dialogPane().getButtonTypes.addAll(okButtonType, cancelButtonType)
+    val clearButtonType = new ButtonType("Clear")
+
+    dialog.dialogPane().getButtonTypes.addAll(okButtonType, clearButtonType, ButtonType.Cancel)
 
     val limA = new TextField() {
-      promptText = if (xDialog) PlotLimits.xMin.getOrElse("-10").toString else PlotLimits.yMin.getOrElse("-10").toString
+      promptText = if (xAxis) PlotLimits.xMin.getOrElse("-10").toString else PlotLimits.yMin.getOrElse("-10").toString
     }
     val limB = new TextField() {
-      promptText = if (xDialog) PlotLimits.xMax.getOrElse("10").toString else PlotLimits.yMax.getOrElse("10").toString
+      promptText = if (xAxis) PlotLimits.xMax.getOrElse("10").toString else PlotLimits.yMax.getOrElse("10").toString
     }
     val errorLabel = new Label("") {
       style = "-fx-text-fill: red"
@@ -81,26 +82,23 @@ object Dialogs {
     }
 
     dialog.dialogPane().setContent(grid)
-    dialog.resultConverter = dButton =>
-      if (dButton == okButtonType)
-        LimitResult(limA.text().toDoubleOption, limB.text().toDoubleOption)
-      else
-        null
+    dialog.resultConverter = dButton => {
+      println(dButton.text)
+      dButton.text match {
+        case okButtonType.text => LimitResult(limA.text().toDoubleOption, limB.text().toDoubleOption)
+        case clearButtonType.text => LimitResult(None, None)
+        case _ => LimitResult(if (xAxis) PlotLimits.xMin else PlotLimits.yMin, if (xAxis) PlotLimits.xMax else PlotLimits.yMax)
+      }
+    }
     val result = dialog.showAndWait()
     result match {
       case Some(LimitResult(a, b)) =>
-        println(s"User gave inputs $a and $b for limits")
         //Send these values to the Plot graph!
-        if (xDialog)
+        if (xAxis)
           PlotLimits.setLimitsX(a, b)
         else
           PlotLimits.setLimitsY(a, b)
-      case _ => println("Received None for the plot limits for axis: " + (if (xDialog) "X" else "Y"))
-        //Empty the values in plot
-        if (xDialog)
-          PlotLimits.setLimitsX(None, None)
-        else
-          PlotLimits.setLimitsY(None, None)
+      case _ => // This will never get called since we always return some LimitResult type!
     }
     Plot.updateLimits()
     Plot.updateRegressionSeries()

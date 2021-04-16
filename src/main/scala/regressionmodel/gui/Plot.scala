@@ -62,8 +62,8 @@ object Plot extends StackPane {
 
   //This should be checked everytime we change XY / YX format and when data changes
   def checkForDuplicates: (Boolean, Boolean) = {
-    val xyDuplicates = this.dataPoints.groupBy(_.first).exists(_._2.length > 1)
-    val yxDuplicates = this.dataPoints.groupBy(_.second).exists(_._2.length > 1)
+    val xyDuplicates = this.dataPoints.groupBy(_.x).exists(_._2.length > 1)
+    val yxDuplicates = this.dataPoints.groupBy(_.y).exists(_._2.length > 1)
     (xyDuplicates, yxDuplicates)
   }
 
@@ -74,14 +74,6 @@ object Plot extends StackPane {
   }
 
   private def limitsHelper(limA: Option[Double], limB: Option[Double], axis: NumberAxis, xAxisBool: Boolean): Unit = {
-    def takeFirst(xyFormat: Boolean, xBool: Boolean): Boolean = {
-      // "X;Y" format and xBool --> true
-      // "X;Y" format and !xBool --> false
-      // "Y;X" format and xBool --> false
-      // "Y;X" format and !xBool --> true
-      (xyFormat && xBool) || (!xyFormat && !xBool)
-    }
-
     axis.autoRanging = false
     (limA, limB) match {
       case (Some(a), Some(b)) =>
@@ -90,28 +82,24 @@ object Plot extends StackPane {
         axis.upperBound = b
       case _ =>
         if (this.dataPoints.length > 0) {
-          val axisValues = if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
-            this.dataPoints.groupBy(_.first) else this.dataPoints.groupBy(_.second)
+          val axisValues = if (xAxisBool) this.dataPoints.groupBy(_.x) else this.dataPoints.groupBy(_.y)
           // Check whether there are DIFFERENT values on this axis
           if (axisValues.size > 1) {
-            if (xAxisBool) {
-              axis.lowerBound = if (GlobalVars.leftCoordinateIsX)
-                dataPoints.minBy(_.first).first else dataPoints.minBy(_.second).second
-              axis.upperBound = if (GlobalVars.leftCoordinateIsX)
-                dataPoints.maxBy(_.first).first else dataPoints.maxBy(_.second).second
+            if (xAxisBool && PlotLimits.yMin.isEmpty && PlotLimits.yMax.isEmpty) {
+              axis.lowerBound = dataPoints.minBy(_.x).x
+              axis.upperBound = dataPoints.maxBy(_.x).x
               val axisLength = axis.getUpperBound - axis.getLowerBound
               axis.lowerBound = math.floor(axis.getLowerBound - axisLength / 50)
               axis.upperBound = math.ceil(axis.getUpperBound + axisLength / 50)
             } else {
+              // Y Axis may be autoranging
               axis.autoRanging = true
             }
           } else {
             // We'll pad +5 and -5 around this axis since all values are equal
             val head = this.dataPoints.head
-            axis.lowerBound = math.floor((if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
-              head.first else head.second) - 5)
-            axis.upperBound = math.ceil((if (takeFirst(GlobalVars.leftCoordinateIsX, xAxisBool))
-              head.first else head.second) + 5)
+            axis.lowerBound = math.floor((if(xAxisBool) head.x else head.y) - 5)
+            axis.upperBound = math.ceil((if (xAxisBool) head.x else head.y) + 5)
           }
         } else {
           // If there's no points available we'll use default -10 and 10

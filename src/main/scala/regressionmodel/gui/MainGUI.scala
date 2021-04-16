@@ -34,22 +34,7 @@ class MainGUI extends BorderPane {
     }
   })
 
-  val dataFormatToggle = new ToggleGroup
-  dataFormatToggle.selectedToggle.onChange((_, oldVal, _) => {
-    //If oldVal is null, it's the first (instantion) selection and theres no need to update anything
-    if (oldVal != null) {
-      //This should return to the old value IF there is duplicate error!
-      dataFormatToggle.getSelectedToggle match {
-        case menuItem: javafx.scene.control.RadioMenuItem =>
-          GlobalVars.leftCoordinateIsX = menuItem.getText.toLowerCase match {
-            case "x;y" => true
-            case _ => false
-          }
-        case _ =>
-      }
-      updateAllPlots()
-    }
-  })
+
   val styleToggle = new ToggleGroup
   styleToggle.selectedToggle.onChange({
     val key = styleToggle.getSelectedToggle match {
@@ -74,28 +59,6 @@ class MainGUI extends BorderPane {
     }
   }
 
-  private def disableAndSelectDataFormat(disableString: String, selectText: String): Unit = {
-    for (toggle <- this.dataFormatToggle.toggles) {
-      toggle match {
-        case radioMenuItem: javafx.scene.control.RadioMenuItem =>
-          radioMenuItem.setDisable(radioMenuItem.getText == disableString)
-          if (selectText == radioMenuItem.getText) {
-            radioMenuItem.setSelected(true)
-          }
-        case _ =>
-      }
-    }
-  }
-
-  private def restoreDataFormatOptions(): Unit = {
-    for (toggle <- this.dataFormatToggle.toggles) {
-      toggle match {
-        case radioMenuItem: javafx.scene.control.RadioMenuItem => radioMenuItem.setDisable(false)
-        case _ =>
-      }
-    }
-  }
-
   private def updateAllPlots(): Unit = {
     // First update all the points
     Plot.update()
@@ -105,55 +68,8 @@ class MainGUI extends BorderPane {
     Plot.updateRegressionSeries()
   }
 
-  private def checkForDuplicates(): Unit = {
-    val boolTuple = Plot.checkForDuplicates
-    boolTuple match {
-      case (true, true) =>
-        // Neither XY or YX format is available because of duplicates
-        Dialogs.showError("Duplicate error!",
-          "Your data was corrupted! (Reason: Duplicate X-values)",
-          "Please choose another file.")
-        restoreDataFormatOptions()
-        Plot.clearPlot()
-      case (false, true) =>
-        // YX format contains duplicates, so we need to disable that button
-        // and select "XY" format as default and show a message
-        if (!GlobalVars.leftCoordinateIsX) {
-          Dialogs.showInfo("Data format info",
-            "Your data contained duplicates in Y;X format",
-            "Solution: Automatically switched to X;Y format")
-        }
-        disableAndSelectDataFormat("Y;X", "X;Y") // This will also call onChange() which calls updates
-      case (true, false) =>
-        // XY format contains duplicates, so we need to disable that button
-        // and select "YX" format as default and show a message
-        if (GlobalVars.leftCoordinateIsX) {
-          Dialogs.showInfo("Data format info",
-            "Your data contained duplicates in X;Y format",
-            "Solution: Automatically switched to Y;X format")
-        }
-        disableAndSelectDataFormat("X;Y", "Y;X") // This will also call onChange() which calls updates
-      case (false, false) =>
-        disableAndSelectDataFormat("", "") // This will enable both dataFormats
-        updateAllPlots()
-    }
-  }
-
   val menuBar: MenuBar = new MenuBar() {
-    val uniqueCheckMenuItem = new CheckMenuItem("Unique X [OFF]")
-    uniqueCheckMenuItem.onAction = event => {
-      event.getTarget match {
-        case checkItem: javafx.scene.control.CheckMenuItem =>
-          if (!checkItem.isSelected) { // We want to restore both options if it was selected
-            restoreDataFormatOptions()
-            uniqueCheckMenuItem.text = "Unique X [OFF]"
-          } else {
-            checkForDuplicates()
-            uniqueCheckMenuItem.text = "Unique X [ON]"
-          }
-        case _ =>
-      }
-    }
+
     val open = new MenuItem("Open...")
     open.accelerator = new KeyCodeCombination(KeyCode.O, KeyCombination.ControlDown)
     open.onAction = _ => {
@@ -161,6 +77,7 @@ class MainGUI extends BorderPane {
         title = "Select the datafile"
       }
       fileChooser.extensionFilters.addAll(
+        //TODO: Add some other filetype, maybe JSON ?
         new ExtensionFilter("Text and CSV files", Seq("*.txt", "*.csv"))
       )
       val selectedFile = fileChooser.showOpenDialog(stage)
@@ -171,7 +88,6 @@ class MainGUI extends BorderPane {
           case "txt" => new TXTReader(selectedFile.getAbsolutePath)
           case "csv" => new CSVReader(selectedFile.getAbsolutePath)
           //These are the only cases since the extensionFilter limits to these types only
-          //That's why we don't need "case _ =>" here
         }
         offFXAndWait {
           reader.load()
@@ -185,11 +101,7 @@ class MainGUI extends BorderPane {
         }
         // Check for duplicates
         Plot.dataPoints = points
-        if (uniqueCheckMenuItem.isSelected) {
-          checkForDuplicates()
-        } else {
-          updateAllPlots()
-        }
+        updateAllPlots()
       }
     }
     val save = new MenuItem("Save...")
@@ -231,7 +143,6 @@ class MainGUI extends BorderPane {
     }
     val close = new MenuItem("Close")
     close.onAction = _ => {
-      restoreDataFormatOptions()
       Plot.clearPlot()
     }
     val exit = new MenuItem("Exit")
@@ -245,8 +156,15 @@ class MainGUI extends BorderPane {
         mnemonicParsing = true
         items = List(
           newMenuItem("Regression type", (GlobalVars.regressionOptions.sorted, regressionTypeToggle), "linear"),
-          newMenuItem("Data format", (GlobalVars.dataFormatOptions.sorted, dataFormatToggle), "x;y"),
-          uniqueCheckMenuItem,
+          new MenuItem("Swap X and Y") {
+            onAction = _ =>
+              if (Plot.dataPoints.length == 0) {
+                Dialogs.showError("Empty data error", "You haven't read any data yet", "Please choose some datafile!")
+              } else {
+                Plot.dataPoints.foreach(_.reverseXY())
+                updateAllPlots()
+              }
+          },
           new SeparatorMenuItem,
           new MenuItem("Point color") {
             onAction = _ => Dialogs.showColorMenu()

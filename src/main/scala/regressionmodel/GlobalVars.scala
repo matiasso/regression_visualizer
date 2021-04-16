@@ -9,7 +9,6 @@ object GlobalVars {
   var myView: MainGUI = _
   var myStage: JFXApp.PrimaryStage = _
   val correctFormatExamples = "1;2\n1; 2\n1 ;2\n1 ; 2\n2.5 ;4\n3; 5.6725\n4.98765;6.1234\n5E-3;10E3"
-  var leftCoordinateIsX: Boolean = true
   val textUnknownCoefficients: String = ""
   val textForGraphLabel = "Graph: "
   val textRSquared = "R² value: "
@@ -25,5 +24,4 @@ object GlobalVars {
     "banana" -> "-fx-shape: \"M 8,223 c 0,0 143,3 185,-181 c 2,-11 -1,-20 1,-33 h 16 c 0,0 -3,17 1,30 c 21,68 -4,242 -204,196 L 8,223 z M 8,230 c 0,0 188,40 196,-160\";"
   )
   val regressionOptions: Array[String] = Array("linear", "exponential")
-  val dataFormatOptions: Array[String] = Array("X;Y", "Y;X")
 }
