@@ -1,6 +1,8 @@
 package regressionmodel.gui
 
 import regressionmodel.GlobalVars
+import regressionmodel.gui.dialogresults._
+import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.Node
 import scalafx.scene.control.Alert.AlertType
@@ -156,6 +158,48 @@ object Dialogs {
         Plot.pointSeries.setColor(s"-fx-background-color: #$clr;")
       //Send this color code to the PointSeries
       case _ => println("Received no color")
+    }
+  }
+
+  def showTxtCsvFormatMenu(): (Boolean, Boolean) = {
+    val dialog = new Dialog[TxtCsvResult]() {
+      initOwner(GlobalVars.myStage)
+      title = "Reader options"
+      headerText = "Choose which applies to your data"
+    }
+
+    val okButtonType = new ButtonType("OK", ButtonData.OKDone)
+    dialog.dialogPane().getButtonTypes.add(okButtonType)
+
+    // Create two ChoiceBoxes for Format X;Y / Y;X and to check unique X!
+    val formatChoiceBox = new ChoiceBox(ObservableBuffer("X;Y", "Y;X")) {
+      value = "X;Y"
+    }
+    val uniqueChoiceBox = new ChoiceBox(ObservableBuffer("ON", "OFF")) {
+      value = "OFF"
+    }
+    val padAndGap = 10
+    val grid = new GridPane() {
+      hgap = padAndGap
+      vgap = padAndGap
+      padding = Insets(padAndGap, padAndGap, padAndGap, padAndGap)
+      addRow(0, new Label("Format:\t"), formatChoiceBox)
+      addRow(1, new Label("Unique X:\t"), uniqueChoiceBox)
+    }
+    dialog.dialogPane().setContent(grid)
+    dialog.resultConverter = dButton =>
+      if (dButton == okButtonType) {
+        TxtCsvResult(formatChoiceBox.getValue == "X;Y", uniqueChoiceBox.getValue == "ON")
+      }
+      else
+        null
+
+    val result = dialog.showAndWait()
+    result match {
+      case Some(TxtCsvResult(leftX, unique)) =>
+        (leftX, unique)
+      case _ => println("Null returned in TxtCsvDialog")
+        (true, false) // This is the default case we want to return
     }
   }
 

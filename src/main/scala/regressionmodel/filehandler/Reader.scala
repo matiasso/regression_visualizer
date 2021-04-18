@@ -49,20 +49,30 @@ abstract class Reader(fileName: String) {
   }
 
   def getDataPoints: Array[PVector] = {
-    //This works for both TXT and CSV, so no need to override it in subclasses
+    val (isLeftX, isXUnique) = Dialogs.showTxtCsvFormatMenu()
+    //This works for both TXT and CSV, so no need to override it in possible later subclasses
     val pointBuffer = new ArrayBuffer[PVector]()
-    //Old regex that I used
-    //val lineRgx = """(-?\d+\.?\d*)[,;]\s*(-?\d+\.?\d*)""".r
     var incorrectCount = 0
     for (line <- lines) {
       val nums = line.replace(',', '.').split(';')
       if (nums.length == 2) {
-        val x = nums(0).trim.toDoubleOption
-        val y = nums(1).trim.toDoubleOption
+        val xOpt = nums(0).trim.toDoubleOption
+        val yOpt = nums(1).trim.toDoubleOption
 
-        (x, y) match {
-          case (Some(v), Some(w)) =>
-            pointBuffer += new PVector(v, w)
+        (xOpt, yOpt) match {
+          case (Some(a), Some(b)) =>
+            val x = if (isLeftX) a else b
+            val y = if (isLeftX) b else a
+            if (isXUnique) {
+              // If this is enabled, we want to first check if there already exists a coordinate with the given X coordinate
+              if (pointBuffer.exists(p => p.x == x)) {
+                Dialogs.showError("Duplicate error",
+                  "Found duplicate for X coordinate: " + x,
+                  "Check your data or read data again with Unique X disabled.")
+                return Array[PVector]()
+              }
+            }
+            pointBuffer += new PVector(x, y)
           case _ =>
             incorrectCount += 1
         }
