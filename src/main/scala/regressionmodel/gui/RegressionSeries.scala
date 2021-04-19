@@ -48,7 +48,7 @@ class RegressionSeries(name: String) extends PointSeries(name) {
           }
           val width = end - start
           //This will specify how often the dots for regression line are drawn
-          val iterations = 500
+          val iterations = 300
           for (i <- 0 to iterations) {
             val x = start + i * width / iterations
             val y = if (this.isLinear) m * x + b else b * math.exp(m * x)

@@ -18,7 +18,7 @@ abstract class PointSeries(val name: String) {
 
   def applyStyles(): Unit = {
     if (this.style.nonEmpty || this.colorStyle.nonEmpty) {
-      Plot.scatterChart.lookupAll(s".series$index").foreach(_.setStyle(this.styleString))
+      Plot.lineChart.lookupAll(s".series$index").foreach(_.setStyle(this.styleString))
     }
   }
 

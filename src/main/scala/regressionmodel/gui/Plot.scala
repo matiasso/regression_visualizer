@@ -2,6 +2,7 @@ package regressionmodel.gui
 
 import regressionmodel.PVector
 import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
+import scalafx.application.Platform
 import scalafx.beans.property.DoubleProperty
 import scalafx.scene.chart.{LineChart, NumberAxis, ScatterChart}
 import scalafx.scene.layout.StackPane
@@ -28,34 +29,36 @@ object Plot extends StackPane {
     }
   }
   val xAxis: NumberAxis = new NumberAxis(-10, 10, 1) {
+    animated = false
     label = "X-axis"
     minorTickCount = 5
     lowerBound.onChange {
-      setTickUnit(this)
+      Platform.runLater(setTickUnit(this))
     }
     upperBound.onChange {
-      setTickUnit(this)
+      Platform.runLater(setTickUnit(this))
     }
   }
   val yAxis: NumberAxis = new NumberAxis(-10, 10, 1) {
+    animated = false
     label = "Y-axis"
     minorTickCount = 5
     lowerBound.onChange {
-      setTickUnit(this)
+      Platform.runLater(setTickUnit(this))
     }
     upperBound.onChange {
-      setTickUnit(this)
+      Platform.runLater(setTickUnit(this))
     }
   }
 
   val pointSeries: DataPointSeries = new DataPointSeries("Points")
   val regressionSeries: RegressionSeries = new RegressionSeries("Regression")
-  val scatterChart: LineChart[Number, Number] = new LineChart[Number, Number](this.xAxis, this.yAxis) {
+  val lineChart: LineChart[Number, Number] = new LineChart[Number, Number](this.xAxis, this.yAxis) {
     title = "Regression model by Matias"
     animated = false
   }
-  scatterChart.getData.addAll(pointSeries.series, regressionSeries.series)
-  this.children = scatterChart
+  lineChart.getData.addAll(pointSeries.series, regressionSeries.series)
+  this.children = lineChart
 
 
   def update(): Unit = {
