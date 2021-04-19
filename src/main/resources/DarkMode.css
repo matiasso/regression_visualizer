@@ -6,16 +6,18 @@
     -fx-text-fill: #FF0000
 }
 /*Style for the datapoints: blue circles*/
-.default-color0.chart-symbol {
+.series0 {
     -fx-background-color: blue;
     -fx-background-radius: 3px;
     -fx-padding: 3px;
+    -fx-stroke: transparent;
 }
 /*Style for the regressionline: SMALL red circles*/
-.default-color1.chart-symbol {
+.series1 {
     -fx-background-color: red;
     -fx-background-radius: 1.2px;
     -fx-padding: 1.2px;
+    -fx-stroke: red;
 }
 /*Adjust the scatterChart to match the dark mode*/
 .chart-plot-background {

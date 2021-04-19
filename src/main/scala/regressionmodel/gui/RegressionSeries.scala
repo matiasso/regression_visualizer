@@ -51,11 +51,9 @@ class RegressionSeries(name: String) extends PointSeries(name) {
           val iterations = 500
           for (i <- 0 to iterations) {
             val x = start + i * width / iterations
-            if (this.isLinear) {
-              this.series.getData.add(XYChart.Data(x, m * x + b))
-            } else {
-              this.series.getData.add(XYChart.Data(x, b * math.exp(m * x)))
-            }
+            val y = if (this.isLinear) m * x + b else b * math.exp(m * x)
+            if (y.isFinite)
+              this.series.getData.add(XYChart.Data(x, y))
           }
         case _ => println("Coefficients were NONE for the regression line")
       }

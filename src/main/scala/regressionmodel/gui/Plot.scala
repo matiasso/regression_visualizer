@@ -2,7 +2,8 @@ package regressionmodel.gui
 
 import regressionmodel.PVector
 import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
-import scalafx.scene.chart.{NumberAxis, ScatterChart}
+import scalafx.beans.property.DoubleProperty
+import scalafx.scene.chart.{LineChart, NumberAxis, ScatterChart}
 import scalafx.scene.layout.StackPane
 import scalafx.util.StringConverter
 
@@ -29,15 +30,27 @@ object Plot extends StackPane {
   val xAxis: NumberAxis = new NumberAxis(-10, 10, 1) {
     label = "X-axis"
     minorTickCount = 5
+    lowerBound.onChange {
+      setTickUnit(this)
+    }
+    upperBound.onChange {
+      setTickUnit(this)
+    }
   }
   val yAxis: NumberAxis = new NumberAxis(-10, 10, 1) {
     label = "Y-axis"
     minorTickCount = 5
+    lowerBound.onChange {
+      setTickUnit(this)
+    }
+    upperBound.onChange {
+      setTickUnit(this)
+    }
   }
 
   val pointSeries: DataPointSeries = new DataPointSeries("Points")
   val regressionSeries: RegressionSeries = new RegressionSeries("Regression")
-  val scatterChart: ScatterChart[Number, Number] = new ScatterChart[Number, Number](this.xAxis, this.yAxis) {
+  val scatterChart: LineChart[Number, Number] = new LineChart[Number, Number](this.xAxis, this.yAxis) {
     title = "Regression model by Matias"
     animated = false
   }
@@ -114,7 +127,7 @@ object Plot extends StackPane {
           } else {
             // We'll pad +5 and -5 around this axis since all values are equal
             val head = this.dataPoints.head
-            axis.lowerBound = math.floor((if(xAxisBool) head.x else head.y) - 5)
+            axis.lowerBound = math.floor((if (xAxisBool) head.x else head.y) - 5)
             axis.upperBound = math.ceil((if (xAxisBool) head.x else head.y) + 5)
           }
         } else {
@@ -123,7 +136,6 @@ object Plot extends StackPane {
           axis.upperBound = 10
         }
     }
-    setTickUnit(axis)
   }
 
   def setTickUnit(axis: NumberAxis): Unit = {
@@ -138,11 +150,10 @@ object Plot extends StackPane {
       // This will sometimes show weird values
       axis.tickUnit = diff / 20
     }
-    //TODO: Fix this, since the axis is autoranging it updates a bit later than this runs
-    /*if (diff > 1E4 || diff < 1E-3) {
+    if (diff > 1E5 || diff < 1E-4) {
       axis.tickLabelFormatter = scientificConverter
     } else {
       axis.tickLabelFormatter = NumberAxis.DefaultFormatter(axis)
-    }*/
+    }
   }
 }
