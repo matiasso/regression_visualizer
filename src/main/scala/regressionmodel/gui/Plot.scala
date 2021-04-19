@@ -1,15 +1,31 @@
 package regressionmodel.gui
 
+import regressionmodel.PVector
 import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
-import regressionmodel.{GlobalVars, PVector}
 import scalafx.scene.chart.{NumberAxis, ScatterChart}
 import scalafx.scene.layout.StackPane
+import scalafx.util.StringConverter
+
+import java.text.DecimalFormat
 
 object Plot extends StackPane {
 
   var dataPoints: Array[PVector] = new Array[PVector](0)
 
-  //Define both x and y axis
+  //Define both x and y axis and their number formats
+  val decimalFormat = new DecimalFormat("#.#E0")
+  val scientificConverter = new StringConverter[Number]() {
+    override def toString(number: Number): String = decimalFormat.format(number.doubleValue())
+
+    override def fromString(string: String): Number = {
+      try decimalFormat.parse(string)
+      catch {
+        case e: Throwable =>
+          println(e.getMessage)
+          0
+      }
+    }
+  }
   val xAxis: NumberAxis = new NumberAxis(-10, 10, 1) {
     label = "X-axis"
     minorTickCount = 5
@@ -18,6 +34,7 @@ object Plot extends StackPane {
     label = "Y-axis"
     minorTickCount = 5
   }
+
   val pointSeries: DataPointSeries = new DataPointSeries("Points")
   val regressionSeries: RegressionSeries = new RegressionSeries("Regression")
   val scatterChart: ScatterChart[Number, Number] = new ScatterChart[Number, Number](this.xAxis, this.yAxis) {
@@ -67,11 +84,12 @@ object Plot extends StackPane {
 
 
   def updateLimits(): Unit = {
-    this.limitsHelper(PlotLimits.xMin, PlotLimits.xMax, this.xAxis, xAxisBool = true)
-    this.limitsHelper(PlotLimits.yMin, PlotLimits.yMax, this.yAxis, xAxisBool = false)
+    this.limitsHelper(PlotLimits.xMin, PlotLimits.xMax, this.xAxis)
+    this.limitsHelper(PlotLimits.yMin, PlotLimits.yMax, this.yAxis)
   }
 
-  private def limitsHelper(limA: Option[Double], limB: Option[Double], axis: NumberAxis, xAxisBool: Boolean): Unit = {
+  private def limitsHelper(limA: Option[Double], limB: Option[Double], axis: NumberAxis): Unit = {
+    val xAxisBool = this.xAxis == axis
     axis.autoRanging = false
     (limA, limB) match {
       case (Some(a), Some(b)) =>
@@ -83,12 +101,12 @@ object Plot extends StackPane {
           val axisValues = if (xAxisBool) this.dataPoints.groupBy(_.x) else this.dataPoints.groupBy(_.y)
           // Check whether there are DIFFERENT values on this axis
           if (axisValues.size > 1) {
-            if (xAxisBool && PlotLimits.yMin.isEmpty && PlotLimits.yMax.isEmpty) {
+            if (xAxisBool) {
               axis.lowerBound = dataPoints.minBy(_.x).x
               axis.upperBound = dataPoints.maxBy(_.x).x
-              val axisLength = axis.getUpperBound - axis.getLowerBound
-              axis.lowerBound = math.floor(axis.getLowerBound - axisLength / 50)
-              axis.upperBound = math.ceil(axis.getUpperBound + axisLength / 50)
+              val axisLength = axis.upperBound() - axis.lowerBound()
+              axis.lowerBound = math.floor(axis.lowerBound() - axisLength / 50)
+              axis.upperBound = math.ceil(axis.upperBound() + axisLength / 50)
             } else {
               // Y Axis may be autoranging
               axis.autoRanging = true
@@ -109,7 +127,7 @@ object Plot extends StackPane {
   }
 
   def setTickUnit(axis: NumberAxis): Unit = {
-    val diff = axis.getUpperBound - axis.getLowerBound
+    val diff = axis.upperBound() - axis.lowerBound()
     if (diff > 20) {
       axis.tickUnit = math.round(diff / 20)
     } else if (diff >= 7) {
@@ -120,5 +138,11 @@ object Plot extends StackPane {
       // This will sometimes show weird values
       axis.tickUnit = diff / 20
     }
+    //TODO: Fix this, since the axis is autoranging it updates a bit later than this runs
+    /*if (diff > 1E4 || diff < 1E-3) {
+      axis.tickLabelFormatter = scientificConverter
+    } else {
+      axis.tickLabelFormatter = NumberAxis.DefaultFormatter(axis)
+    }*/
   }
 }
