@@ -50,6 +50,7 @@ class DataPointSeries(name: String) extends PointSeries(name) {
 
       override def onFinish(result: Future[Unit], successful: Boolean): Unit = {
         BottomPanel.progressBar.visible = false
+        applyStyles()
         println("Drawing finished!")
       }
     })

@@ -37,7 +37,7 @@
 }
 .chart-vertical-zero-line,
 .chart-horizontal-zero-line {
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 1.5;
     -fx-stroke: white
 }
 .chart-legend {
@@ -55,6 +55,7 @@ VBox {
 HBox {
     -fx-font-size: 14px;
 }
-menuBar {
+MenuBar {
     -fx-border-color: transparent transparent #999999 transparent;
+    -fx-background-color: #161616;
 }

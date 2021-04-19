@@ -36,8 +36,6 @@ object Plot extends StackPane {
       // Optimize this later
       this.pointSeries.update()
     }
-    // The last thing is to apply styles (We have to do this each time)
-    this.pointSeries.applyStyles()
   }
 
   def updateRegressionSeries(): Unit = {

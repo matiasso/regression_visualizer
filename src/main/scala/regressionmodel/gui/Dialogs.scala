@@ -85,7 +85,6 @@ object Dialogs {
 
     dialog.dialogPane().setContent(grid)
     dialog.resultConverter = dButton => {
-      println(dButton.text)
       dButton.text match {
         case okButtonType.text => LimitResult(limA.text().toDoubleOption, limB.text().toDoubleOption)
         case clearButtonType.text => LimitResult(None, None)
