@@ -77,7 +77,6 @@ class MainGUI extends BorderPane {
         title = "Select the datafile"
       }
       fileChooser.extensionFilters.addAll(
-        //TODO: Add some other filetype, maybe JSON ?
         new ExtensionFilter("Text and CSV files", Seq("*.txt", "*.csv"))
       )
       val selectedFile = fileChooser.showOpenDialog(stage)

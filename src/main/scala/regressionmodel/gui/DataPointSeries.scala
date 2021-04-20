@@ -25,25 +25,24 @@ class DataPointSeries(name: String) extends PointSeries(name) {
         BottomPanel.progressBar.visible = true
         var i = 0
         for (point <- Plot.dataPoints) {
-          if (i % 100 == 0) {
+          if (i % 125 == 0) {
             //onFXAndWait is better, but it's way too slow for big datafiles, so I don't want to use it for all dots
             onFXAndWait {
               series.getData.add(XYChart.Data(point.x, point.y))
             }
           } else {
-            // onFX Usually freezes, but with busyWorker and 20ms wait time here and there this should work!
+            // onFX Usually freezes, but with busyWorker and small wait time here and there this should work!
             onFX {
               series.getData.add(XYChart.Data(point.x, point.y))
             }
           }
-          // The window freezes with big datafiles so I'd like to slow this down and show progress instead
           i += 1
           progress() = i * 1.0 / Plot.dataPoints.length
-          message() = s"Progress: $i/${Plot.dataPoints.length}(${math.round(progress.toDouble * 100)}%)"
+          message() = s"Progress: $i/${Plot.dataPoints.length}\t(${math.round(progress.toDouble * 100)}%)"
 
           // Sleep on the busyWorker so the window doesn't freeze!
           if (i % 25 == 0) {
-            Thread.sleep(20)
+            Thread.sleep(22)
           }
         }
       }

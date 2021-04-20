@@ -3,8 +3,7 @@ package regressionmodel.gui
 import regressionmodel.PVector
 import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
 import scalafx.application.Platform
-import scalafx.beans.property.DoubleProperty
-import scalafx.scene.chart.{LineChart, NumberAxis, ScatterChart}
+import scalafx.scene.chart.{LineChart, NumberAxis}
 import scalafx.scene.layout.StackPane
 import scalafx.util.StringConverter
 
@@ -33,10 +32,10 @@ object Plot extends StackPane {
     label = "X-axis"
     minorTickCount = 5
     lowerBound.onChange {
-      Platform.runLater(setTickUnit(this))
+      setTickUnit(this)
     }
     upperBound.onChange {
-      Platform.runLater(setTickUnit(this))
+      setTickUnit(this)
     }
   }
   val yAxis: NumberAxis = new NumberAxis(-10, 10, 1) {
@@ -44,10 +43,10 @@ object Plot extends StackPane {
     label = "Y-axis"
     minorTickCount = 5
     lowerBound.onChange {
-      Platform.runLater(setTickUnit(this))
+      setTickUnit(this)
     }
     upperBound.onChange {
-      Platform.runLater(setTickUnit(this))
+      setTickUnit(this)
     }
   }
 
@@ -57,7 +56,6 @@ object Plot extends StackPane {
     title = "Regression model by Matias"
     animated = false
   }
-  lineChart.getData.addAll(pointSeries.series, regressionSeries.series)
   this.children = lineChart
 
 
@@ -81,12 +79,16 @@ object Plot extends StackPane {
     this.dataPoints = new Array[PVector](0)
     this.pointSeries.clear()
     this.regressionSeries.clear()
+    // Remove all data from linechart because othervice the line strokes will be left visible.
+    this.lineChart.getData.clear()
+    this.lineChart.getData.addAll(this.pointSeries.series, this.regressionSeries.series)
     // Since LinearRegression and ExponentialRegression are both objects we can clear their values this way
     LinearRegression.clearAll()
     ExponentialRegression.clearAll()
+    // Update bottom info labels
     BottomPanel.updateRSquared()
     BottomPanel.updateFunctionLabel()
-    // If the user hasn't specified any limits, we'll make both axis in range [-10, 10]
+    // Update the limits
     this.updateLimits()
   }
 
@@ -153,10 +155,11 @@ object Plot extends StackPane {
       // This will sometimes show weird values
       axis.tickUnit = diff / 20
     }
+    Platform.runLater(
     if (diff > 1E5 || diff < 1E-4) {
       axis.tickLabelFormatter = scientificConverter
     } else {
       axis.tickLabelFormatter = NumberAxis.DefaultFormatter(axis)
-    }
+    })
   }
 }

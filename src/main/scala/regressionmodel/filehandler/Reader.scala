@@ -33,7 +33,10 @@ abstract class Reader(fileName: String) {
         val lineBuffer = new ArrayBuffer[String]()
         while (oneLine != null) {
           // Use regex here to remove all not needed characters from the line
-          lineBuffer += oneLine.replaceAll(raw"[^-\d;,.E]", "")
+          val line = oneLine.replaceAll(raw"[^-\d;,.E]", "")
+          if (line.nonEmpty) {
+            lineBuffer += line
+          }
           oneLine = linesIn.readLine()
         }
         this.lines = lineBuffer.toArray

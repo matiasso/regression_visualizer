@@ -44,7 +44,7 @@ class RegressionSeries(name: String) extends PointSeries(name) {
                   end = math.min(end, xLims.max)
                 }
               }
-            case _ =>
+            case _ => this.clear()
           }
           val width = end - start
           //This will specify how often the dots for regression line are drawn
