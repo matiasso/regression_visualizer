@@ -35,6 +35,7 @@ object BottomPanel extends VBox {
       preserveRatio = true
       fitHeight = 15
     }
+    visible = false
     tooltip = decimalTooltip
     onAction = _ => {
       decimalCount = math.max(decimalCount - 1, 1)
@@ -46,13 +47,16 @@ object BottomPanel extends VBox {
       preserveRatio = true
       fitHeight = 15
     }
+    visible = false
     tooltip = decimalTooltip
     onAction = _ => {
       decimalCount = math.min(decimalCount + 1, 16)
       updateAllLabels()
     }
   }
-  val decimalLabel: Label = new Label(s"Decimals: $decimalCount")
+  val decimalLabel: Label = new Label(s"Decimals: $decimalCount") {
+    visible = false
+  }
   val copyButton: Button = new Button("Copy values") {
     visible = false
     onAction = _ => {
@@ -108,17 +112,21 @@ object BottomPanel extends VBox {
     }
   }
 
-  private def checkEnableCopyButton(): Unit = {
-    (Plot.regressionSeries.regressionObject.getCoefficients, Plot.regressionSeries.regressionObject.rSquared) match {
-      case ((Some(a), Some(b)), Some(c)) => this.copyButton.visible = true
-      case _ => this.copyButton.visible = false
+  private def checkButtonVisibility(): Unit = {
+    val visibility = (Plot.regressionSeries.regressionObject.getCoefficients, Plot.regressionSeries.regressionObject.rSquared) match {
+      case ((Some(a), Some(b)), Some(c)) => true
+      case _ => false
     }
+    this.copyButton.visible = visibility
+    this.decimalLabel.visible = visibility
+    this.buttonMore.visible = visibility
+    this.buttonLess.visible = visibility
   }
 
   def updateFunctionLabel(): Unit = {
     //Check whether we're using linear or exponential graph
     this.labelFunc.text = GlobalVars.textForGraphLabel + "\t" + this.getFunctionStr(true)
-    this.checkEnableCopyButton()
+    this.checkButtonVisibility()
   }
 
   private def getRSquaredStr: String = {
@@ -130,7 +138,7 @@ object BottomPanel extends VBox {
 
   def updateRSquared(): Unit = {
     this.labelRSquared.text = GlobalVars.textRSquared + "\t" + this.getRSquaredStr
-    this.checkEnableCopyButton()
+    this.checkButtonVisibility()
   }
 
   private def getSuperscript(char: Char): Char = {

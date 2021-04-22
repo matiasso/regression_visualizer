@@ -227,6 +227,21 @@ object Dialogs {
       Plot.pointSeries.setSize(size)
   }
 
+  def showAxisTitleDialog(isXAxis: Boolean): String = {
+    val defaultVal = if (isXAxis) "X-axis" else "Y-axis"
+    val dialog = new TextInputDialog(defaultValue = defaultVal) {
+      initOwner(GlobalVars.myStage)
+      title = "Axis title customization"
+      headerText = (if (isXAxis) "X" else "Y") + "-axis title:"
+      contentText = "Enter the title you want:"
+    }
+    val result = dialog.showAndWait()
+    result match {
+      case Some(title) => title
+      case None => defaultVal
+    }
+  }
+
   def showWarning(titleStr: String, header: String, content: String): Option[ButtonType] = {
     this.showBasicDialog(AlertType.Warning, titleStr, header, content)
   }

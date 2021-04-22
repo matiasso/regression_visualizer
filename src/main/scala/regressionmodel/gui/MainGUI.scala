@@ -164,11 +164,21 @@ class MainGUI extends BorderPane {
                 updateAllPlots()
               }
           },
+          new MenuItem("Y axis title") {
+            onAction = _ => {
+              Plot.yAxis.label = Dialogs.showAxisTitleDialog(false)
+            }
+          },
+          new MenuItem("X axis title") {
+            onAction = _ => {
+              Plot.xAxis.label = Dialogs.showAxisTitleDialog(true)
+            }
+          },
           new SeparatorMenuItem,
           new MenuItem("Point color") {
             onAction = _ => Dialogs.showColorMenu()
           },
-          newMenuItem("Point style", (GlobalVars.styleOptions.keys.toArray.sorted, styleToggle), "circle"),
+          newMenuItem("Point shape", (GlobalVars.styleOptions.keys.toArray.sorted, styleToggle), "circle"),
           new MenuItem("Point size") {
             onAction = _ => Dialogs.showSizeDialog()
           },
