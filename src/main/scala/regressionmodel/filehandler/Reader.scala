@@ -1,6 +1,6 @@
 package regressionmodel.filehandler
 
-import regressionmodel.gui.Dialogs
+import regressionmodel.gui.{CustomDialogException, Dialogs, ExpandedDialogException}
 import regressionmodel.{GlobalVars, PVector}
 import scalafx.scene.control.Alert.AlertType
 
@@ -69,10 +69,9 @@ abstract class Reader(fileName: String) {
             if (isXUnique) {
               // If this is enabled, we want to first check if there already exists a coordinate with the given X coordinate
               if (pointBuffer.exists(p => p.x == x)) {
-                Dialogs.showError("Duplicate error",
+                throw CustomDialogException("Duplicate error",
                   "Found duplicate for X coordinate: " + x,
                   "Check your data or read data again with Unique X disabled.")
-                return Array[PVector]()
               }
             }
             pointBuffer += new PVector(x, y)
@@ -84,19 +83,17 @@ abstract class Reader(fileName: String) {
       }
     }
     if (lines.length == 0) {
-      Dialogs.showError("Empty file!",
+      throw CustomDialogException("Empty file!",
         "There was no proper data in the file you selected.",
         "Please choose another file.")
     }
     else if (incorrectCount == lines.length) {
-      Dialogs.showDialogWithExpandedText(AlertType.Error,
-        "Invalid data!",
+      throw ExpandedDialogException("Invalid data!",
         "No line in your data had the correct data format.",
         "Correct format is \"X;Y\" or \"Y;X\"",
         "Notice the semicolon separator! Examples of correct format:\n" + GlobalVars.correctFormatExamples)
     } else if (incorrectCount > 0) {
-      Dialogs.showDialogWithExpandedText(AlertType.Warning,
-        "File contained invalid data!",
+      throw ExpandedDialogException("File contained invalid data!",
         s"$incorrectCount/${lines.length} of your lines had incorrect format",
         "Correct format is \"X;Y\" or \"Y;X\"",
         "Notice the semicolon separator! Examples of correct format:\n" + GlobalVars.correctFormatExamples)

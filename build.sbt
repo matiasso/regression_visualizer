@@ -6,6 +6,9 @@ scalaVersion := "2.13.5"
 
 libraryDependencies += "org.scalafx" %% "scalafx" % "14-R19"
 libraryDependencies += "org.scalafx" %% "scalafx-extras" % "0.3.6"
+// Add scalatest
+libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.7"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.7" % "test"
 
 
 // Determine OS version of JavaFX binaries

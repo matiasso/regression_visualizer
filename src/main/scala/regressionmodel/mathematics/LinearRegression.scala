@@ -1,14 +1,13 @@
 package regressionmodel.mathematics
 
-import org.scalafx.extras.onFX
+import regressionmodel.PVector
 
 
-object LinearRegression extends RegressionModel {
+class LinearRegression extends RegressionModel {
 
   override def calculateCoefficients(): Unit = {
     // This formula was found online. (From a video https://www.youtube.com/watch?v=szXbuO3bVRk )
-    // Basic idea is "Sum(x_avg*y_avg) / Sum(x_avg^2)"
-
+    // Basic idea is "Sum((x-x_avg)*(y-y_avg)) / Sum((x-x_avg)^2)"
     this.clearAll() // Clear existing m, b, R^2 values
     val xs = this.getXValues
     val ys = this.getYValues
@@ -40,9 +39,7 @@ object LinearRegression extends RegressionModel {
         case None => println("m was NOT defined for some reason, even though it SHOULD be!")
       }
     } else {
-      onFX {
-        this.showZeroWarning()
-      }
+      this.throwZeroWarning()
     }
   }
 }

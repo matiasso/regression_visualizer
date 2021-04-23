@@ -7,6 +7,7 @@ import regressionmodel.filehandler._
 import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
 import scalafx.embed.swing.SwingFXUtils
 import scalafx.scene.SnapshotParameters
+import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control._
 import scalafx.scene.image.WritableImage
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
@@ -24,9 +25,9 @@ class MainGUI extends BorderPane {
     if (oldVal != null) {
       newVal match {
         case menuItem: javafx.scene.control.RadioMenuItem =>
-          Plot.regressionSeries.regressionObject = menuItem.getText.toLowerCase match {
-            case "exponential" => ExponentialRegression
-            case _ => LinearRegression
+          Plot.regressionSeries.regressionInstance = menuItem.getText.toLowerCase match {
+            case "exponential" => new ExponentialRegression()
+            case _ => new LinearRegression()
           }
           Plot.updateRegressionSeries()
         case _ =>
@@ -91,16 +92,24 @@ class MainGUI extends BorderPane {
         offFXAndWait {
           reader.load()
         }
-        val points = reader.getDataPoints
-        println("Successfully loaded data points!")
-        if (points.length > 5000) {
-          Dialogs.showWarning("Data size warning!",
-            "This might take some time to draw all the dots...",
-            s"Your data contains ${points.length} points")
+        try {
+          val points = reader.getDataPoints
+          println("Successfully loaded data points!")
+          if (points.length > 4000) {
+            Dialogs.showWarning("Data size warning!",
+              "This might take some time to draw all the dots...",
+              s"Your data contains ${points.length} points")
+          }
+          Plot.dataPoints = points
+          updateAllPlots()
+        } catch {
+          case c: CustomDialogException =>
+            Dialogs.showError(c.title, c.header, c.text)
+          case e: ExpandedDialogException =>
+            Dialogs.showDialogWithExpandedText(AlertType.Warning, e.title, e.header, e.text, e.expanded)
+          case other: Throwable =>
+            println(other.getMessage)
         }
-        // Check for duplicates
-        Plot.dataPoints = points
-        updateAllPlots()
       }
     }
     val save = new MenuItem("Save...")

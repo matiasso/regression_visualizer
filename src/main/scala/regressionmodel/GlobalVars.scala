@@ -8,7 +8,7 @@ object GlobalVars {
 
   var myView: MainGUI = _
   var myStage: JFXApp.PrimaryStage = _
-  val correctFormatExamples = "1;2\n1; 2\n1 ;2\n1 ; 2\n2.5 ;4\n3; 5.6725\n4.98765;6.1234\n5E-3;10E3"
+  val correctFormatExamples = "1;2\n1; 2\n1 ;2\n1 ; 2\n2.5 ;4\n3; 5,6725\n4.98765;6.1234\n5E-3;10E3"
   val textUnknownCoefficients: String = ""
   val textForGraphLabel = "Graph: "
   val textRSquared = "R² value: "

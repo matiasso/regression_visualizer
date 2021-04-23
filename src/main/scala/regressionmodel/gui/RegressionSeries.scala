@@ -1,23 +1,38 @@
 package regressionmodel.gui
 
-import org.scalafx.extras.offFXAndWait
+import org.scalafx.extras.{offFXAndWait, onFX}
 import regressionmodel.mathematics._
 import scalafx.scene.chart.XYChart
 
 class RegressionSeries(name: String) extends PointSeries(name) {
 
   val index = 1
-  var regressionObject: RegressionModel = LinearRegression // As a default this will be linear regression
+  var regressionInstance: RegressionModel = new LinearRegression()
 
-  def isLinear: Boolean = this.regressionObject == LinearRegression
+  def isLinear: Boolean = {
+    this.regressionInstance match {
+      case _: LinearRegression => true
+      case _ => false
+    }
+  }
 
   override def update(): Unit = {
     this.clear()
     if (Plot.dataPoints.length > 1) {
       offFXAndWait {
-        regressionObject.calculateCoefficients()
+        try {
+          regressionInstance.setData(Plot.dataPoints)
+          regressionInstance.calculateCoefficients()
+        } catch {
+          case e: Throwable =>
+            onFX {
+              Dialogs.showWarning("Regression warning",
+                e.getMessage,
+                "Please check your data!")
+            }
+        }
       }
-      val coefficients: (Option[Double], Option[Double]) = regressionObject.getCoefficients
+      val coefficients: (Option[Double], Option[Double]) = regressionInstance.getCoefficients
       //Update the labels to show this regression line and R^2 value
       BottomPanel.updateFunctionLabel()
       BottomPanel.updateRSquared()
@@ -55,7 +70,9 @@ class RegressionSeries(name: String) extends PointSeries(name) {
             if (y.isFinite)
               this.series.getData.add(XYChart.Data(x, y))
           }
-        case _ => println("Coefficients were NONE for the regression line")
+        case _ =>
+          Plot.lineChart.getData.remove(this.series)
+          Plot.lineChart.getData.add(this.series)
       }
     } else {
       //We can't draw a regression line for 0 or 1 points

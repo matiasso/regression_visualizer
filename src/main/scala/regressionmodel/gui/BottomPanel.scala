@@ -95,7 +95,7 @@ object BottomPanel extends VBox {
 
 
   private def getFunctionStr(superscripted: Boolean): String = {
-    Plot.regressionSeries.regressionObject.getCoefficients match {
+    Plot.regressionSeries.regressionInstance.getCoefficients match {
       case (Some(m), Some(b)) =>
         val bStr = s"%.${decimalCount}f".format(b)
         val bWithSign = (if (b >= 0) "+" else "") + bStr
@@ -113,7 +113,7 @@ object BottomPanel extends VBox {
   }
 
   private def checkButtonVisibility(): Unit = {
-    val visibility = (Plot.regressionSeries.regressionObject.getCoefficients, Plot.regressionSeries.regressionObject.rSquared) match {
+    val visibility = (Plot.regressionSeries.regressionInstance.getCoefficients, Plot.regressionSeries.regressionInstance.rSquared) match {
       case ((Some(a), Some(b)), Some(c)) => true
       case _ => false
     }
@@ -130,7 +130,7 @@ object BottomPanel extends VBox {
   }
 
   private def getRSquaredStr: String = {
-    Plot.regressionSeries.regressionObject.rSquared match {
+    Plot.regressionSeries.regressionInstance.rSquared match {
       case Some(r) => s"%.${decimalCount}f".format(r)
       case None => GlobalVars.textUnknownCoefficients
     }

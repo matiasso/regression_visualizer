@@ -1,7 +1,6 @@
 package regressionmodel.gui
 
 import regressionmodel.PVector
-import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
 import scalafx.application.Platform
 import scalafx.scene.chart.{LineChart, NumberAxis}
 import scalafx.scene.layout.StackPane
@@ -11,11 +10,11 @@ import java.text.DecimalFormat
 
 object Plot extends StackPane {
 
-  var dataPoints: Array[PVector] = new Array[PVector](0)
+  var dataPoints: Array[PVector] = Array[PVector]()
 
   //Define both x and y axis and their number formats
   val decimalFormat = new DecimalFormat("#.#E0")
-  val scientificConverter = new StringConverter[Number]() {
+  val scientificConverter: StringConverter[Number] = new StringConverter[Number]() {
     override def toString(number: Number): String = decimalFormat.format(number.doubleValue())
 
     override def fromString(string: String): Number = {
@@ -56,6 +55,7 @@ object Plot extends StackPane {
     title = "Regression model by Matias"
     animated = false
   }
+  this.lineChart.getData.addAll(this.pointSeries.series, this.regressionSeries.series)
   this.children = lineChart
 
 
@@ -79,12 +79,10 @@ object Plot extends StackPane {
     this.dataPoints = new Array[PVector](0)
     this.pointSeries.clear()
     this.regressionSeries.clear()
-    // Remove all data from linechart because othervice the line strokes will be left visible.
+    // Remove all data from lineChart because otherwice the line strokes will be left visible.
     this.lineChart.getData.clear()
     this.lineChart.getData.addAll(this.pointSeries.series, this.regressionSeries.series)
-    // Since LinearRegression and ExponentialRegression are both objects we can clear their values this way
-    LinearRegression.clearAll()
-    ExponentialRegression.clearAll()
+    this.regressionSeries.regressionInstance.clearAll()
     // Update bottom info labels
     BottomPanel.updateRSquared()
     BottomPanel.updateFunctionLabel()
@@ -126,7 +124,7 @@ object Plot extends StackPane {
               axis.lowerBound = math.floor(axis.lowerBound() - axisLength / 50)
               axis.upperBound = math.ceil(axis.upperBound() + axisLength / 50)
             } else {
-              // Y Axis may be autoranging
+              // Y Axis may be autoRanging
               axis.autoRanging = true
             }
           } else {
@@ -156,10 +154,10 @@ object Plot extends StackPane {
       axis.tickUnit = diff / 20
     }
     Platform.runLater(
-    if (diff > 1E5 || diff < 1E-4) {
-      axis.tickLabelFormatter = scientificConverter
-    } else {
-      axis.tickLabelFormatter = NumberAxis.DefaultFormatter(axis)
-    })
+      if (diff > 1E6 || diff < 1E-5) {
+        axis.tickLabelFormatter = scientificConverter
+      } else {
+        axis.tickLabelFormatter = NumberAxis.DefaultFormatter(axis)
+      })
   }
 }
