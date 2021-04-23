@@ -94,6 +94,15 @@ class MainGUI extends BorderPane {
         }
         try {
           val points = reader.getDataPoints
+          val invalidLines = reader.getFaultyLines
+          if (invalidLines.length > 0) {
+            Dialogs.showDialogWithExpandedText(AlertType.Warning,
+              "File contained invalid data!",
+              s"${invalidLines.length}/${invalidLines.length + points.length} of your lines had incorrect format",
+              "Correct format is \"X;Y\" or \"Y;X\"",
+              "Notice the semicolon separator! Examples of correct format:\n" +
+                GlobalVars.correctFormatExamples + "\n\nYour faulty lines were:\n" + invalidLines.mkString("\n"))
+          }
           println("Successfully loaded data points!")
           if (points.length > 4000) {
             Dialogs.showWarning("Data size warning!",

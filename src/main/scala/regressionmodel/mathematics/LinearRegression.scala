@@ -1,7 +1,5 @@
 package regressionmodel.mathematics
 
-import regressionmodel.PVector
-
 
 class LinearRegression extends RegressionModel {
 

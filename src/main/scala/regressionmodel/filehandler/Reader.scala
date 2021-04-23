@@ -2,13 +2,13 @@ package regressionmodel.filehandler
 
 import regressionmodel.gui.{CustomDialogException, Dialogs, ExpandedDialogException}
 import regressionmodel.{GlobalVars, PVector}
-import scalafx.scene.control.Alert.AlertType
 
 import java.io.{BufferedReader, FileNotFoundException, FileReader, IOException}
 import scala.collection.mutable.ArrayBuffer
 
 abstract class Reader(fileName: String) {
 
+  protected var invalidLines: ArrayBuffer[String] = ArrayBuffer[String]()
   protected var lines: Array[String] = Array[String]()
 
   //This method is from A+ materials
@@ -55,7 +55,6 @@ abstract class Reader(fileName: String) {
     val (isLeftX, isXUnique) = Dialogs.showTxtCsvFormatMenu()
     //This works for both TXT and CSV, so no need to override it in possible later subclasses
     val pointBuffer = new ArrayBuffer[PVector]()
-    var incorrectCount = 0
     for (line <- lines) {
       val nums = line.replace(',', '.').split(';')
       if (nums.length == 2) {
@@ -76,10 +75,10 @@ abstract class Reader(fileName: String) {
             }
             pointBuffer += new PVector(x, y)
           case _ =>
-            incorrectCount += 1
+            invalidLines += line
         }
       } else {
-        incorrectCount += 1
+        invalidLines += line
       }
     }
     if (lines.length == 0) {
@@ -87,20 +86,17 @@ abstract class Reader(fileName: String) {
         "There was no proper data in the file you selected.",
         "Please choose another file.")
     }
-    else if (incorrectCount == lines.length) {
+    else if (invalidLines.size == lines.length) {
       throw ExpandedDialogException("Invalid data!",
         "No line in your data had the correct data format.",
-        "Correct format is \"X;Y\" or \"Y;X\"",
-        "Notice the semicolon separator! Examples of correct format:\n" + GlobalVars.correctFormatExamples)
-    } else if (incorrectCount > 0) {
-      throw ExpandedDialogException("File contained invalid data!",
-        s"$incorrectCount/${lines.length} of your lines had incorrect format",
         "Correct format is \"X;Y\" or \"Y;X\"",
         "Notice the semicolon separator! Examples of correct format:\n" + GlobalVars.correctFormatExamples)
     }
     pointBuffer.toArray
   }
 
-  def verifyFileType: Boolean
+  def getFaultyLines: Array[String] = this.invalidLines.toArray
+
+  protected def verifyFileType: Boolean
 
 }
