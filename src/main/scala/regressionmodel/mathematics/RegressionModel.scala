@@ -10,7 +10,7 @@ trait RegressionModel {
 
   protected var data: Array[PVector] = Array[PVector]()
 
-  def setData(arr: Array[PVector]): Unit = this.data = arr  // Mainly used for testing...
+  def setData(arr: Array[PVector]): Unit = this.data = arr // Mainly used for testing...
 
   var m: Option[Double] = None
   var b: Option[Double] = None
@@ -30,7 +30,7 @@ trait RegressionModel {
 
   protected def getYlogs: Array[Double] = data.map(p => math.log(p.y))
 
-  def calculateCoefficients()
+  def calculateCoefficients(): Unit
 
   def getCoefficients: (Option[Double], Option[Double]) = (this.m, this.b)
 

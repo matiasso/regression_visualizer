@@ -1,8 +1,8 @@
 package regressionmodel.filehandler
 
 import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
 import java.io.File
+import javax.imageio.ImageIO
 
 class ImageWriter(filePath: File) extends Writer {
 

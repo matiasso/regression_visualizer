@@ -10,10 +10,10 @@ import scalafx.scene.layout.{HBox, Priority, StackPane, VBox}
 
 object BottomPanel extends VBox {
 
-  val paddingInt = 10
-  var decimalCount: Int = 6
-  val labelRSquared = new Label(GlobalVars.textRSquared)
-  val labelFunc = new Label(GlobalVars.textForGraphLabel)
+  private val paddingInt = 10
+  private var decimalCount: Int = 6
+  private val labelRSquared = new Label(GlobalVars.textRSquared)
+  private val labelFunc = new Label(GlobalVars.textForGraphLabel)
   val progressBar: ProgressBar = new ProgressBar() {
     progress = 0
     visible = false
@@ -29,8 +29,8 @@ object BottomPanel extends VBox {
     this.updateFunctionLabel()
   }
 
-  val decimalTooltip = new Tooltip("Range is limited to 1—16")
-  val buttonLess: Button = new Button() {
+  private val decimalTooltip = new Tooltip("Range is limited to 1—16")
+  private val buttonLess: Button = new Button() {
     graphic = new ImageView(new Image("left-arrow.png")) {
       preserveRatio = true
       fitHeight = 15
@@ -42,7 +42,7 @@ object BottomPanel extends VBox {
       updateAllLabels()
     }
   }
-  val buttonMore: Button = new Button() {
+  private val buttonMore: Button = new Button() {
     graphic = new ImageView(new Image("right-arrow.png")) {
       preserveRatio = true
       fitHeight = 15
@@ -54,10 +54,10 @@ object BottomPanel extends VBox {
       updateAllLabels()
     }
   }
-  val decimalLabel: Label = new Label(s"Decimals: $decimalCount") {
+  private val decimalLabel: Label = new Label(s"Decimals: $decimalCount") {
     visible = false
   }
-  val copyButton: Button = new Button("Copy values") {
+  private val copyButton: Button = new Button("Copy values") {
     visible = false
     onAction = _ => {
       try {
@@ -67,15 +67,15 @@ object BottomPanel extends VBox {
           s"${GlobalVars.textForGraphLabel}${getFunctionStr(false)}")
         clipboard.content = content
       } catch {
-        case e:Throwable => println("Error in copy button action!\n" + e.getMessage)
+        case e: Throwable => println("Error in copy button action!\n" + e.getMessage)
       }
     }
   }
-  val secondHBox: HBox = new HBox() { // This takes ~50% of the width, leaving 50% for R^2 value label
+  private val secondHBox: HBox = new HBox() { // This takes ~50% of the width, leaving 50% for R^2 value label
     spacing = paddingInt
     children = Seq(copyButton, buttonLess, decimalLabel, buttonMore)
   }
-  val progressStackPane: StackPane = new StackPane() {
+  private val progressStackPane: StackPane = new StackPane() {
     children = Seq(progressBar, progressLabel)
   }
   for (node <- Seq(labelRSquared, labelFunc, progressStackPane, progressBar)) {

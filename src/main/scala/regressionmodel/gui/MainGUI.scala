@@ -19,7 +19,7 @@ import scalafx.stage.FileChooser.ExtensionFilter
 class MainGUI extends BorderPane {
 
 
-  val regressionTypeToggle = new ToggleGroup
+  private val regressionTypeToggle = new ToggleGroup
   regressionTypeToggle.selectedToggle.onChange((_, oldVal, newVal) => {
     //If oldVal is null, it's the first (instantion) selection and theres no need to update anything
     if (oldVal != null) {
@@ -36,7 +36,7 @@ class MainGUI extends BorderPane {
   })
 
 
-  val styleToggle = new ToggleGroup
+  private val styleToggle = new ToggleGroup
   styleToggle.selectedToggle.onChange({
     val key = styleToggle.getSelectedToggle match {
       case menuItem: javafx.scene.control.RadioMenuItem =>
@@ -69,7 +69,7 @@ class MainGUI extends BorderPane {
     Plot.updateRegressionSeries()
   }
 
-  val menuBar: MenuBar = new MenuBar() {
+  private val menuBar: MenuBar = new MenuBar() {
 
     val open = new MenuItem("Open...")
     open.accelerator = new KeyCodeCombination(KeyCode.O, KeyCombination.ControlDown)

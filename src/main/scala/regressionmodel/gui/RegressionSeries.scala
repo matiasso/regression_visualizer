@@ -6,7 +6,7 @@ import scalafx.scene.chart.XYChart
 
 class RegressionSeries(name: String) extends PointSeries(name) {
 
-  val index = 1
+  protected val index = 1
   var regressionInstance: RegressionModel = new LinearRegression()
 
   def isLinear: Boolean = {

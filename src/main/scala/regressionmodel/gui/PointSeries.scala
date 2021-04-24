@@ -4,10 +4,10 @@ import scalafx.scene.chart.XYChart
 
 abstract class PointSeries(val name: String) {
 
-  var style: String = ""
-  var size: String = ""
-  var colorStyle: String = ""
-  val index: Int
+  private var style: String = ""
+  private var size: String = ""
+  private var colorStyle: String = ""
+  protected val index: Int
   val series: XYChart.Series[Number, Number] = new XYChart.Series()
   series.getData.add(XYChart.Data(0, 0))
   series.setName(name)
@@ -22,7 +22,7 @@ abstract class PointSeries(val name: String) {
     }
   }
 
-  def styleString: String = this.style + this.colorStyle + this.size
+  private def styleString: String = this.style + this.colorStyle + this.size
 
   def setStyle(styleStr: String): Unit = {
     this.style = styleStr

@@ -13,8 +13,8 @@ object Plot extends StackPane {
   var dataPoints: Array[PVector] = Array[PVector]()
 
   //Define both x and y axis and their number formats
-  val decimalFormat = new DecimalFormat("#.#E0")
-  val scientificConverter: StringConverter[Number] = new StringConverter[Number]() {
+  private val decimalFormat = new DecimalFormat("#.#E0")
+  private val scientificConverter: StringConverter[Number] = new StringConverter[Number]() {
     override def toString(number: Number): String = decimalFormat.format(number.doubleValue())
 
     override def fromString(string: String): Number = {
@@ -141,7 +141,7 @@ object Plot extends StackPane {
     }
   }
 
-  def setTickUnit(axis: NumberAxis): Unit = {
+  private def setTickUnit(axis: NumberAxis): Unit = {
     val diff = axis.upperBound() - axis.lowerBound()
     if (diff > 20) {
       axis.tickUnit = math.round(diff / 20)

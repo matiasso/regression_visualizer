@@ -60,7 +60,7 @@ class PVector(var x: Double, var y: Double) {
     this.y = a
   }
 
-  override def toString: String = "FIRST:" + this.x.toString + ", SECOND:" + this.y.toString
+  override def toString: String = s"(X, Y)=($x, $y)"
 
 }
 

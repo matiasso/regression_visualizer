@@ -9,7 +9,7 @@ import java.util.concurrent.Future
 
 class DataPointSeries(name: String) extends PointSeries(name) {
 
-  val index = 0
+  protected val index = 0
 
   override def update(): Unit = {
     this.clear()

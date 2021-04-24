@@ -6,24 +6,24 @@ class GuiTest extends AnyFlatSpec {
 
   behavior of "Linear regression"
   val linear = new LinearRegression()
-  it should "be (None, None) before calculations" in {
+  it should "be (None, None) before any calculations" in {
     assert(linear.getCoefficients == (None, None))
   }
-  it should "throw exception when set is empty" in {
+  it should "throw exception when dataset is empty" in {
     assertThrows[Exception] { linear.calculateCoefficients() }
   }
-  it should "throw exception when set is defined but invalid" in {
+  it should "throw exception when dataset is defined but invalid" in {
     // Vertical line, impossible to fit y = kx + b line
     linear.setData(Array[PVector](new PVector(0, 1), new PVector(0, 2), new PVector(0, 3)))
     assertThrows[Exception] {
       linear.calculateCoefficients()
     }
   }
-  it should "be (None, None) before calculations after setting data" in {
+  it should "be (None, None) with dataset but with no calculations" in {
     linear.setData(Array[PVector](new PVector(0, 2), new PVector(1, 3), new PVector(2, 4)))
     assert(linear.getCoefficients == (None, None))
   }
-  it should "be (Some(1), Some(2)) when given simple example" in {
+  it should "be (Some(1), Some(2)) when given simple linear example" in {
     //linear.calculateCoefficients()
     linear.setData(Array[PVector](new PVector(0, 2), new PVector(1, 3), new PVector(2, 4)))
     linear.calculateCoefficients()
@@ -43,13 +43,13 @@ class GuiTest extends AnyFlatSpec {
 
   behavior of "Exponential Regression"
   val exponential = new ExponentialRegression()
-  it should "be (None, None) before calculations" in {
+  it should "be (None, None) before any calculations" in {
     assert(exponential.getCoefficients == (None, None))
   }
-  it should "throw exception when set is empty" in {
+  it should "throw exception when dataset is empty" in {
     assertThrows[Exception] { exponential.calculateCoefficients() }
   }
-  it should "throw exception when set is defined but invalid" in {
+  it should "throw exception when dataset is defined but invalid" in {
     // Vertical line, impossible to fit y = b * e^(mx) line
     exponential.setData(Array[PVector](new PVector(0, 1), new PVector(0, 4), new PVector(0, 8)))
     assertThrows[Exception] {
@@ -62,11 +62,11 @@ class GuiTest extends AnyFlatSpec {
       exponential.calculateCoefficients()
     }
   }
-  it should "be (None, None) before calculations after setting data" in {
+  it should "be (None, None) with dataset but with no calculations" in {
     exponential.setData(Array[PVector](new PVector(0, 2), new PVector(1, 3.5), new PVector(2, 6)))
     assert(exponential.getCoefficients == (None, None))
   }
-  it should "be (Some(0.9), Some(0.75)) when given simple example" in {
+  it should "be (Some(0.9), Some(0.75)) when given simple exponential example" in {
     exponential.setData(Array[PVector](new PVector(0, 0.75),
       new PVector(1, 0.75*math.exp(0.9*1)), new PVector(2, 0.75*math.exp(0.9*2))))
     exponential.calculateCoefficients()
