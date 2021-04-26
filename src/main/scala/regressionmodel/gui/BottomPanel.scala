@@ -97,9 +97,10 @@ object BottomPanel extends VBox {
   private def getFunctionStr(superscripted: Boolean): String = {
     Plot.regressionSeries.regressionInstance.getCoefficients match {
       case (Some(m), Some(b)) =>
-        val bStr = s"%.${decimalCount}f".format(b)
+
+        val bStr = if (math.abs(b) > 1E4) s"%6.${decimalCount}e".format(b) else s"%.${decimalCount}f".format(b)
         val bWithSign = (if (b >= 0) "+" else "") + bStr
-        val mStr = s"%.${decimalCount}f".format(m)
+        val mStr = if (math.abs(m) > 1E4) s"%6.${decimalCount}e".format(m) else s"%.${decimalCount}f".format(m)
         if (Plot.regressionSeries.isLinear) {
           s"y = $mStr * x $bWithSign"
         } else {
@@ -114,7 +115,7 @@ object BottomPanel extends VBox {
 
   private def checkButtonVisibility(): Unit = {
     val visibility = (Plot.regressionSeries.regressionInstance.getCoefficients, Plot.regressionSeries.regressionInstance.rSquared) match {
-      case ((Some(a), Some(b)), Some(c)) => true
+      case ((Some(_), Some(_)), Some(_)) => true
       case _ => false
     }
     this.copyButton.visible = visibility
@@ -155,6 +156,7 @@ object BottomPanel extends VBox {
       case '9' => '\u2079' // ⁹
       case '.' | ',' => '\u02D9' // ˙
       case 'x' => '\u02E3' // ˣ
+      case 'E' => 'ᴱ'
       case _ => ' '
     }
   }

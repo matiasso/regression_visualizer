@@ -63,17 +63,21 @@ abstract class Reader(fileName: String) {
 
         (xOpt, yOpt) match {
           case (Some(a), Some(b)) =>
-            val x = if (isLeftX) a else b
-            val y = if (isLeftX) b else a
-            if (isXUnique) {
-              // If this is enabled, we want to first check if there already exists a coordinate with the given X coordinate
-              if (pointBuffer.exists(p => p.x == x)) {
-                throw CustomDialogException("Duplicate error",
-                  "Found duplicate for X coordinate: " + x,
-                  "Check your data or read data again with Unique X disabled.")
+            if (a.isFinite && b.isFinite) {
+              val x = if (isLeftX) a else b
+              val y = if (isLeftX) b else a
+              if (isXUnique) {
+                // If this is enabled, we want to first check if there already exists a coordinate with the given X coordinate
+                if (pointBuffer.exists(p => p.x == x)) {
+                  throw CustomDialogException("Duplicate error",
+                    "Found duplicate for X coordinate: " + x,
+                    "Check your data or read data again with Unique X disabled.")
+                }
               }
+              pointBuffer += new PVector(x, y)
+            } else {
+              invalidLines += line
             }
-            pointBuffer += new PVector(x, y)
           case _ =>
             invalidLines += line
         }

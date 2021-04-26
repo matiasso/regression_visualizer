@@ -121,8 +121,8 @@ object Plot extends StackPane {
               axis.lowerBound = dataPoints.minBy(_.x).x
               axis.upperBound = dataPoints.maxBy(_.x).x
               val axisLength = axis.upperBound() - axis.lowerBound()
-              axis.lowerBound = math.floor(axis.lowerBound() - axisLength / 50)
-              axis.upperBound = math.ceil(axis.upperBound() + axisLength / 50)
+              axis.lowerBound = math.floor(axis.lowerBound() - axisLength / 100)
+              axis.upperBound = math.ceil(axis.upperBound() + axisLength / 100)
             } else {
               // Y Axis may be autoRanging
               axis.autoRanging = true
@@ -142,19 +142,25 @@ object Plot extends StackPane {
   }
 
   private def setTickUnit(axis: NumberAxis): Unit = {
-    val diff = axis.upperBound() - axis.lowerBound()
-    if (diff > 20) {
-      axis.tickUnit = math.round(diff / 20)
-    } else if (diff >= 7) {
-      axis.tickUnit = 1
-    } else if (diff >= 2) {
-      axis.tickUnit = 0.25
+    val diff = math.abs(axis.upperBound() - axis.lowerBound())
+    if (diff.isFinite) {
+      if (diff > 20) {
+        axis.tickUnit = diff / 20
+      } else if (diff >= 7) {
+        axis.tickUnit = 1
+      } else if (diff >= 2) {
+        axis.tickUnit = 0.25
+      } else {
+        // This will sometimes show weird values
+        axis.tickUnit = diff / 20
+      }
     } else {
-      // This will sometimes show weird values
-      axis.tickUnit = diff / 20
+      axis.tickUnit = Double.MaxValue / 10
+      // For some reason this doesn't work as expected so I limited the range in Dialogs
     }
+
     Platform.runLater(
-      if (diff > 1E6 || diff < 1E-5) {
+      if (diff.isInfinite || diff > 1E6 || diff < 1E-5) {
         axis.tickLabelFormatter = scientificConverter
       } else {
         axis.tickLabelFormatter = NumberAxis.DefaultFormatter(axis)

@@ -29,9 +29,9 @@ class ExponentialRegression extends RegressionModel {
             // For the exponential model we'll compare it to the ln(y)=mx+b model
             val rNominator = xs.indices.map(i => mVal * xs(i) + helperB - yAvg).iterator.map(n => n * n).sum
             val rDenominator = ys.indices.map(i => ys(i) - yAvg).iterator.map(n => n * n).sum
-            if (rDenominator != 0)
+            if (rDenominator != 0) {
               this.rSquared = Some(math.min(rNominator / rDenominator, 1.0))
-            else
+            } else
               this.rSquared = Some(1.0)
 
           case None => println("m was NOT defined for some reason, even though it SHOULD be!")

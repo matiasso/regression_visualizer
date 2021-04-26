@@ -61,14 +61,24 @@ class RegressionSeries(name: String) extends PointSeries(name) {
               }
             case _ => this.clear()
           }
-          val width = end - start
+          println("Start: " + start)
+          println("End: " + end)
+          var width = math.abs(end - start)
           //This will specify how often the dots for regression line are drawn
           val iterations = 300
-          for (i <- 0 to iterations) {
-            val x = start + i * width / iterations
-            val y = if (this.isLinear) m * x + b else b * math.exp(m * x)
-            if (y.isFinite)
-              this.series.getData.add(XYChart.Data(x, y))
+          if (width.isFinite) {
+            for (i <- 0 to iterations) {
+              val x = start + width / iterations * i
+              this.addY(x, m, b)
+            }
+          } else {
+            // Double isn't enough here so we draw with two loops
+            for (i <- 0 to iterations) {
+              val x = start + Double.MaxValue / iterations * i
+              this.addY(x, m, b)
+              val x2 = end - Double.MaxValue / iterations * i
+              this.addY(x2, m, b)
+            }
           }
         case _ =>
           Plot.lineChart.getData.remove(this.series)
@@ -82,5 +92,11 @@ class RegressionSeries(name: String) extends PointSeries(name) {
         "Impossible to draw a regression line",
         s"Reason: Only ${Plot.dataPoints.length} $pointStr given!")
     }
+  }
+
+  private def addY(x: Double, m: Double, b: Double): Unit = {
+    val y = if (this.isLinear) m * x + b else b * math.exp(m * x)
+    if (y.isFinite && x.isFinite)
+      this.series.getData.add(XYChart.Data(x, y))
   }
 }

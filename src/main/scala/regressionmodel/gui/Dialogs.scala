@@ -16,7 +16,7 @@ object Dialogs {
     val dialog = new Dialog[LimitResult]() {
       initOwner(GlobalVars.myStage)
       title = "Plot limits for " + (if (xAxis) "X" else "Y") + "-axis"
-      headerText = "Please input lower and upper bounds"
+      headerText = s"Please input lower and upper bounds\nRange is [${Double.MinValue}, ${Double.MaxValue}]"
     }
     /*dialog.dialogPane().setMinWidth(280)
     dialog.dialogPane().setMinHeight(220)*/
@@ -65,8 +65,22 @@ object Dialogs {
       val doubleOptB = limB.text().toDoubleOption
       (doubleOptA, doubleOptB) match {
         case (Some(a), Some(b)) =>
-          okButton.setDisable(a >= b) //if a >= b then disable the button
-          errorLabel.text = if (a >= b) "ERROR: Lower bound bigger than upper bound" else ""
+          val diff = math.abs(a - b)
+          if (diff.isInfinite) {
+            okButton.setDisable(true)
+            errorLabel.text = "ERROR: Range is too large! Maximum is 1.79E308"
+          }
+          else if (a.isFinite && b.isFinite) {
+            okButton.setDisable(a >= b) //if a >= b then disable the button
+            errorLabel.text = if (a >= b) "ERROR: Lower bound bigger than upper bound" else ""
+          } else {
+            okButton.setDisable(true)
+            if (a.isFinite && !b.isFinite) {
+              errorLabel.text = s"ERROR: upper bound is too ${if (b.isPosInfinity) "large" else "small"}"
+            } else {
+              errorLabel.text = s"ERROR: lower bound is too ${if (a.isPosInfinity) "large" else "small"}"
+            }
+          }
         case _ =>
           okButton.setDisable(true)
           if (limA.text().isEmpty || limB.text().isEmpty)
