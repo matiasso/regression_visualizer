@@ -33,12 +33,12 @@ class RegressionSeries(name: String) extends PointSeries(name) {
         }
       }
       val coefficients: (Option[Double], Option[Double]) = regressionInstance.getCoefficients
-      //Update the labels to show this regression line and R^2 value
+      // Update the labels to show this regression line and R^2 value
       BottomPanel.updateFunctionLabel()
       BottomPanel.updateRSquared()
       coefficients match {
         case (Some(m), Some(b)) =>
-          //Add the dots for the regressionModel
+          // Add the dots for the regressionModel
           var start = PlotLimits.xMin.getOrElse(Plot.xAxis.lowerBound())
           var end = PlotLimits.xMax.getOrElse(Plot.xAxis.upperBound())
           // Calculate the limits where we need to draw the regression line
@@ -63,7 +63,7 @@ class RegressionSeries(name: String) extends PointSeries(name) {
             case _ => this.clear()
           }
           var width = math.abs(end - start)
-          //This will specify how often the dots for regression line are drawn
+          // This will specify how often the dots for regression line are drawn
           val iterations = 300
           if (width.isFinite) {
             for (i <- 0 to iterations) {
@@ -84,7 +84,7 @@ class RegressionSeries(name: String) extends PointSeries(name) {
           Plot.lineChart.getData.add(this.series)
       }
     } else {
-      //We can't draw a regression line for 0 or 1 points
+      // We can't draw a regression line for 0 or 1 points
       val pointStr = if (Plot.dataPoints.length == 1) "point" else "points"
       println(s"Impossible to draw a regression line for ${Plot.dataPoints.length} $pointStr")
       Dialogs.showError("Regression line error",

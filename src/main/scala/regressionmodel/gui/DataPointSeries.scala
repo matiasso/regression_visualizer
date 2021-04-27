@@ -26,7 +26,7 @@ class DataPointSeries(name: String) extends PointSeries(name) {
         var i = 0
         for (point <- Plot.dataPoints) {
           if (i % 125 == 0) {
-            //onFXAndWait is better, but it's way too slow for big datafiles, so I don't want to use it for all dots
+            // onFXAndWait is better, but it's way too slow for big datafiles, so I don't want to use it for all dots
             onFXAndWait {
               series.getData.add(XYChart.Data(point.x, point.y))
             }

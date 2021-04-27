@@ -12,7 +12,7 @@ object Plot extends StackPane {
 
   var dataPoints: Array[PVector] = Array[PVector]()
 
-  //Define both x and y axis and their number formats that are used for scientific form
+  // Define both x and y axis and their number formats that are used for scientific form
   private val decimalFormat = new DecimalFormat("#.#E0")
   private val scientificConverter: StringConverter[Number] = new StringConverter[Number]() {
     override def toString(number: Number): String = decimalFormat.format(number.doubleValue())

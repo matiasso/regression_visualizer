@@ -24,7 +24,7 @@ class GuiTest extends AnyFlatSpec {
     assert(linear.getCoefficients == (None, None))
   }
   it should "be (Some(1), Some(2)) when given simple linear example" in {
-    //linear.calculateCoefficients()
+    // linear.calculateCoefficients()
     linear.setData(Array[PVector](new PVector(0, 2), new PVector(1, 3), new PVector(2, 4)))
     linear.calculateCoefficients()
     assert(linear.getCoefficients == (Some(1), Some(2)))

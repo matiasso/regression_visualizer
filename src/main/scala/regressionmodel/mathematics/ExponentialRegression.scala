@@ -7,10 +7,10 @@ class ExponentialRegression extends RegressionModel {
     this.clearAll() // Clear existing m, b, R^2 values
     val xs = this.getXValues
     val yValues =this.getYValues
-    //We cannot take logarithms if some values of Y are negative or zero
+    // We cannot take logarithms if some values of Y are negative or zero
     if (yValues.forall(_ > 0)) {
-      //Take logarithms and fit a linear model for them
-      //Here we could use the LinearRegression model again, but I decided to "repeat" a few lines here
+      // Take logarithms and fit a linear model for them
+      // Here we could use the LinearRegression model again, but I decided to "repeat" a few lines here
       val ys = this.getYlogs
       val xAvg: Double = xs.iterator.sum / xs.length
       val yAvg: Double = ys.iterator.sum / ys.length

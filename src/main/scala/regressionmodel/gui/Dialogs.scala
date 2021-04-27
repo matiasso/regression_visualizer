@@ -55,17 +55,17 @@ object Dialogs {
     val okButton = dialog.dialogPane().lookupButton(okButtonType)
     okButton.setDisable(true)
 
-    //Add checks here for the double format, just as an extra feature :)
+    // Add checks here for the double format, just as an extra feature :)
     def checkEnableOkButton(): Unit = {
-      //Enable the button ONLY if both inputs are in Double format
-      //Otherwise update the errorLabel to show what's wrong
+      // Enable the button ONLY if both inputs are in Double format
+      // Otherwise update the errorLabel to show what's wrong
       val doubleOptA = limA.text().toDoubleOption
       val doubleOptB = limB.text().toDoubleOption
       (doubleOptA, doubleOptB) match {
         case (Some(a), Some(b)) =>
           val diff = math.abs(a - b)
           if (a.isFinite && b.isFinite && diff.isFinite) {
-              okButton.setDisable(a >= b) //if a >= b then disable the button
+              okButton.setDisable(a >= b) // if a >= b then disable the button
               errorLabel.text = if (a >= b) "ERROR: Lower bound bigger than upper bound" else ""
           } else {
             okButton.setDisable(true)
@@ -98,13 +98,13 @@ object Dialogs {
       dButton.text match {
         case okButtonType.text => LimitResult(limA.text().toDoubleOption, limB.text().toDoubleOption)
         case clearButtonType.text => LimitResult(None, None)
-        case _ => LimitResult(if (xAxis) PlotLimits.xMin else PlotLimits.yMin, if (xAxis) PlotLimits.xMax else PlotLimits.yMax)  //Cancel returns theese
+        case _ => LimitResult(if (xAxis) PlotLimits.xMin else PlotLimits.yMin, if (xAxis) PlotLimits.xMax else PlotLimits.yMax)  // Cancel returns theese
       }
     }
     val result = dialog.showAndWait()
     result match {
       case Some(LimitResult(a, b)) =>
-        //Send these values to the Plot graph!
+        // Send these values to the Plot graph!
         if (xAxis)
           PlotLimits.setLimitsX(a, b)
         else
@@ -139,13 +139,13 @@ object Dialogs {
     val okButton = dialog.dialogPane().lookupButton(okButtonType)
     okButton.setDisable(true)
 
-    //Add checks here for the hexadecimal format
+    // Add checks here for the hexadecimal format
     def checkEnableOkButton(): Unit = {
       okButton.setDisable(textField.text().replace("#", "").length != 6)
     }
 
     textField.text.onChange { (_, old, cur) =>
-      //Restrict to only Hexadecimals A-F, 0-9
+      // Restrict to only Hexadecimals A-F, 0-9
       val rgx = """^#?[0-9a-fA-F]*$""".r
       if (rgx.findFirstIn(cur).isEmpty || cur.length > 7) {
         // Set the text to the old value
@@ -165,7 +165,7 @@ object Dialogs {
       case Some(ColorResult(clr)) =>
         println(s"User gave color code $clr")
         Plot.pointSeries.setColor(s"-fx-background-color: #$clr;")
-      //Send this color code to the PointSeries
+      // Send this color code to the PointSeries
       case _ => println("Received no color")
     }
   }

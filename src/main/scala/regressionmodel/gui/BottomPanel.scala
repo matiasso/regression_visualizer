@@ -125,7 +125,7 @@ object BottomPanel extends VBox {
   }
 
   def updateFunctionLabel(): Unit = {
-    //Check whether we're using linear or exponential graph
+    // Check whether we're using linear or exponential graph
     this.labelFunc.text = GlobalVars.textForGraphLabel + "\t" + this.getFunctionStr(true)
     this.checkButtonVisibility()
   }

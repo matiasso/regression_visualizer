@@ -12,12 +12,12 @@ abstract class Reader(fileName: String) {
   protected var invalidLines: ArrayBuffer[String] = ArrayBuffer[String]()
   protected var lines: Array[String] = Array[String]()
 
-  //This method is mostly from A+ materials
-  //It works for both CSV and TXT files
+  // This method is mostly from A+ materials
+  // It works for both CSV and TXT files
   def load(): Unit = {
     // verifyFileType just checks that the extension is correct
     if (!this.verifyFileType) {
-      //I check the fileType with extension filters in the file chooser window so this should never occur, but it's here just in case
+      // I check the fileType with extension filters in the file chooser window so this should never occur, but it's here just in case
       throw new Exception(s"The filetype for $fileName is invalid!")
     }
     try {
@@ -53,7 +53,7 @@ abstract class Reader(fileName: String) {
   def getDataPoints: Array[PVector] = {
     // Ask the user whether the data is in X;Y format or Y;X format, and if the X-coordinates should be unique or not
     val (isLeftX, isXUnique) = Dialogs.showTxtCsvFormatMenu()
-    //This works for both TXT and CSV, so no need to override it in their subclasses
+    // This works for both TXT and CSV, so no need to override it in their subclasses
     val pointBuffer = new ArrayBuffer[PVector]()
     for (line <- lines) {
       val nums = line.replace(',', '.').split(';')

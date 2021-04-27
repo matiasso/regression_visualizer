@@ -4,9 +4,9 @@ import regressionmodel.PVector
 
 trait RegressionModel {
 
-  //This trait will help us in Linear and Exponential regression models
-  //Linear:       y = mx + b
-  //Exponential:  y = Be^(mx) where B = e^b (meaning B > 0) and ln(y) = ln(b) + x*ln(m) is linear
+  // This trait will help us in Linear and Exponential regression models
+  // Linear:       y = mx + b
+  // Exponential:  y = Be^(mx) where B = e^b (meaning B > 0) and ln(y) = ln(b) + x*ln(m) is linear
 
   protected var data: Array[PVector] = Array[PVector]()
 

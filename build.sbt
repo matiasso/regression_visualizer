@@ -25,7 +25,7 @@ libraryDependencies ++= javaFXModules.map(m =>
   "org.openjfx" % s"javafx-$m" % "14.0.1" classifier osName
 )
 
-//MergeStrategy
+// MergeStrategy
 assemblyMergeStrategy in assembly := {
   case PathList(ps@_*) if ps.last endsWith "module-info.class" => MergeStrategy.first
   case "application.conf" => MergeStrategy.concat

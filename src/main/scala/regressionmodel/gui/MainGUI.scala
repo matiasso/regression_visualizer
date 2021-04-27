@@ -22,7 +22,7 @@ class MainGUI extends BorderPane {
   // Define the regression toggle for settings menu
   private val regressionTypeToggle = new ToggleGroup
   regressionTypeToggle.selectedToggle.onChange((_, oldVal, newVal) => {
-    //If oldVal is null, it's the first (instantion) selection and theres no need to update anything
+    // If oldVal is null, it's the first (instantion) selection and theres no need to update anything
     if (oldVal != null) {
       newVal match {
         case menuItem: javafx.scene.control.RadioMenuItem =>
@@ -54,7 +54,7 @@ class MainGUI extends BorderPane {
 
   // A helper method for creating new sub-menus
   private def newMenuItem(text: String, tuple: (Array[String], ToggleGroup), defaultValStr: String): Menu = {
-    //This is used for the settings menu, to create a menu item with first item selected
+    // This is used for the settings menu, to create a menu item with first item selected
     new Menu(text) {
       items = tuple._1.map(name => new RadioMenuItem(name.capitalize) {
         toggleGroup = tuple._2
@@ -85,13 +85,13 @@ class MainGUI extends BorderPane {
         new ExtensionFilter("Text and CSV files", Seq("*.txt", "*.csv"))
       )
       val selectedFile = fileChooser.showOpenDialog(stage)
-      //If the user cancels the selection, it will be null
+      // If the user cancels the selection, it will be null
       if (selectedFile != null) {
         println("Selected: " + selectedFile.getAbsolutePath)
         val reader = selectedFile.getName.takeRight(3) match {
           case "txt" => new TXTReader(selectedFile.getAbsolutePath)
           case "csv" => new CSVReader(selectedFile.getAbsolutePath)
-          //These are the only cases since the extensionFilter limits to these types only
+          // These are the only cases since the extensionFilter limits to these types only
         }
         offFXAndWait {
           reader.load()
@@ -250,6 +250,6 @@ class MainGUI extends BorderPane {
   this.top = menuBar
   this.bottom = BottomPanel
   this.center = Plot
-  Plot.clearPlot() //We want to clear the first initial value (After the legend has been created)
+  Plot.clearPlot() // We want to clear the first initial value (After the legend has been created)
 }
 

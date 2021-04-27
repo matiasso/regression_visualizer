@@ -6,7 +6,7 @@ import scalafx.application.JFXApp
 
 object GlobalVars {
 
-  //Here I hold some values that many classes use several times, so I won't need to type them multiple times and it's easier to customize them later
+  // Here I hold some values that many classes use several times, so I won't need to type them multiple times and it's easier to customize them later
   var myView: MainGUI = _
   var myStage: JFXApp.PrimaryStage = _
   val correctFormatExamples = "1;2\n1; 2\n1 ;2\n1 ; 2\n2.5 ;4\n3; 5,6725\n4.98765;6.1234\n5E-3;10E3"
@@ -14,7 +14,7 @@ object GlobalVars {
   val textForGraphLabel = "Graph: "
   val textRSquared = "R² value: "
   val styleOptions: Map[String, String] = Map(
-    // These were done with https://svg-path-visualizer.netlify.app/ with LOTS of experimenting
+    // These were done with https:// svg-path-visualizer.netlify.app/ with LOTS of experimenting
     "circle" -> "-fx-shape: \"M 25,50 a25,25 0 1,1 50,0 a25,25 0 1,1 -50,0\";",
     "rectangle" -> "-fx-shape: \"M1,1h1v1h-1Z\";",
     "triangle" -> "-fx-shape: \"M2,0 4,3.4641016, 0, 3.4641016 Z\";",
