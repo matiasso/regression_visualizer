@@ -24,7 +24,7 @@ class RegressionSeries(name: String) extends PointSeries(name) {
           regressionInstance.setData(Plot.dataPoints)
           regressionInstance.calculateCoefficients()
         } catch {
-          case e: Throwable =>    // This should probably catch more specific exceptions
+          case e: Throwable => // This should probably catch more specific exceptions
             onFX {
               Dialogs.showWarning("Regression warning",
                 e.getMessage,

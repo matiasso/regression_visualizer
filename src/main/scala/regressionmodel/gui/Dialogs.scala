@@ -32,7 +32,7 @@ object Dialogs {
     val limB = new TextField() {
       promptText = if (xAxis) PlotLimits.xMax.getOrElse("10").toString else PlotLimits.yMax.getOrElse("10").toString
     }
-    val errorLabel = new Label("") {  // This will show errors below the textFields in red font color
+    val errorLabel = new Label("") { // This will show errors below the textFields in red font color
       style = "-fx-text-fill: red"
     }
     val padGap = 10
@@ -65,8 +65,8 @@ object Dialogs {
         case (Some(a), Some(b)) =>
           val diff = math.abs(a - b)
           if (a.isFinite && b.isFinite && diff.isFinite) {
-              okButton.setDisable(a >= b) // if a >= b then disable the button
-              errorLabel.text = if (a >= b) "ERROR: Lower bound bigger than upper bound" else ""
+            okButton.setDisable(a >= b) // if a >= b then disable the button
+            errorLabel.text = if (a >= b) "ERROR: Lower bound bigger than upper bound" else ""
           } else {
             okButton.setDisable(true)
             if (a.isFinite && b.isInfinite) {
@@ -98,7 +98,7 @@ object Dialogs {
       dButton.text match {
         case okButtonType.text => LimitResult(limA.text().toDoubleOption, limB.text().toDoubleOption)
         case clearButtonType.text => LimitResult(None, None)
-        case _ => LimitResult(if (xAxis) PlotLimits.xMin else PlotLimits.yMin, if (xAxis) PlotLimits.xMax else PlotLimits.yMax)  // Cancel returns theese
+        case _ => LimitResult(if (xAxis) PlotLimits.xMin else PlotLimits.yMin, if (xAxis) PlotLimits.xMax else PlotLimits.yMax) // Cancel returns theese
       }
     }
     val result = dialog.showAndWait()

@@ -11,8 +11,8 @@ class LinearRegression extends RegressionModel {
     val ys = this.getYValues
     val xAvg: Double = xs.iterator.sum / xs.length
     val yAvg: Double = ys.iterator.sum / ys.length
-    val nominator = xs.indices.map(i => (xs(i) - xAvg) * (ys(i) - yAvg)).sum  // Sum((x-x_avg)*(y-y_avg))
-    val denominator = xs.indices.map(i => xs(i) - xAvg).map(n => n * n).sum   // Sum((x-x_avg)^2)
+    val nominator = xs.indices.map(i => (xs(i) - xAvg) * (ys(i) - yAvg)).sum // Sum((x-x_avg)*(y-y_avg))
+    val denominator = xs.indices.map(i => xs(i) - xAvg).map(n => n * n).sum // Sum((x-x_avg)^2)
     if (denominator != 0) {
       this.m = Some(nominator / denominator)
       // It would be safe to use "m.get" after this, but match case is probably better
@@ -25,8 +25,8 @@ class LinearRegression extends RegressionModel {
             case Some(bVal) =>
               // Then calculate R squared by sum(f_i - y_avg)^2 / sum(y_i - y_avg)^2
               // For the linear model f_i=mx+b
-              val rNominator = xs.indices.map(i => mVal * xs(i) + bVal - yAvg).iterator.map(n => n * n).sum   // sum(f_i - y_avg)^2
-              val rDenominator = ys.indices.map(i => ys(i) - yAvg).iterator.map(n => n * n).sum               // sum(y_i - y_avg)^2
+              val rNominator = xs.indices.map(i => mVal * xs(i) + bVal - yAvg).iterator.map(n => n * n).sum // sum(f_i - y_avg)^2
+              val rDenominator = ys.indices.map(i => ys(i) - yAvg).iterator.map(n => n * n).sum // sum(y_i - y_avg)^2
               if (rDenominator != 0)
                 this.rSquared = Some(math.min(rNominator / rDenominator, 1.0))
               else

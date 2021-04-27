@@ -9,7 +9,7 @@ abstract class PointSeries(val name: String) {
   private var colorStyle: String = ""
   protected val index: Int
   val series: XYChart.Series[Number, Number] = new XYChart.Series()
-  series.getData.add(XYChart.Data(0, 0))  // We have to add one datapoint there so that the legend works properly.
+  series.getData.add(XYChart.Data(0, 0)) // We have to add one datapoint there so that the legend works properly.
   series.setName(name)
 
   def update()
