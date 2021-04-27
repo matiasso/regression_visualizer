@@ -18,8 +18,6 @@ object Dialogs {
       title = "Plot limits for " + (if (xAxis) "X" else "Y") + "-axis"
       headerText = s"Please input lower and upper bounds\nRange is [${Double.MinValue}, ${Double.MaxValue}]"
     }
-    /*dialog.dialogPane().setMinWidth(280)
-    dialog.dialogPane().setMinHeight(220)*/
 
 
     val okButtonType = new ButtonType("OK", ButtonData.OKDone)
@@ -27,13 +25,14 @@ object Dialogs {
 
     dialog.dialogPane().getButtonTypes.addAll(okButtonType, clearButtonType, ButtonType.Cancel)
 
+    // Create two textFields for lower and upper bounds
     val limA = new TextField() {
       promptText = if (xAxis) PlotLimits.xMin.getOrElse("-10").toString else PlotLimits.yMin.getOrElse("-10").toString
     }
     val limB = new TextField() {
       promptText = if (xAxis) PlotLimits.xMax.getOrElse("10").toString else PlotLimits.yMax.getOrElse("10").toString
     }
-    val errorLabel = new Label("") {
+    val errorLabel = new Label("") {  // This will show errors below the textFields in red font color
       style = "-fx-text-fill: red"
     }
     val padGap = 10
@@ -56,29 +55,26 @@ object Dialogs {
     val okButton = dialog.dialogPane().lookupButton(okButtonType)
     okButton.setDisable(true)
 
-    //Make use for this errorLabel later!
-
     //Add checks here for the double format, just as an extra feature :)
     def checkEnableOkButton(): Unit = {
       //Enable the button ONLY if both inputs are in Double format
+      //Otherwise update the errorLabel to show what's wrong
       val doubleOptA = limA.text().toDoubleOption
       val doubleOptB = limB.text().toDoubleOption
       (doubleOptA, doubleOptB) match {
         case (Some(a), Some(b)) =>
           val diff = math.abs(a - b)
-          if (diff.isInfinite) {
-            okButton.setDisable(true)
-            errorLabel.text = "ERROR: Range is too large! Maximum is 1.79E308"
-          }
-          else if (a.isFinite && b.isFinite) {
-            okButton.setDisable(a >= b) //if a >= b then disable the button
-            errorLabel.text = if (a >= b) "ERROR: Lower bound bigger than upper bound" else ""
+          if (a.isFinite && b.isFinite && diff.isFinite) {
+              okButton.setDisable(a >= b) //if a >= b then disable the button
+              errorLabel.text = if (a >= b) "ERROR: Lower bound bigger than upper bound" else ""
           } else {
             okButton.setDisable(true)
-            if (a.isFinite && !b.isFinite) {
+            if (a.isFinite && b.isInfinite) {
               errorLabel.text = s"ERROR: upper bound is too ${if (b.isPosInfinity) "large" else "small"}"
-            } else {
+            } else if (a.isInfinite && b.isFinite) {
               errorLabel.text = s"ERROR: lower bound is too ${if (a.isPosInfinity) "large" else "small"}"
+            } else if (diff.isInfinite) {
+              errorLabel.text = "ERROR: Range is too large! Maximum is 1.79E308"
             }
           }
         case _ =>
@@ -102,7 +98,7 @@ object Dialogs {
       dButton.text match {
         case okButtonType.text => LimitResult(limA.text().toDoubleOption, limB.text().toDoubleOption)
         case clearButtonType.text => LimitResult(None, None)
-        case _ => LimitResult(if (xAxis) PlotLimits.xMin else PlotLimits.yMin, if (xAxis) PlotLimits.xMax else PlotLimits.yMax)
+        case _ => LimitResult(if (xAxis) PlotLimits.xMin else PlotLimits.yMin, if (xAxis) PlotLimits.xMax else PlotLimits.yMax)  //Cancel returns theese
       }
     }
     val result = dialog.showAndWait()
@@ -113,7 +109,7 @@ object Dialogs {
           PlotLimits.setLimitsX(a, b)
         else
           PlotLimits.setLimitsY(a, b)
-      case _ => // This will never get called since we always return some LimitResult type!
+      case _ =>
     }
     Plot.updateLimits()
     Plot.updateRegressionSeries()
@@ -130,7 +126,6 @@ object Dialogs {
     dialog.dialogPane().getButtonTypes.add(okButtonType)
 
     val textField = new TextField() {
-      //This promptText doesn't usually show because it's focused right away
       promptText = "Example: #FF33CC"
     }
     val padAndGap = 10
@@ -153,6 +148,7 @@ object Dialogs {
       //Restrict to only Hexadecimals A-F, 0-9
       val rgx = """^#?[0-9a-fA-F]*$""".r
       if (rgx.findFirstIn(cur).isEmpty || cur.length > 7) {
+        // Set the text to the old value
         textField.text = old
       } else {
         checkEnableOkButton()
@@ -230,6 +226,7 @@ object Dialogs {
       buttonTypes = Seq(SmallButton, MediumButton, LargeButton, XXLButton, ButtonType.Cancel)
     }
     val result = alert.showAndWait()
+    // Translate each button to an integer that specifies the size
     val size = result match {
       case Some(SmallButton) => 0
       case Some(MediumButton) => 2

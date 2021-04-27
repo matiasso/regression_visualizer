@@ -24,7 +24,7 @@ class RegressionSeries(name: String) extends PointSeries(name) {
           regressionInstance.setData(Plot.dataPoints)
           regressionInstance.calculateCoefficients()
         } catch {
-          case e: Throwable =>
+          case e: Throwable =>    // This should probably catch more specific exceptions
             onFX {
               Dialogs.showWarning("Regression warning",
                 e.getMessage,
@@ -41,6 +41,7 @@ class RegressionSeries(name: String) extends PointSeries(name) {
           //Add the dots for the regressionModel
           var start = PlotLimits.xMin.getOrElse(Plot.xAxis.lowerBound())
           var end = PlotLimits.xMax.getOrElse(Plot.xAxis.upperBound())
+          // Calculate the limits where we need to draw the regression line
           (PlotLimits.yMin, PlotLimits.yMax) match {
             case (Some(min), Some(max)) =>
               if (this.isLinear) {
@@ -61,8 +62,6 @@ class RegressionSeries(name: String) extends PointSeries(name) {
               }
             case _ => this.clear()
           }
-          println("Start: " + start)
-          println("End: " + end)
           var width = math.abs(end - start)
           //This will specify how often the dots for regression line are drawn
           val iterations = 300
@@ -72,7 +71,7 @@ class RegressionSeries(name: String) extends PointSeries(name) {
               this.addY(x, m, b)
             }
           } else {
-            // Double isn't enough here so we draw with two loops
+            // Double isn't enough here so we draw with one loop to two different ends of the range
             for (i <- 0 to iterations) {
               val x = start + Double.MaxValue / iterations * i
               this.addY(x, m, b)
@@ -95,6 +94,7 @@ class RegressionSeries(name: String) extends PointSeries(name) {
   }
 
   private def addY(x: Double, m: Double, b: Double): Unit = {
+    // Check that neither Y or X is infinite or NaN
     val y = if (this.isLinear) m * x + b else b * math.exp(m * x)
     if (y.isFinite && x.isFinite)
       this.series.getData.add(XYChart.Data(x, y))

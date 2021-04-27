@@ -6,6 +6,7 @@ import scalafx.application.JFXApp
 
 object GlobalVars {
 
+  //Here I hold some values that many classes use several times, so I won't need to type them multiple times and it's easier to customize them later
   var myView: MainGUI = _
   var myStage: JFXApp.PrimaryStage = _
   val correctFormatExamples = "1;2\n1; 2\n1 ;2\n1 ; 2\n2.5 ;4\n3; 5,6725\n4.98765;6.1234\n5E-3;10E3"

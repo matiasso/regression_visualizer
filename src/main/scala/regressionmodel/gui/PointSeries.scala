@@ -9,7 +9,7 @@ abstract class PointSeries(val name: String) {
   private var colorStyle: String = ""
   protected val index: Int
   val series: XYChart.Series[Number, Number] = new XYChart.Series()
-  series.getData.add(XYChart.Data(0, 0))
+  series.getData.add(XYChart.Data(0, 0))  // We have to add one datapoint there so that the legend works properly.
   series.setName(name)
 
   def update()
@@ -17,7 +17,7 @@ abstract class PointSeries(val name: String) {
   def clear(): Unit = this.series.getData.clear()
 
   def applyStyles(): Unit = {
-    if (this.style.nonEmpty || this.colorStyle.nonEmpty) {
+    if (this.style.nonEmpty || this.colorStyle.nonEmpty || this.size.nonEmpty) {
       Plot.lineChart.lookupAll(s".series$index").foreach(_.setStyle(this.styleString))
     }
   }
@@ -35,7 +35,8 @@ abstract class PointSeries(val name: String) {
   }
 
   def setSize(size: Int): Unit = {
-    // For some reason the insets have to be negative size, otherwice it mirrors my symbols upside down
+    // I figured that I can set the size by changing insets. But positive values mirror the shapes upside down
+    // For some reason the insets have to be negative size to keep symbols correct way up
     this.size = "-fx-background-insets: " + -size + "px;"
     this.applyStyles()
   }

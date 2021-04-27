@@ -6,7 +6,7 @@ import scalafx.scene.Scene
 
 
 object Main extends JFXApp {
-  //I created my own class for the Graphical user interface part
+  //Created a separate class for the MainGUI
   GlobalVars.myView = new MainGUI()
 
   GlobalVars.myStage = new JFXApp.PrimaryStage {

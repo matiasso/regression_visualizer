@@ -6,17 +6,18 @@ import regressionmodel.{GlobalVars, PVector}
 import java.io.{BufferedReader, FileNotFoundException, FileReader, IOException}
 import scala.collection.mutable.ArrayBuffer
 
+// This class currently handles both TXT and CSV since they are so similar, that it would cause repeated lines in code if I implemented both features in their own classes
 abstract class Reader(fileName: String) {
 
   protected var invalidLines: ArrayBuffer[String] = ArrayBuffer[String]()
   protected var lines: Array[String] = Array[String]()
 
-  //This method is from A+ materials
+  //This method is mostly from A+ materials
   //It works for both CSV and TXT files
   def load(): Unit = {
+    // verifyFileType just checks that the extension is correct
     if (!this.verifyFileType) {
-      //I check the fileType with extension filters in the file chooser window
-      //This should never occur, but it's here just in case
+      //I check the fileType with extension filters in the file chooser window so this should never occur, but it's here just in case
       throw new Exception(s"The filetype for $fileName is invalid!")
     }
     try {
@@ -24,10 +25,8 @@ abstract class Reader(fileName: String) {
       val fileIn = new FileReader(fileName)
       // read line by line from the previous stream
       val linesIn = new BufferedReader(fileIn)
-      // At this point, the streams should be open
-      // so we must remember to close them.
+      // At this point, the streams should be open so we must remember to close them.
       try {
-
         // Read the text from the stream line by line until the read line is null
         var oneLine = linesIn.readLine()
         val lineBuffer = new ArrayBuffer[String]()
@@ -52,8 +51,9 @@ abstract class Reader(fileName: String) {
   }
 
   def getDataPoints: Array[PVector] = {
+    // Ask the user whether the data is in X;Y format or Y;X format, and if the X-coordinates should be unique or not
     val (isLeftX, isXUnique) = Dialogs.showTxtCsvFormatMenu()
-    //This works for both TXT and CSV, so no need to override it in possible later subclasses
+    //This works for both TXT and CSV, so no need to override it in their subclasses
     val pointBuffer = new ArrayBuffer[PVector]()
     for (line <- lines) {
       val nums = line.replace(',', '.').split(';')

@@ -12,7 +12,7 @@ object Plot extends StackPane {
 
   var dataPoints: Array[PVector] = Array[PVector]()
 
-  //Define both x and y axis and their number formats
+  //Define both x and y axis and their number formats that are used for scientific form
   private val decimalFormat = new DecimalFormat("#.#E0")
   private val scientificConverter: StringConverter[Number] = new StringConverter[Number]() {
     override def toString(number: Number): String = decimalFormat.format(number.doubleValue())
@@ -59,7 +59,7 @@ object Plot extends StackPane {
   this.children = lineChart
 
 
-  def update(): Unit = {
+  def updateDataPoints(): Unit = {
     if (this.dataPoints.length == 0) {
       // If it's empty, we can simply remove our data
       this.clearPlot()
@@ -90,15 +90,6 @@ object Plot extends StackPane {
     this.updateLimits()
   }
 
-
-  //This should be checked everytime we change XY / YX format and when data changes
-  def checkForDuplicates: (Boolean, Boolean) = {
-    val xyDuplicates = this.dataPoints.groupBy(_.x).exists(_._2.length > 1)
-    val yxDuplicates = this.dataPoints.groupBy(_.y).exists(_._2.length > 1)
-    (xyDuplicates, yxDuplicates)
-  }
-
-
   def updateLimits(): Unit = {
     this.limitsHelper(PlotLimits.xMin, PlotLimits.xMax, this.xAxis)
     this.limitsHelper(PlotLimits.yMin, PlotLimits.yMax, this.yAxis)
@@ -115,14 +106,15 @@ object Plot extends StackPane {
       case _ =>
         if (this.dataPoints.length > 0) {
           val axisValues = if (xAxisBool) this.dataPoints.groupBy(_.x) else this.dataPoints.groupBy(_.y)
-          // Check whether there are DIFFERENT values on this axis
+          // Check whether there are DIFFERENT UNIQUE values on this axis
           if (axisValues.size > 1) {
             if (xAxisBool) {
               axis.lowerBound = dataPoints.minBy(_.x).x
               axis.upperBound = dataPoints.maxBy(_.x).x
               val axisLength = axis.upperBound() - axis.lowerBound()
-              axis.lowerBound = math.floor(axis.lowerBound() - axisLength / 100)
-              axis.upperBound = math.ceil(axis.upperBound() + axisLength / 100)
+              // Pad a bit around both ends
+              axis.lowerBound = math.floor(axis.lowerBound() - axisLength / 80)
+              axis.upperBound = math.ceil(axis.upperBound() + axisLength / 80)
             } else {
               // Y Axis may be autoRanging
               axis.autoRanging = true
@@ -155,10 +147,10 @@ object Plot extends StackPane {
         axis.tickUnit = diff / 20
       }
     } else {
-      axis.tickUnit = Double.MaxValue / 10
-      // For some reason this doesn't work as expected so I limited the range in Dialogs
+      axis.tickUnit = Double.MaxValue / 10 // For some reason this doesn't work as expected, ScalaFX still tries to draw + 2000 ticks and prints warnings
     }
 
+    // Check whether we want to use scientific form or normal form for the tick-labels
     Platform.runLater(
       if (diff.isInfinite || diff > 1E6 || diff < 1E-5) {
         axis.tickLabelFormatter = scientificConverter

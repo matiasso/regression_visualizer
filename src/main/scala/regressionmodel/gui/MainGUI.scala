@@ -19,6 +19,7 @@ import scalafx.stage.FileChooser.ExtensionFilter
 class MainGUI extends BorderPane {
 
 
+  // Define the regression toggle for settings menu
   private val regressionTypeToggle = new ToggleGroup
   regressionTypeToggle.selectedToggle.onChange((_, oldVal, newVal) => {
     //If oldVal is null, it's the first (instantion) selection and theres no need to update anything
@@ -36,6 +37,7 @@ class MainGUI extends BorderPane {
   })
 
 
+  // Define the style toggle (shape toggle) for settings menu
   private val styleToggle = new ToggleGroup
   styleToggle.selectedToggle.onChange({
     val key = styleToggle.getSelectedToggle match {
@@ -50,6 +52,7 @@ class MainGUI extends BorderPane {
     }
   })
 
+  // A helper method for creating new sub-menus
   private def newMenuItem(text: String, tuple: (Array[String], ToggleGroup), defaultValStr: String): Menu = {
     //This is used for the settings menu, to create a menu item with first item selected
     new Menu(text) {
@@ -62,13 +65,14 @@ class MainGUI extends BorderPane {
 
   private def updateAllPlots(): Unit = {
     // First update all the points
-    Plot.update()
+    Plot.updateDataPoints()
     // Then update the limits
     Plot.updateLimits()
     // Then draw the regression line with given limits
     Plot.updateRegressionSeries()
   }
 
+  // Define the menuBar that is shown on the top of the window
   private val menuBar: MenuBar = new MenuBar() {
 
     val open = new MenuItem("Open...")
@@ -136,7 +140,7 @@ class MainGUI extends BorderPane {
         format match {
           case "png" =>
             try {
-              val smallerSide = math.min(Plot.getWidth, Plot.getHeight)
+              val smallerSide = math.min(Plot.width(), Plot.height())
               val scale = 1200 / smallerSide // The smaller side will always be ~1200px
               val sp = new SnapshotParameters {
                 transform = Transform.scale(scale, scale)
@@ -164,6 +168,7 @@ class MainGUI extends BorderPane {
     }
     val exit = new MenuItem("Exit")
     exit.onAction = _ => sys.exit(0)
+
     menus = List(
       new Menu("_File") {
         mnemonicParsing = true
@@ -182,6 +187,7 @@ class MainGUI extends BorderPane {
                 updateAllPlots()
               }
           },
+          new SeparatorMenuItem, // Use separators to keep this clean
           new MenuItem("Y axis title") {
             onAction = _ => {
               Plot.yAxis.label = Dialogs.showAxisTitleDialog(false)
@@ -193,6 +199,7 @@ class MainGUI extends BorderPane {
             }
           },
           new SeparatorMenuItem,
+          // The point style options are under this separator
           new MenuItem("Point color") {
             onAction = _ => Dialogs.showColorMenu()
           },
@@ -208,6 +215,7 @@ class MainGUI extends BorderPane {
             onAction = _ => Dialogs.showLimitDialog(false)
           },
           new SeparatorMenuItem,
+          // Dark mode toggle that loads the correct .css file
           new CheckMenuItem("Dark mode [OFF]") {
             onAction = event => {
               event.getTarget match {
@@ -232,7 +240,7 @@ class MainGUI extends BorderPane {
         mnemonicParsing = true
         items = List(
           new MenuItem("About") {
-            onAction = _ => Dialogs.showInfo("About", "This program was made by Matias",
+            onAction = _ => Dialogs.showInfo("About", "This program was made by Matias Södersved",
               "This is a project for CS-C2120 course")
           }
         )

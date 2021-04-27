@@ -5,12 +5,13 @@ import regressionmodel.PVector
 trait RegressionModel {
 
   //This trait will help us in Linear and Exponential regression models
-  //y = mx + b
-  //y = Be^(mx) where B = e^b (meaning B > 0) and ln(y) = ln(b) + x*ln(m) is linear
+  //Linear:       y = mx + b
+  //Exponential:  y = Be^(mx) where B = e^b (meaning B > 0) and ln(y) = ln(b) + x*ln(m) is linear
 
   protected var data: Array[PVector] = Array[PVector]()
 
-  def setData(arr: Array[PVector]): Unit = this.data = arr // Mainly used for testing...
+  // Since traits cannot be instantiated with parameters, I had to do this. This also makes scalatests easier to write.
+  def setData(arr: Array[PVector]): Unit = this.data = arr
 
   var m: Option[Double] = None
   var b: Option[Double] = None
@@ -25,8 +26,6 @@ trait RegressionModel {
   protected def getXValues: Array[Double] = data.map(_.x)
 
   protected def getYValues: Array[Double] = data.map(_.y)
-
-  protected def getXlogs: Array[Double] = data.map(p => math.log(p.x))
 
   protected def getYlogs: Array[Double] = data.map(p => math.log(p.y))
 

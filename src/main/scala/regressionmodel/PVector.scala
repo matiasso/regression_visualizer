@@ -1,7 +1,10 @@
 package regressionmodel
 
+// For this project I mainly care about the x and y coordinates which this class holds.
+// To improve the accuracy, they should maybe be of type BigDecimal, instead of Double.
 class PVector(var x: Double, var y: Double) {
 
+  //Most of these methods are not needed in this project, but could be handy later in some other project
   def magnitude: Double = {
     math.sqrt(x * x + y * y)
   }
