@@ -32,9 +32,9 @@ class LinearRegression extends RegressionModel {
               else
                 this.rSquared = Some(1.0) // Since all Y values are the same as yAvg, our y=0x+b line fits perfectly
 
-            case None => println("b was NOT defined for some odd reason!")
+            case None =>
           }
-        case None => println("m was NOT defined for some reason, even though it SHOULD be!")
+        case None =>
       }
     } else {
       this.throwZeroWarning()

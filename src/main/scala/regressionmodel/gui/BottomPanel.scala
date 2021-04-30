@@ -67,7 +67,7 @@ object BottomPanel extends VBox {
           s"${GlobalVars.textForGraphLabel}${getFunctionStr(false)}")
         clipboard.content = content
       } catch {
-        case e: Throwable => println("Error in copy button action!\n" + e.getMessage)
+        case e: Throwable =>
       }
     }
   }

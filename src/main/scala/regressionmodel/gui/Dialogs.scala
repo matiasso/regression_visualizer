@@ -163,10 +163,8 @@ object Dialogs {
     val result = dialog.showAndWait()
     result match {
       case Some(ColorResult(clr)) =>
-        println(s"User gave color code $clr")
         Plot.pointSeries.setColor(s"-fx-background-color: #$clr;")
-      // Send this color code to the PointSeries
-      case _ => println("Received no color")
+      case _ =>
     }
   }
 
@@ -207,8 +205,7 @@ object Dialogs {
     result match {
       case Some(TxtCsvResult(leftX, unique)) =>
         (leftX, unique)
-      case _ => println("Null returned in TxtCsvDialog")
-        (true, false) // This is the default case we want to return
+      case _ => (true, false) // This is the default case we want to return
     }
   }
 

@@ -86,7 +86,6 @@ class RegressionSeries(name: String) extends PointSeries(name) {
     } else {
       // We can't draw a regression line for 0 or 1 points
       val pointStr = if (Plot.dataPoints.length == 1) "point" else "points"
-      println(s"Impossible to draw a regression line for ${Plot.dataPoints.length} $pointStr")
       Dialogs.showError("Regression line error",
         "Impossible to draw a regression line",
         s"Reason: Only ${Plot.dataPoints.length} $pointStr given!")

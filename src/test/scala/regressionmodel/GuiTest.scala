@@ -1,5 +1,6 @@
+package regressionmodel
+
 import org.scalatest.flatspec.AnyFlatSpec
-import regressionmodel.PVector
 import regressionmodel.mathematics.{ExponentialRegression, LinearRegression}
 
 class GuiTest extends AnyFlatSpec {

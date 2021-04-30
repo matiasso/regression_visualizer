@@ -35,7 +35,7 @@ class ExponentialRegression extends RegressionModel {
             } else
               this.rSquared = Some(1.0) // If all y-values are the same as yAvg, then our model fits perfectly with y=B*e^(0x)=B
 
-          case None => println("m was NOT defined for some reason, even though it SHOULD be!")
+          case None =>
         }
       } else {
         this.throwZeroWarning()

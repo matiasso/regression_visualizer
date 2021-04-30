@@ -47,8 +47,6 @@ class MainGUI extends BorderPane {
     }
     if (GlobalVars.styleOptions.contains(key)) {
       Plot.pointSeries.setStyle(GlobalVars.styleOptions(key))
-    } else {
-      println("Error in styleToggle.onChange()")
     }
   })
 
@@ -87,7 +85,6 @@ class MainGUI extends BorderPane {
       val selectedFile = fileChooser.showOpenDialog(stage)
       // If the user cancels the selection, it will be null
       if (selectedFile != null) {
-        println("Selected: " + selectedFile.getAbsolutePath)
         val reader = selectedFile.getName.takeRight(3) match {
           case "txt" => new TXTReader(selectedFile.getAbsolutePath)
           case "csv" => new CSVReader(selectedFile.getAbsolutePath)
@@ -107,7 +104,6 @@ class MainGUI extends BorderPane {
               "Notice the semicolon separator! Examples of correct format:\n" +
                 GlobalVars.correctFormatExamples + "\n\nYour faulty lines were:\n" + invalidLines.mkString("\n"))
           }
-          println("Successfully loaded data points!")
           if (points.length > 4000) {
             Dialogs.showWarning("Data size warning!",
               "This might take some time to draw all the dots...",
@@ -121,7 +117,6 @@ class MainGUI extends BorderPane {
           case e: ExpandedDialogException =>
             Dialogs.showDialogWithExpandedText(AlertType.Warning, e.title, e.header, e.text, e.expanded)
           case other: Throwable =>
-            println(other.getMessage)
         }
       }
     }
@@ -152,8 +147,6 @@ class MainGUI extends BorderPane {
               Dialogs.showInfo("Image saved!", "Snapshot was saved successfully!", "")
             } catch {
               case e: Exception =>
-                println("Something went wrong with ImageSave:")
-                println(e.getMessage)
             }
           case _ =>
             Dialogs.showError("Wrong extension!",

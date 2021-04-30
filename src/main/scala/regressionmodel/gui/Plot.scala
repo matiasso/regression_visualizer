@@ -20,9 +20,7 @@ object Plot extends StackPane {
     override def fromString(string: String): Number = {
       try decimalFormat.parse(string)
       catch {
-        case e: Throwable =>
-          println(e.getMessage)
-          0
+        case e: Throwable => 0
       }
     }
   }
