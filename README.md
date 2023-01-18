@@ -12,6 +12,12 @@ sbt run
 
 ## Example view
 
-![An example view of the program, containing a scatter plot of the example data](/Examples/ExampleView.png)
+Example data can be found in `Examples/exampleData.csv`
+### Light mode
 
-Example data for the above picture is found in `Examples/exampleData.csv`
+![An example lightmode view of the program, containing a scatter plot of the example data](/Examples/ExampleView.png)
+
+### Dark mode
+
+![An example darkmode view of the program, containing a scatter plot of the example data](/Examples/ExampleView.png)
+
