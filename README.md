@@ -19,5 +19,5 @@ Example data can be found in `Examples/exampleData.csv`
 
 ### Dark mode
 
-![An example darkmode view of the program, containing a scatter plot of the example data](/Examples/ExampleView.png)
+![An example darkmode view of the program, containing a scatter plot of the example data](/Examples/ExampleDarkView.png)
 
